@@ -17,7 +17,7 @@ import plotly.graph_objects as go
 from app import app
 
 
-df = pd.read_excel("2003-2016 Seed Potato Cert data v20191204_NO FL lines_Rioux 5AUG2020.xlsx", sheet_name="2003-2016 Seed Potato Cert")
+df = pd.read_csv("cleaned_potato.csv")
 virus_list = ["LR","ST","MIX","MOS"]
 year_list = list(np.sort(df["S_YR"].unique()))
 year_list.append("all")
@@ -188,9 +188,9 @@ tabs = html.Div(
     [
         dbc.Tabs(
             [
-                dbc.Tab(label="State", tab_id="tab-1"),
-                dbc.Tab(label="Variety", tab_id="tab-2"),
-                dbc.Tab(label="Grower", tab_id="tab-3"),
+                dbc.Tab(label="State", tab_id="tab-1", href="/Virus/State"),
+                dbc.Tab(label="Variety", tab_id="tab-2", href = "/Virus/Variety" ),
+                dbc.Tab(label="Grower", tab_id="tab-3", href = "/Virus/Grower"),
             ],
             id="tabs",
             active_tab="tab-1",
@@ -227,58 +227,75 @@ virus_layout = dbc.Container(
 @app.callback(
     Output("state-graph", "figure"),
     [
-        Input("category", "value"),
         Input("state_number", "value"),
         Input("state_virus", "value"),
         Input("state_year", "value")
     ],
 )
-def plot_virus_by_state(category, state_number, virus, year):
-    virus_columns = find_virus_columns(virus)
-    if year == "all":
-        temp = df
+def state_plot(state_number, state_virus, state_year="all"):
+    number_column = list(df.columns[df.columns.str.startswith("NO")])
+    number_column = number_column + ["PLTCT_1", "PLTCT_2"]
+    temp = df.copy()
+    frequent_state = temp["S_STATE"].value_counts()[:state_number].index.to_list()
+    temp = temp[temp["S_STATE"].isin(frequent_state)].groupby("S_STATE").sum()[number_column]
+    temp
+
+    if state_year == "all":
+        temp = temp
     else:
-        temp = df[df["S_YR"] == year]
-    frequent_state = temp[category].value_counts()[:state_number].index.to_list()
-    temp = temp[temp[category].isin(frequent_state)].groupby(category).mean()[virus_columns]
+        temp = temp[temp["S_YR"] == state_year]
+
+    for column in temp.columns:
+        print(column)
+        if "1ST" in column:
+            #         print(column)
+            new_column = column.replace("NO", "PCT")
+            print(new_column)
+            temp[new_column] = temp[column] / temp["PLTCT_1"]
+        elif "2ND" in column:
+
+            new_column = column.replace("NO", "PCT")
+            #         print(new_column)
+            temp[new_column] = temp[column] / temp["PLTCT_2"]
+    temp = temp[temp.columns[(temp.columns.str.contains("PCT")) & (temp.columns.str.contains(state_virus))]]
+    print(temp)
     fig = go.Figure()
     fig.add_trace(go.Bar(y=temp.index,
                          x=temp.iloc[:, 0],
-                         text=np.round(temp.iloc[:, 0], 3),
+                         text=np.round(temp.iloc[:, 0], 5),
                          textposition='outside',
                          name=temp.columns[0],
                          marker_color='rgb(55, 83, 109)',
-                         orientation='h'
+                         orientation="h"
                          ))
     fig.add_trace(go.Bar(y=temp.index,
                          x=temp.iloc[:, 1],
-                         text=np.round(temp.iloc[:, 1], 3),
+                         text=np.round(temp.iloc[:, 1], 5),
                          textposition='outside',
                          name=temp.columns[1],
                          marker_color='rgb(26, 118, 255)',
-                         orientation='h'
+                         orientation="h"
                          ))
 
-    fig.add_trace(go.Bar(y=temp.index,
-                         x=temp.iloc[:, 2],
-                         text=np.round(temp.iloc[:, 2], 3),
-                         textposition='outside',
-                         name=temp.columns[2],
-                         marker_color='crimson',
-                         orientation='h'
-                         ))
+    # fig.add_trace(go.Bar(x=temp.index,
+    #                 y = temp.iloc[:,2],
+    #                 text=np.round(temp.iloc[:,2],3),
+    #                 textposition='outside',
+    #                 name=temp.columns[2],
+    #                 marker_color='crimson'
+    #                 ))
 
     fig.update_layout(
-        title='Virus across {}'.format(category),
+        title='US Export of Plastic Scrap',
         xaxis_tickfont_size=14,
         yaxis=dict(
-            title=category,
+            title='USD (millions)',
             titlefont_size=16,
             tickfont_size=14,
         ),
         legend=dict(
-            y=0,
-            x=1.0,
+            x=0,
+            y=1.0,
             bgcolor='rgba(255, 255, 255, 0)',
             bordercolor='rgba(255, 255, 255, 0)'
         ),
