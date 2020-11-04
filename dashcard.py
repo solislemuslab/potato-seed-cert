@@ -24,24 +24,7 @@ year_list = list(np.sort(df["S_YR"].unique()))
 year_list.append("all")
 category = ["S_STATE","VARIETY","S_G"]
 
-# nav = html.Div(
-#     [
-#         dbc.Nav(
-#             [
-#                 dbc.NavLink("Internal link", href="/"),
-#                 dbc.NavLink("External link", href="https://github.com"),
-#                 dbc.NavLink(
-#                     "External relative",
-#                     href="/l/components/nav",
-#                     external_link=True,
-#                 ),
-#                 dbc.NavLink("Button", id="button-link", n_clicks=0),
-#             ]
-#         ),
-#         html.Br(),
-#         html.P(id="button-clicks"),
-#     ]
-# )
+
 #
 #
 # @app.callback(
@@ -238,10 +221,10 @@ def plot_virus_by_state(category, state_number, virus, year):
                          ))
 
     fig.update_layout(
-        title='US Export of Plastic Scrap',
+        title='Virus across {}'.format(category),
         xaxis_tickfont_size=14,
         yaxis=dict(
-            title='USD (millions)',
+            title=category,
             titlefont_size=16,
             tickfont_size=14,
         ),

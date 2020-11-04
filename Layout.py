@@ -7,238 +7,193 @@ import plotly.express as px
 from urllib.request import urlopen
 import json
 import numpy as np
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output,  State
 import pandas as pd
 import xlrd
 import base64
-from callback import df,  encoded_image, encoded_image_03, encoded_image_05, encoded_image_10, mobility, covid_by_census,\
-    policy
+import io
+import dash_table
+from app import app
 
-SIDEBAR_STYLE = {
-    "position": "fixed",
-    "top": 0,
-    "left": 0,
-    "bottom": 0,
-    "width": "16rem",
-    "padding": "2rem 1rem",
-    "background-color": "#f8f9fa",
-}
 
-# save all the parameters of the pages for easy accessing
-PAGES = [
-    {'children': 'Home', 'href': '/', 'id': 'home'},
-    {'children': 'Correlation', 'href': '/correlation', 'id': 'correlation-page'}
-]
+homepage = html.Div([
+    # dcc.Upload(
+    #     id='upload-data',
+    #     children = html.Button('Upload File')),
+    dcc.Upload(
+        id='upload-data',
+        children=html.Div([
+            'Drag and Drop or ',
+            html.A('Select Files')
+        ]),
+        style={
+            'width': '30%',
+            'height': '60px',
+            'lineHeight': '60px',
+            'borderWidth': '1px',
+            'borderStyle': 'dashed',
+            'borderRadius': '5px',
+            'textAlign': 'center',
+            'margin': '10px'
+        },
+        # Allow multiple files to be uploaded
+        multiple=True
+    ),
+    html.Div(id='output-data-upload'),
+])
 
-CONTENT_STYLE = {
-    "margin-left": "18rem",
-    "margin-right": "2rem",
-    "padding": "2rem 1rem",
-}
 
-homepage_layout = html.Div(
+def parse_contents(contents, filename, date):
+    content_type, content_string = contents.split(',')
+
+    decoded = base64.b64decode(content_string)
+    try:
+        if 'csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+        elif 'xls' in filename:
+            # Assume that the user uploaded an excel file
+            df = pd.read_excel(io.BytesIO(decoded))
+    except Exception as e:
+        print(e)
+        return html.Div([
+            'There was an error processing this file.'
+        ])
+
+    summer_columns = ["CERT_N",
+                      "SNAME",
+                      "GCODE",
+                      "VARIETY",
+                      "S_GRW",
+                      "S_G",
+                      "S_YR",
+                      "S_GCODE",
+                      "S_STATE"]
+
+    winter_columns = ["winter_{}".format(x) for x in summer_columns]
+
+    errors = []
+    rows = []
+    for i, column in enumerate(summer_columns):
+        error = len(df[df[summer_columns[i]] != df[winter_columns[i]]])
+        errors.append(error)
+
+        msg = " at row "
+        indices = df[df[summer_columns[i]] != df[winter_columns[i]]].index.tolist()
+        for index in indices:
+            msg = msg + str(index) + " "
+        rows.append(msg)
+
+    warning_msg = ""
+    for i in range(len(summer_columns)):
+        msg = "{summer} doesn't match {winter}".format(summer=summer_columns[i], winter=winter_columns[i])
+        msg += " at row "
+        indices = df[df[summer_columns[i]] != df[winter_columns[i]]].index.tolist()
+        for index in indices:
+            msg = msg + str(index) + " "
+
+        msg += "\n"
+
+        warning_msg += msg
+    all_card_content = []
+    for i in range(len(summer_columns)):
+        card_content =[
+        dbc.CardHeader(summer_columns[i]),
+        dbc.ListGroup(
+            [
+                dbc.ListGroupItem("Number of errors: " + str(errors[i])),
+                dbc.ListGroupItem("Index of errors: " + rows[i] ),
+            ],
+            flush=True,
+        )]
+        # card_content = [
+        #     dbc.CardHeader(summer_columns[i]),
+        #     dbc.CardBody(
+        #         [
+        #             html.H5("Card title", className="card-title"),
+        #             html.P(
+        #                 str(errors[i]),
+        #                 className="card-text",
+        #             ),
+        #         ]
+        #     ),
+        # ]
+        all_card_content.append(card_content)
+
+    cards = html.Div(
+        [dbc.Row(
                 [
-                    dbc.Row(
-                        [
-                            dbc.Col(dcc.Markdown([
-                                "##### Mobility Types\n",
-                                "**Grocery & pharmacy**\n",
-                                "Mobility trends for places like grocery markets, food warehouses, \
-                                    farmers markets, specialty food shops, drug stores, and pharmacies.\n",
-                                "**Parks**\n",
-                                "Mobility trends for places like local parks, national parks, public beaches,\
-                                    marinas, dog parks, plazas, and public gardens.\n",
-                                "**Transit stations**\n",
-                                "Mobility trends for places like public transport hubs such as subway, bus, and train stations.\n",
-                                "**Retail & recreation**\n",
-                                "Mobility trends for places like restaurants, cafes, shopping centers, \
-                                    theme parks, museums, libraries, and movie theaters.\n",
-                                "**Residential**\n", "Mobility trends for places of residence.\n",
-                                "**Workplaces**\n", "Mobility trends for places of work."
-
-                            ])),
-                            dbc.Col(dcc.Markdown([
-                                "##### Correlation Coefficients between Daily Cases and Mobility\n",
-                                "It is the number that describes how people reacted to the reported daily cases "\
-                                    "in the previous days. It takes values between -1 and 1. A positive value indicates that "\
-                                        "as the reported daily cases increased, people's mobility decreased in the following day.\n",
-                                "##### Data resources\n",
-                                "[Google COVID-19 Community Mobility Reports](https://www.google.com/covid19/mobility/index.html?hl=en)\n",
-                                "[John Hopkins Daily Reports](https://github.com/CSSEGISandData/COVID-19)\n",
-                                "[New York Times COVID-19 Reports](https://github.com/nytimes/covid-19-data)"
-                            ])),
-                        ]
-                    )
+                    dbc.Col(dbc.Card(all_card_content[0], color="primary"), width={"size": 3, "order": 1, "offset": 1}),
+                    dbc.Col(dbc.Card(all_card_content[1], color="secondary"), width={"size": 3, "order": 12, "offset": 1}),
+                    dbc.Col(dbc.Card(all_card_content[2], color="info"), width={"size": 3, "order": "last", "offset": 1}),
+                ],
+                className="mb-4",
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(dbc.Card(all_card_content[3], color="success"), width={"size": 3, "order": 1, "offset": 1}),
+                    dbc.Col(dbc.Card(all_card_content[4], color="warning"), width={"size": 3, "order": 12, "offset": 1}),
+                    dbc.Col(dbc.Card(all_card_content[5], color="danger"), width={"size": 3, "order": 123, "offset": 1}),
+                ],
+                className="mb-4",
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(dbc.Card(all_card_content[6], color="light"), width={"size": 3, "order": 1, "offset": 1}),
+                    dbc.Col(dbc.Card(all_card_content[7], color="dark"), width={"size": 3, "order": 12, "offset": 1}),
+                    dbc.Col(dbc.Card(all_card_content[8], color="dark"), width={"size": 3, "order": 123, "offset": 1})
                 ]
-)
+            ),
+        ]
+    )
 
+    return html.Div([
 
-# the layout of the correlation page
-virus_layout = html.Div(children=[
-        html.Hr()
-        ])
-
-
-sidebar_layout = html.Div(
-    [
-        html.Div([
-                    dbc.Row([html.H4("Potato")
-                            ])
-                    ]),
-        html.Hr(),
-        html.P(
-            "Catalog", className="lead"
-        ),
-        dbc.Nav(
-            [
-                dbc.NavLink("Home", href="/", id="home")
-            ],
-            vertical=False,
-            pills=True,
-        ),
-        dbc.Nav(
-            [
-                dbc.NavLink("Visualization", href="/virus", id="correlation-page")
-            ],
-            vertical=False,
-            pills=True,
-        ),
-        dbc.Nav(
-            [
-                dbc.NavLink("Week 10/05", href="/weather", id="weather-page")
-            ],
-            vertical=False,
-            pills=True,
-        )
-    ],
-    style=SIDEBAR_STYLE
-)
-
-# weather_layout = html.Div([
-#     html.Div([
-#         html.Div(
-#           dcc.Graph(id='g1',
-#                     figure=fig_03,
-#                     className="six columns",
-#                     style={"width":500, "margin": 0, 'display': 'inline-block'}
-#                 ),
-#         html.Div(
-#           dcc.Graph(id='g2',
-#                     figure={'data': [{'y': [1, 2, 3]}]}),
-#                     className="six columns",
-#                     style={"width":500, "margin": 0, 'display': 'inline-block'}
-#                 ),
-#     ], className="row")
-# ])
-
-# weather_layout = html.Div([
-#         html.Div([
-#             html.Div(dcc.Graph(figure=fig_03))
-#         ])
-#         ],
-#     CONTENT_STYLE)
-
-#
-
-# weather_layout = html.Div(className='row',
-#                           style = {"display":"flex"},
-#         children = [
-#                 # html.Div(html.H3("Wisconsin Mobility Trend Analysis -- during covid19"),
-#                 # dcc.Markdown(
-#                 #                 "The mobility trend reveals how people are driving during the special period.\n",
-#                 #                 "The darker the color indicates more movements while lighter indicates less movements.\n"
-#                 #               ),
-#                 html.Div([
-#                  html.H5("March"),
-#                  html.Img(src='data:image/png;base64,{}'.format(encoded_image_03), style={'width': '250px'})
-#
-#                 ]),
-#                 html.Div([
-#                  html.H5("May"),
-#                  html.Img(src='data:image/png;base64,{}'.format(encoded_image_05), style={'width': '250px'})
-#
-#                 ]),
-#                 html.Div([
-#                  html.H5("October"),
-#                  html.Img(src='data:image/png;base64,{}'.format(encoded_image_10), style={'width': '250px'})
-#
-#                 ])
-#
-#         ])
-
-weather_layout = html.Div(
-    [
-    html.H3("Wisconsin Mobility Trend Analysis -- during covid19"),
-    dcc.Markdown([
-                                "The mobility trend reveals how people are driving during the special period.\n",
-                                "The darker the color indicates more movements while lighter indicates less movements.\n"
-                              ]),
-        dbc.Row(
-            [
-                dbc.Col(html.Div([
-                 html.H5("March"),
-                 html.Img(src='data:image/png;base64,{}'.format(encoded_image_03), style={'width': '250px'})
-
-                ])),
-                dbc.Col(html.Div([
-                    html.H5("May"),
-                    html.Img(src='data:image/png;base64,{}'.format(encoded_image_05), style={'width': '250px'})
-
-                ])),
-                dbc.Col(html.Div([
-                    html.H5("October"),
-                    html.Img(src='data:image/png;base64,{}'.format(encoded_image_10), style={'width': '250px'})
-
-                ]))
-            ],
-            align="start"),
-
-        html.Hr(),
-
-        html.Div([
-            html.H5('Daily Confirmed Cases'),
-            html.Img(src='data:image/png;base64,{}'.format(policy), style={'width': '550px'})
-
+        dbc.Row([
+            dbc.Col(dbc.Card(html.H3(children= filename,
+                                     className="text-center text-light bg-dark"), body=True, color="dark")
+                    , className="mt-4 mb-5")
         ]),
+        # html.H6(datetime.datetime.fromtimestamp(date)),
 
-        html.Div(dcc.Markdown([
-            "The blue vertical lines represent the state-wise policies \n",
-            "The red vertical lines represent the two protest occured in the May and late Auguest.\n",
-            "It can be seen that covid cases per day increase significantly a few weeks followed by protest"
-        ])
+        dash_table.DataTable(
+            data=df.to_dict('records')[:5],
+            columns=[{'name': i, 'id': i} for i in df.columns],
+            style_header={'backgroundColor': '#25597f', 'color': 'white'},
+            style_cell={
+                'backgroundColor': 'white',
+                'color': 'black',
+                'fontSize': 13,
+                'font-family': 'Nunito Sans'}
         ),
 
-        html.Hr(),
-
-        html.Div(
-            dcc.Markdown([
-                "The data shows how visitors to (or time spent in) categorized places change compared to our baseline days.\n",
-                "A baseline day represents a normal value for that day of the week.\n",
-                "The baseline day is the median value from the 5‑week period Jan 3 – Feb 6, 2020.\n",
-                "For each region-category, the baseline isn’t a single value—it’s 7 individual values.\n"
-                "Avoid comparing day-to-day changes. Especially weekends with weekdays."
-            ])
-        ),
-        html.Div([
-            html.H5('Mobility Trend'),
-            html.Img(src='data:image/png;base64,{}'.format(mobility), style={'width': '550px'})
-
+        html.Hr(),  # horizontal line
+        dbc.Row([
+            dbc.Col(dbc.Card(html.H3(children='Warning',
+                                     className="text-center text-light bg-dark"), body=True, color="dark")
+                    , className="mb-4")
         ]),
+        cards,
+        # For debugging, display the raw contents provided by the web browser
+        # html.Div('Warning'),
+        # dcc.Markdown(
+        #     style={"background-color": "red", "border": "solid 1px black"},
+        #     children = warning_msg)
+        # html.Pre(contents + '...', style={
+        #     'whiteSpace': 'pre-wrap',
+        #     'wordBreak': 'break-all'
+        # })
+    ])
 
-        html.Hr(),
-        ])
-# html.Div(className='row',
-#          style : {'display' : 'flex'},
-#              children=[
-#         html.Div(
-#             dcc.Graph(id='value-index'),
-#             className='col s12 m6',
-#
-#             ),
-#         html.Div(
-#             dcc.Graph(id='rental-index'),
-#             className='col s12 m6',
-#             )
-#         ]
-# )
-#
+
+@app.callback(Output('output-data-upload', 'children'),
+              [Input('upload-data', 'contents')],
+              [State('upload-data', 'filename'),
+               State('upload-data', 'last_modified')])
+def update_output(list_of_contents, list_of_names, list_of_dates):
+    if list_of_contents is not None:
+        children = [
+            parse_contents(c, n, d) for c, n, d in
+            zip(list_of_contents, list_of_names, list_of_dates)]
+        return children
