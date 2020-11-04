@@ -98,6 +98,7 @@ controls_1 = dbc.Card(
     body=True,
 )
 
+
 controls_2 = dbc.Card(
     [
         dbc.FormGroup(
@@ -140,12 +141,56 @@ controls_2 = dbc.Card(
     body=True,
 )
 
+controls_3 = dbc.Card(
+    [
+        dbc.FormGroup(
+            [
+                dbc.Label("Grower Number"),
+                dcc.Dropdown(
+                    id="grower_number",
+                    options=[
+                        {"label": col, "value": col} for col in range(1,20)
+                    ],
+                    value=10,
+                ),
+            ]
+        ),
+        dbc.FormGroup(
+            [
+                dbc.Label("Virus"),
+                dcc.Dropdown(
+                    id="variety_virus",
+                    options=[
+                        {"label": col, "value": col} for col in virus_list
+                    ],
+                    value="LR",
+                ),
+            ]
+        ),
+        dbc.FormGroup(
+            [
+                dbc.Label("Year"),
+                dcc.Dropdown(
+                    id="variety_year",
+                    options=[
+                        {"label": col, "value": col} for col in year_list
+                    ],
+                    value="all",
+                ),
+            ]
+        ),
+    ],
+    body=True,
+)
+
+
 tabs = html.Div(
     [
         dbc.Tabs(
             [
                 dbc.Tab(label="State", tab_id="tab-1"),
                 dbc.Tab(label="Variety", tab_id="tab-2"),
+                dbc.Tab(label="Grower", tab_id="tab-3"),
             ],
             id="tabs",
             active_tab="tab-1",
@@ -160,6 +205,8 @@ def switch_tab(at):
         return controls_1
     elif at == "tab-2":
         return controls_2
+    elif at == "tab-3":
+        return controls_3
     return html.P("This shouldn't ever be displayed...")
 
 virus_layout = dbc.Container(
