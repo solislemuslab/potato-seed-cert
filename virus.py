@@ -2,6 +2,7 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_table
 import pandas as pd
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
@@ -336,6 +337,19 @@ virus_layout = dbc.Container(
                                 multi= True,
                                 value= df["VARIETY"].value_counts()[:10].index ),
                         ]),
+                    dbc.FormGroup(
+                        [
+                            dbc.Label("Year"),
+                            dcc.Dropdown(
+                                id="sensitive_year",
+                                options=[
+                                    {"label": col, "value": col} for col in year_list
+                                ],
+                                value="all",
+                            ),
+                        ]
+                            ),
+
 
                 ], body=True, )),
             dbc.Col(dcc.Graph(id="sensitivity-graph"), md=8),
@@ -351,12 +365,31 @@ virus_layout = dbc.Container(
                         style = {"width": "100%",  "align-items": "center", "justify-content": "center"},
                         width= {"size": 8, "offset": 2})
                 ]),
+
+        html.Br(),
+        dbc.Row([
+                dbc.Col(html.Div(
+                    dash_table.DataTable(
+                        id="parallel-graph-table",
+
+                        style_header={'backgroundColor': '#25597f', 'color': 'white'},
+                        style_cell={
+                            'backgroundColor': 'white',
+                            'color': 'black',
+                            'fontSize': 13,
+                            'font-family': 'Nunito Sans'}
+                    ),
+                        ),
+                    style={"width": "100%", "align-items": "center", "justify-content": "center"},
+                    width={"size": 8, "offset": 4})
+                ]),
+
         dbc.Row([
             dbc.Col(dbc.Card(
                 [
                     dbc.FormGroup(
                         [
-                            dbc.Label("Season"),
+                            dbc.Label("State"),
                             dcc.Dropdown(
                                 id='multi_state',
                                 options=[{'label': i, 'value': i} for i in sorted(df["S_STATE"].dropna().unique())],
@@ -364,9 +397,33 @@ virus_layout = dbc.Container(
                                 multi=True,
                                 style={'width': '70%', 'margin-left': '5px'},
                                 placeholder="Select states", ),
-                        ])],body=True)),
+                        ]),
+                    dbc.FormGroup(
+                        [
+                            dbc.Label("Inspection"),
+                            dcc.Dropdown(
+                                id='parallel_inspection',
+                                options=[{'label': i, 'value': i} for i in ["1ST", "2ND"]],
+                                value=['1ST'],
+                                style={'width': '70%', 'margin-left': '5px'},
+                                 ),
+                        ]),
+                    dbc.FormGroup(
+                        [
+                            dbc.Label("Year"),
+                            dcc.Dropdown(
+                                id="parallel_year",
+                                options=[
+                                    {"label": col, "value": col} for col in year_list
+                                ],
+                                value="all",
+                            ),
+                        ]
+                    ),
+                    ],body=True)),
 
-            dbc.Col(dcc.Graph(id="parallel-graph"), md=8),]),
+            dbc.Col([
+                    dcc.Graph(id="parallel-graph")], md=8),]),
         dbc.Row([
             dbc.Col(html.Div(
                 dbc.Card(html.H3(children='Acres Rejection',
@@ -406,13 +463,15 @@ def state_plot(state_number, state_virus, state_year):
     number_column = number_column + ["PLTCT_1", "PLTCT_2", "S_YR", "CY"]
     temp = df.copy()
     frequent_state = temp["S_STATE"].value_counts()[:state_number].index.to_list()
-    temp = temp[temp["S_STATE"].isin(frequent_state)].groupby("S_STATE").sum()[number_column]
-    temp
+
 
     if state_year == "all":
-        temp = temp
+        temp = temp[temp["S_STATE"].isin(frequent_state)].groupby("S_STATE").sum()[number_column]
+
     else:
-        temp = temp[temp["S_YR"] == state_year]
+        temp = temp[temp["S_STATE"].isin(frequent_state)].groupby(["S_STATE", "S_YR"]).sum()[
+            number_column].reset_index()
+        temp = temp[temp["S_YR"] == state_year].set_index("S_STATE")
 
     for column in temp.columns:
         print(column)
@@ -463,7 +522,7 @@ def state_plot(state_number, state_virus, state_year):
             tickfont_size=14,
         ),
         xaxis=dict(
-            title='Percentage of potato with disease',
+            title='Percentage of potato with {}'.format(state_virus),
             titlefont_size=16,
             tickfont_size=14,
         ),
@@ -581,19 +640,59 @@ def prevalent_disease(season, disease, variety):
     )
     return fig
 
+# @app.callback([Output("parallel-graph-table", "data"),
+#                Output("parallel-graph-table", "columns")],
+#               [Input("multi_state", "value"),
+#                Input("parallel_inspection", "value")])
+# def parallel_graph_table(state, inspection):
+#     number_column = list(df.columns[df.columns.str.startswith("NO")])
+#     number_column = number_column + ["PLTCT_1", "PLTCT_2"]
+#     number_column
+#     temp = df.copy()
+#     # frequent_state = temp["S_STATE"].value_counts()[:10].index.to_list()
+#     temp = temp.groupby("S_STATE").sum()[number_column]
+#     temp
+#
+#     for column in temp.columns:
+#         #     print(column)
+#         if "1ST" in column:
+#
+#             new_column = column.replace("NO", "PCT")
+#             print(new_column)
+#             temp[new_column] = temp[column] / temp["PLTCT_1"]
+#         elif "2ND" in column:
+#
+#             new_column = column.replace("NO", "PCT")
+#             #         print(new_column)
+#             temp[new_column] = temp[column] / temp["PLTCT_2"]
+#     first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
+#     second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND", "PCT_MIX_2ND", "PCT_TOTV_2ND","PCT_BRR_2ND"]
+#
+#     if inspection == "1ST":
+#         temp = temp.loc[state, first_ins].reset_index()
+#     else:
+#         temp = temp.loc[state, second_ins].reset_index()
+#
+#     data = temp.to_dict('records')
+#     columns = [{'name': i, 'id': i} for i in temp.columns]
+#
+#
+#     return data, columns
+
 @app.callback(
-    Output("parallel-graph", "figure"),
-    [
-        Input("multi_state", "value"),
-    ],
+    [Output("parallel-graph-table", "data"),
+    Output("parallel-graph-table", "columns"),
+    Output("parallel-graph", "figure")],
+    [Input("multi_state", "value"),
+     Input("parallel_inspection", "value")]
 )
-def parallel_plot(state):
+def parallel_plot(state, inspection):
     number_column = list(df.columns[df.columns.str.startswith("NO")])
     number_column = number_column + ["PLTCT_1", "PLTCT_2"]
     number_column
     temp = df.copy()
-    frequent_state = temp["S_STATE"].value_counts()[:10].index.to_list()
-    temp = temp[temp["S_STATE"].isin(frequent_state)].groupby("S_STATE").sum()[number_column]
+    # frequent_state = temp["S_STATE"].value_counts()[:10].index.to_list()
+    temp = temp.groupby("S_STATE").sum()[number_column]
     temp
 
     for column in temp.columns:
@@ -608,25 +707,80 @@ def parallel_plot(state):
             new_column = column.replace("NO", "PCT")
             #         print(new_column)
             temp[new_column] = temp[column] / temp["PLTCT_2"]
-    temp = temp.loc[state]
+    first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
+    second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND", "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
+
+
     print(temp)
-    fig = go.Figure(data=
-    go.Parcoords(
-        line=dict(color=temp["PCT_MOS_1ST"],
-                  colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
-        dimensions=list([
-            dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
-                 #                 constraintrange = [4,8],
-                 label='LR', values=temp["PCT_LR_1ST"]),
-            dict(range=[temp["PCT_MOS_1ST"].min() * 0.5, temp["PCT_MOS_1ST"].max() * 1.2],
-                 label='MOS', values=temp["PCT_MOS_1ST"]),
-            dict(range=[temp["PCT_ST_1ST"].min() * 0.5, temp["PCT_ST_1ST"].max() * 1.2],
-                 label="ST", values=temp["PCT_ST_1ST"]),
-            dict(range=[temp["PCT_MIX_1ST"].min() * 0.5, temp["PCT_MIX_1ST"].max() * 1.2],
-                 label='MIX', values=temp["PCT_MIX_1ST"])
-        ])
-    )
-    )
+
+    first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
+    second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND", "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
+
+    if inspection == "1ST":
+        temp = temp.loc[state, first_ins].reset_index()
+        fig = go.Figure(data=
+        go.Parcoords(
+            line=dict(color=temp["PCT_MOS_1ST"],
+                      colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
+            dimensions=list([
+                dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
+                     #                 constraintrange = [4,8],
+                     label='LR', values=temp["PCT_LR_1ST"]),
+                dict(range=[temp["PCT_MOS_1ST"].min() * 0.5, temp["PCT_MOS_1ST"].max() * 1.2],
+                     label='MOS', values=temp["PCT_MOS_1ST"]),
+                dict(range=[temp["PCT_ST_1ST"].min() * 0.5, temp["PCT_ST_1ST"].max() * 1.2],
+                     label="ST", values=temp["PCT_ST_1ST"]),
+                dict(range=[temp["PCT_MIX_1ST"].min() * 0.5, temp["PCT_MIX_1ST"].max() * 1.2],
+                     label='MIX', values=temp["PCT_MIX_1ST"])
+            ])
+        )
+        )
+    else:
+        temp = temp.loc[state, second_ins].reset_index()
+        fig = go.Figure(data=
+        go.Parcoords(
+            line=dict(color=temp["PCT_MOS_2ND"],
+                      colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
+            dimensions=list([
+                dict(range=[temp["PCT_LR_2ND"].min() * 0.5, temp["PCT_LR_2ND"].max() * 1.2],
+                     #                 constraintrange = [4,8],
+                     label='LR', values=temp["PCT_LR_2ND"]),
+                dict(range=[temp["PCT_MOS_2ND"].min() * 0.5, temp["PCT_MOS_2ND"].max() * 1.2],
+                     label='MOS', values=temp["PCT_MOS_2ND"]),
+                dict(range=[temp["PCT_ST_2ND"].min() * 0.5, temp["PCT_ST_2ND"].max() * 1.2],
+                     label="ST", values=temp["PCT_ST_2ND"]),
+                dict(range=[temp["PCT_MIX_2ND"].min() * 0.5, temp["PCT_MIX_2ND"].max() * 1.2],
+                     label='MIX', values=temp["PCT_MIX_2ND"]),
+                dict(range=[temp["PCT_TOTV_2ND"].min() * 0.5, temp["PCT_TOTV_2ND"].max() * 1.2],
+                     label="TOTV", values=temp["PCT_TOTV_2ND"]),
+                dict(range=[temp["PCT_BRR_2ND"].min() * 0.5, temp["PCT_BRR_2ND"].max() * 1.2],
+                     label="BRR", values=temp["PCT_BRR_2ND"]),
+            ])
+        )
+        )
+
+    data = temp.to_dict('records')
+    columns = [{'name': i, 'id': i} for i in temp.columns]
+
+    # return data, columns
+
+    # fig = go.Figure(data=
+    # go.Parcoords(
+    #     line=dict(color=temp["PCT_MOS_1ST"],
+    #               colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
+    #     dimensions=list([
+    #         dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
+    #              #                 constraintrange = [4,8],
+    #              label='LR', values=temp["PCT_LR_1ST"]),
+    #         dict(range=[temp["PCT_MOS_1ST"].min() * 0.5, temp["PCT_MOS_1ST"].max() * 1.2],
+    #              label='MOS', values=temp["PCT_MOS_1ST"]),
+    #         dict(range=[temp["PCT_ST_1ST"].min() * 0.5, temp["PCT_ST_1ST"].max() * 1.2],
+    #              label="ST", values=temp["PCT_ST_1ST"]),
+    #         dict(range=[temp["PCT_MIX_1ST"].min() * 0.5, temp["PCT_MIX_1ST"].max() * 1.2],
+    #              label='MIX', values=temp["PCT_MIX_1ST"])
+    #     ])
+    # )
+    # )
 
     fig.update_layout(
         plot_bgcolor='white',
@@ -644,7 +798,7 @@ def parallel_plot(state):
     fig.update_layout(showlegend=True)
 
     # fig.update_traces(mode="markers+lines")
-    return fig
+    return data, columns, fig
 
 
 @app.callback(
@@ -653,7 +807,7 @@ def parallel_plot(state):
         Input("acres_rejection", "value"),
     ],
 )
-def parallel_plot(lots):
+def acre_rejection(lots):
     temp = df.groupby("LNAME").sum()[["ACRES", "AC_REJ", "winter_ACRES", "winter_AC_REJ"]]
     temp["rej_pct"] = temp["AC_REJ"] / temp["ACRES"]
     temp["winter_rej_pct"] = temp["winter_AC_REJ"] / temp["winter_ACRES"]

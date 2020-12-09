@@ -29,7 +29,7 @@ summer_columns = ["CERT_N",
                       "S_STATE"]
 
 winter_columns = ["winter_{}".format(x) for x in summer_columns]
-
+rejection_column = ["AC_REJ", "winter_AC_REJ"]
 
 homepage = html.Div([
     # dcc.Upload(
@@ -87,17 +87,6 @@ def parse_contents(contents, filename, date):
             'There was an error processing this file.'
         ])
 
-    summer_columns = ["CERT_N",
-                      "SNAME",
-                      "GCODE",
-                      "VARIETY",
-                      "S_GRW",
-                      "S_G",
-                      "S_YR",
-                      "S_GCODE",
-                      "S_STATE"]
-
-    winter_columns = ["winter_{}".format(x) for x in summer_columns]
 
     errors = []
     rows = []
@@ -212,6 +201,8 @@ def parse_contents(contents, filename, date):
                 id="target_column",
                 options=[
                     {"label": col, "value": col} for col in summer_columns
+                ] + [
+                    {"label": col, "value": col} for col in rejection_column
                 ],
                 value="SNAME"
             ),
@@ -301,23 +292,24 @@ def update_href(dropdown_value):
     writer.save()
     return '/{}'.format(relative_filename)
 
-@app.callback(Output('problematic_table', 'data'),
+@app.callback([Output('problematic_table', 'data'),
+                Output('problematic_table', 'columns'),],
               [Input('target_column', 'value')])
 def update_href(dropdown_value):
     print(dropdown_value)
-    target_indices = summer_columns.index(dropdown_value)
-    result_df = df[df[summer_columns[target_indices]] != df[winter_columns[target_indices]]  ]
-    return result_df.to_dict('records')[:5]
-
-@app.callback(Output('problematic_table', 'columns'),
-              [Input('target_column', 'value')])
-def highlight_columns(dropdown_value):
-    target_indices = summer_columns.index(dropdown_value)
-    result_df = df[df[summer_columns[target_indices]] != df[winter_columns[target_indices]]]
-    target_indices = summer_columns.index(dropdown_value)
-    winter_dropdown = winter_columns[target_indices]
-    return [{'id': c, 'name': c, 'editable': (c != dropdown_value and c != winter_dropdown)} for c in result_df.columns]
-
+    if dropdown_value in summer_columns:
+        target_indices = summer_columns.index(dropdown_value)
+        winter_dropdown = winter_columns[target_indices]
+        result_df = df[df[summer_columns[target_indices]] != df[winter_columns[target_indices]]  ]
+        data = result_df.to_dict('records')[:5]
+        winter_dropdown = winter_columns[target_indices]
+        columns = [{'id': c, 'name': c, 'editable': (c != dropdown_value and c != winter_dropdown)} for c in result_df.columns]
+    elif dropdown_value in rejection_column:
+        result_df = df[df[dropdown_value] < 0]
+        data = result_df.to_dict('records')[:5]
+        columns = [{'id': c, 'name': c, 'editable': (c != dropdown_value)} for c in
+                   result_df.columns]
+    return data, columns
 
 @app.server.route('/downloads/<path:path>')
 def serve_static(path):
