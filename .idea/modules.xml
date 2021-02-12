@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/potato-seed-cert.iml" filepath="$PROJECT_DIR$/.idea/potato-seed-cert.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/potato.iml" filepath="$PROJECT_DIR$/.idea/potato.iml" />
     </modules>
   </component>
 </project>
