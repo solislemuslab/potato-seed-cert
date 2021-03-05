@@ -67,44 +67,13 @@ card_content = [
 
 
 homepage = html.Div([
-    # dcc.Upload(
-    #     id='upload-data',
-    #     children = html.Button('Upload File')),
     dbc.Row(
     [
         dbc.Col(dbc.Card(card_content, color="blue", outline=True)),
 
     ]
     ),
-    # dcc.Upload(
-    #     id='upload-data',
-    #     children=html.Div([
-    #         'Drag and Drop or ',
-    #         html.A('Select Files')
-    #     ]),
-    #     style={
-    #         'width': '30%',
-    #         'height': '60px',
-    #         'lineHeight': '60px',
-    #         'borderWidth': '1px',
-    #         'borderStyle': 'dashed',
-    #         'borderRadius': '5px',
-    #         'textAlign': 'center',
-    #         'margin': '10px'
-    #     },
-    #     # Allow multiple files to be uploaded
-    #     multiple=True
-    # ),
-    # dbc.Col(
-    #         dcc.Dropdown(
-    #             id="target_column",
-    #             options=[
-    #                 {"label": col, "value": col} for col in summer_columns
-    #             ],
-    #             value= "SNAME"
-    #         ),
-    #         md = 4
-    #     ),
+
     html.Div(id='output-data-upload'),
 ])
 
@@ -163,18 +132,7 @@ def parse_contents(contents, filename, date):
             ],
             flush=True,
         )]
-        # card_content = [
-        #     dbc.CardHeader(summer_columns[i]),
-        #     dbc.CardBody(
-        #         [
-        #             html.H5("Card title", className="card-title"),
-        #             html.P(
-        #                 str(errors[i]),
-        #                 className="card-text",
-        #             ),
-        #         ]
-        #     ),
-        # ]
+
         all_card_content.append(card_content)
 
     cards = html.Div(
@@ -203,9 +161,6 @@ def parse_contents(contents, filename, date):
             ),
         ]
     )
-
-    # index = summer_columns.index(target_column)
-    # indices = df[df[summer_columns[index]] != df[winter_columns[index]]].index.tolist()
 
 
     return html.Div([
@@ -289,44 +244,9 @@ def parse_contents(contents, filename, date):
         ],
         outline=True, color="warning", className="mr-1")
 
-        # dash_table.DataTable(
-        #     id = "problematic rows",
-        #     data = df.to_dict("records")[indices],
-        #     columns=[{'name': i, 'id': i} for i in df.columns],
-        #     style_header={'backgroundColor': '#25597f', 'color': 'white'},
-        #     style_cell={
-        #         'backgroundColor': 'white',
-        #         'color': 'black',
-        #         'fontSize': 13,
-        #         'font-family': 'Nunito Sans'}
-        # ),
-        # For debugging, display the raw contents provided by the web browser
-        # html.Div('Warning'),
-        # dcc.Markdown(
-        #     style={"background-color": "red", "border": "solid 1px black"},
-        #     children = warning_msg)
-        # html.Pre(contents + '...', style={
-        #     'whiteSpace': 'pre-wrap',
-        #     'wordBreak': 'break-all'
-        # })
     ])
 
-# @app.callback(Output('problematic rows', 'data'),
-#               [Input('target_column', 'value'),
-#               Input('upload-data', 'contents')],
-#               [State('upload-data', 'filename'),
-#                State('upload-data', 'last_modified')]
-#               )
-# def problematic_table(target_column, list_of_contents, list_of_names, list_of_dates):
-#
-#
-#
-#     index = summer_columns.index(target_column)
-#     print(index)
-#     indices = df[df[summer_columns[index]] != df[winter_columns[index]]].index.tolist()
-#     print(indices)
-#     return df.to_dict("records")[indices]
-#
+
 
 
 @app.callback(Output('output-data-upload', 'children'),

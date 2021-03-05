@@ -18,7 +18,7 @@ import functools
 import re
 import plotly.graph_objects as go
 
-from apps import prevalent_disease, acres, layout, navbar, variety, state_comparison
+from apps import prevalent_disease, acres, navbar, variety, state_comparison, upload, statistical_test
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 
@@ -86,36 +86,12 @@ LINEBREAK_STYLE = {
   'border': '1px solid white'
 }
 
-submenu_3 = [
-    html.Li(
-        # use Row and Col components to position the chevrons
-        dbc.Row(
-            [
-                dbc.Col("Variety", className = 'text-light'),
-                dbc.Col(
-                    html.I(className="fas fa-chevron-right mr-3", style ={'color': 'white'}), width="auto"
-                ),
-            ],
-            className="my-1",
-        ),
-        style={"cursor": "pointer"},
-        id="submenu-3",
-    ),
-    # we use the Collapse component to hide and reveal the navigation links
-    dbc.Collapse(
-        [
-            dbc.NavLink("Variety-1", href="/Variety/1", className = 'text-light'),
-            dbc.NavLink("Variety-2", href="/Variety/2", className = 'text-light'),
-        ],
-        id="submenu-3-collapse",
-    ),
-]
 
-submenu_2 = [
+Statistical_Test = [
     html.Li(
         dbc.Row(
             [
-                dbc.Col("Acre-rejection", className = 'text-light'),
+                dbc.Col("Statistical Test", className = 'text-light'),
                 dbc.Col(
                     html.I(className="fas fa-chevron-right mr-3",  style ={'color': 'white'}), width="auto"
                 ),
@@ -127,19 +103,19 @@ submenu_2 = [
     ),
     dbc.Collapse(
         [
-            dbc.NavLink("Acre-Rejection-1", href="/acre-rejection/1", className = 'text-light'),
-            dbc.NavLink("Acre-Rejection-2", href="/acre-rejection/2", className = 'text-light'),
+            dbc.NavLink("Statistical test", href="/stat-test", className = 'text-light'),
         ],
         id="submenu-2-collapse",
     ),
+    html.Br()
 ]
 
-submenu_1 = [
+Visualization = [
     html.Li(
         # use Row and Col components to position the chevrons
         dbc.Row(
             [
-                dbc.Col("Disease-Prevalence", className= 'text-light'),
+                dbc.Col("Data Visualization", className= 'text-light'),
                 dbc.Col(
                     html.I(className="fas fa-chevron-right mr-3",  style ={'color': 'white'}), width="auto"
                 ),
@@ -154,17 +130,24 @@ submenu_1 = [
         [
             dbc.NavLink("Disease-Prevalence-1", href="/disease-prevalence/1", className = 'text-light'),
             dbc.NavLink("Disease-Prevalence-2", href="/disease-prevalence/2", className = 'text-light'),
+            dbc.NavLink("State-Comparison-1", href="/state-comparison/1", className = 'text-light'),
+            dbc.NavLink("State-Comparison-2", href="/state-comparison/2", className = 'text-light'),
+            dbc.NavLink("Acre-Rejection-1", href="/acre-rejection/1", className = 'text-light'),
+            dbc.NavLink("Acre-Rejection-2", href="/acre-rejection/2", className = 'text-light'),
+            dbc.NavLink("Variety-1", href="/Variety/1", className = 'text-light'),
+            dbc.NavLink("Variety-2", href="/Variety/2", className = 'text-light'),
         ],
         id="submenu-1-collapse",
     ),
+    html.Br()
 ]
 
-submenu_4 = [
+Data_Import = [
     html.Li(
         # use Row and Col components to position the chevrons
         dbc.Row(
             [
-                dbc.Col("State-Comparison", className= 'text-light'),
+                dbc.Col("Data Import", className= 'text-light'),
                 dbc.Col(
                     html.I(className="fas fa-chevron-right mr-3",  style ={'color': 'white'}), width="auto"
                 ),
@@ -177,29 +160,15 @@ submenu_4 = [
     # we use the Collapse component to hide and reveal the navigation links
     dbc.Collapse(
         [
-            dbc.NavLink("State-Comparison-1", href="/state-comparison/1", className = 'text-light'),
-            dbc.NavLink("State-Comparison-2", href="/state-comparison/2", className = 'text-light'),
+            dbc.NavLink("Data Import", href="/data-import", className = 'text-light'),
         ],
         id="submenu-4-collapse",
     ),
+    html.Br()
 ]
 
-table_import = [
-    html.Li(
-        # use Row and Col components to position the chevrons
-        dbc.Row(
-            [
-                dbc.Col(dbc.NavLink("Data Import", href="/data-import", className = 'text-light'),),
-                dbc.Col(
-                    html.I(className="fas fa-chevron-right mr-3"), width="auto"
-                ),
-            ],
-            className="my-1",
-        ),
-        style={"cursor": "pointer"},
-        id='table_import',
-    )
-]
+
+
 
 sidebar = html.Div(
     [
@@ -208,7 +177,9 @@ sidebar = html.Div(
         # html.P(
         #     "A sidebar with collapsible navigation links", className="lead"
         # ),
-        dbc.Nav(table_import + submenu_3 + submenu_2 + submenu_1 + submenu_4,
+        dbc.Nav(Data_Import +
+                Visualization +
+                Statistical_Test,
                 vertical=True,),
     ],
     style=SIDEBAR_STYLE,
@@ -282,7 +253,8 @@ for i in [1, 2, 3,4]:
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname in ['/', '/data-import']:
-        return layout.homepage
+        # return layout.homepage
+        return upload.homepage
     if pathname in ["/disease-prevalence/1"]:
         return prevalent_disease.prevalent_disease_block
     elif pathname == "/disease-prevalence/2":
@@ -299,6 +271,8 @@ def render_page_content(pathname):
         return state_comparison.state_comparison_layout
     elif pathname == "/state-comparison/2":
         return html.P("No way! This is page 3.2!")
+    elif pathname == "/stat-test":
+        return statistical_test.homepage
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
         [

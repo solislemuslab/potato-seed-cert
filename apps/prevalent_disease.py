@@ -79,8 +79,9 @@ prevalent_disease_block = html.Div([dbc.Row([
                                     multi=True,
                                     value=df["VARIETY"].value_counts()[:3].index),
                             ]),
-                    ], body=True, )),
-                dbc.Col(dcc.Graph(id="prevalence-graph"), md=8),
+                    ], body=True, style={'height':'70vh'})),
+                dbc.Col(
+                    dbc.Card(dcc.Graph(id="prevalence-graph"), body = True, style={'height':'70vh'},),   md = 8)
             ],
                 align="center", ),
         ])
