@@ -15,6 +15,7 @@ import io
 import flask
 import os
 import dash_table
+import jellyfish
 from app import app
 
 PAGE_SIZE = 5
@@ -170,6 +171,59 @@ def data_preview(contents, filename):
             ),
             html.Br(),
             html.Br(),
+
+            dbc.Card(
+                dbc.CardBody(
+                [
+                    dbc.Row(
+                        [dbc.Col(
+                            dbc.FormGroup(
+                                [
+                                    dbc.Label("Columns"),
+                                    dcc.Dropdown(
+                                        id="similar_columns",
+                                        options=[
+                                            {"label": col, "value": col} for col in ["VAREITY", "S_G"]
+                                        ],
+                                        value="VARIETY"),
+                                ]), ),
+                        dbc.Col(
+                            dbc.FormGroup(
+                                [
+                                    dbc.Label("Text"),
+                                    dbc.Input(id = 'quantity-value', type="number", min=0, max=1, step=0.01),
+                                ]), ),]
+                    ),
+                    html.Br(),
+                    dbc.Row(
+                        dbc.Col(
+
+                            dash_table.DataTable(
+                                id='similar_string_table',
+                                virtualization=True,
+                                page_action='native',
+                                page_size=15,
+                                style_cell={  # ensure adequate header width when text is shorter than cell's text
+                                    'minWidth': 95, 'maxWidth': 95, 'width': 95
+                                },
+                                # style_data_conditional=[{
+                                #     'if': {'column_editable': False},
+                                #     'backgroundColor': 'rgb(30, 30, 30)',
+                                #     'color': 'white'
+                                # }],
+                                style_header_conditional=[{
+                                    'if': {'column_editable': False},
+                                    'backgroundColor': 'rgb(30, 30, 30)',
+                                    'color': 'white'
+                                }],
+                            ),
+                        )
+                    )]
+                ),
+            ),
+            html.Br(),
+            html.Br(),
+
             html.Hr(),
             dbc.Row([
                 dbc.Col(
@@ -396,6 +450,136 @@ def page_and_sort( sort_by, contents, filename, derived_query_structure):
 
     return df_filtered.to_dict('records')
 
+
+
+# Heatmap to examine the distribution of errors
+@app.callback(
+    Output('error-structure-graph', "figure"),
+    [
+        Input('upload-data', 'contents'),
+        Input('upload-data', 'filename'),
+        Input("fix-button", "n_clicks")
+    ]
+)
+def error_structure(contents, filename, n_clicks):
+    if contents:
+        contents = contents[0]
+        filename = filename[0]
+        df = parse_data(contents, filename)
+
+    if  n_clicks is None or n_clicks % 2 == 0:
+        pass
+    elif n_clicks % 2 == 1:
+        for i in range(0, len(combined_columns), 2):
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i + 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                df[combined_columns[i + 1]])
+
+        for i in range(1, len(combined_columns), 2):
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i - 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                df[combined_columns[i - 1]])
+
+    for i in range(len(summer_columns)):
+        df[error_columns[i]] = df[summer_columns[i]] != df[winter_columns[i]]
+
+    fig = px.imshow(df[error_columns].T, color_continuous_scale=px.colors.sequential.Greys,
+                    title="Errors Structure")
+    fig.update_layout(title_font={'size': 27}, title_x=0.5)
+
+    return fig
+
+
+# Heatmap to examine the distribution of missing values
+@app.callback(
+    Output('missing-structure-graph', "figure"),
+    [
+        Input('upload-data', 'contents'),
+        Input('upload-data', 'filename'),
+        Input("fix-button", "n_clicks")
+    ]
+)
+def missing_structure(contents, filename, n_clicks):
+    if contents:
+        contents = contents[0]
+        filename = filename[0]
+        df = parse_data(contents, filename)
+
+    if  n_clicks is None or n_clicks % 2 == 0:
+        pass
+    elif n_clicks % 2 == 1:
+        for i in range(0, len(combined_columns), 2):
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i + 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                df[combined_columns[i + 1]])
+
+        for i in range(1, len(combined_columns), 2):
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i - 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                df[combined_columns[i - 1]])
+
+    for i in range(len(summer_columns)):
+        df[error_columns[i]] = df[[summer_columns[i], winter_columns[i]]].isnull().apply(lambda x: any(x), axis = 1)
+
+    fig = px.imshow(df[error_columns].T, color_continuous_scale=px.colors.sequential.Greys,
+                    title="Missing Structure")
+    fig.update_layout(title_font={'size': 27}, title_x=0.5)
+
+    return fig
+
+
+@app.callback([Output('fix-button', 'children'),],
+              [
+                  Input('fix-button', 'n_clicks'),
+
+              ])
+def error_table(nclicks):
+    if nclicks == None or nclicks % 2 == 0:
+        return ["fix me"]
+    else:
+        return ["Undo"]
+
+
+@app.callback([Output('similar_string_table', 'data'),
+                Output('similar_string_table', 'columns'),],
+              [Input('similar_columns', 'value'),
+               Input('upload-data', 'contents'),
+               Input('upload-data', 'filename')
+               ])
+
+def error_highlight_table(dropdown_value, contents, filename):
+    if contents:
+        contents = contents[0]
+        filename = filename[0]
+        df = parse_data(contents, filename)
+
+    print(df)
+    a = dropdown_value
+    b = "winter_{a}".format(a = dropdown_value)
+
+    print(a,b)
+
+    for i in range(0, len(combined_columns), 2):
+        df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i + 1]])
+        df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+            df[combined_columns[i + 1]])
+
+    for i in range(1, len(combined_columns), 2):
+        df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i - 1]])
+        df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+            df[combined_columns[i - 1]])
+
+    temp = df.loc[df[a] != df[b], [a, b]].drop_duplicates()
+    print(temp)
+    temp["jaro_distance"] = temp.apply(lambda x: jellyfish.jaro_distance(x[a], x[b]), axis=1)
+    temp = temp.sort_values(by="jaro_distance", ascending=False)
+
+
+    columns = [{'id': c, 'name': c,} for c in temp.columns]
+
+    return temp.to_dict('records'), columns
+
+
 # Generate the table with highlighted errors
 @app.callback([Output('problematic_table', 'data'),
                 Output('problematic_table', 'columns'),],
@@ -442,102 +626,6 @@ def error_highlight_table(dropdown_value, contents, filename, sort_by, derived_q
 
     return df_filtered.to_dict('records'), columns
 
-# Heatmap to examine the distribution of errors
-@app.callback(
-    Output('error-structure-graph', "figure"),
-    [
-        Input('upload-data', 'contents'),
-        Input('upload-data', 'filename'),
-        Input("fix-button", "n_clicks")
-    ]
-)
-def error_structure(contents, filename, n_clicks):
-    if contents:
-        contents = contents[0]
-        filename = filename[0]
-        df = parse_data(contents, filename)
-
-    if  n_clicks is None or n_clicks % 2 == 0:
-        pass
-    elif n_clicks % 2 == 1:
-        for i in range(0, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i + 1]])
-            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                df[combined_columns[i + 1]])
-
-        for i in range(1, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i - 1]])
-            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                df[combined_columns[i - 1]])
-
-    for i in range(len(summer_columns)):
-        df[error_columns[i]] = df[summer_columns[i]] != df[winter_columns[i]]
-
-    fig = px.imshow(df[error_columns].T, color_continuous_scale=px.colors.sequential.Greys,
-                    title="Errors Structure")
-    fig.update_layout(title_font={'size': 27}, title_x=0.5)
-
-    return fig
-
-# Heatmap to examine the distribution of missing values
-@app.callback(
-    Output('missing-structure-graph', "figure"),
-    [
-        Input('upload-data', 'contents'),
-        Input('upload-data', 'filename'),
-        Input("fix-button", "n_clicks")
-    ]
-)
-def missing_structure(contents, filename, n_clicks):
-    if contents:
-        contents = contents[0]
-        filename = filename[0]
-        df = parse_data(contents, filename)
-
-    if  n_clicks is None or n_clicks % 2 == 0:
-        pass
-    elif n_clicks % 2 == 1:
-        for i in range(0, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i + 1]])
-            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                df[combined_columns[i + 1]])
-
-        for i in range(1, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i - 1]])
-            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                df[combined_columns[i - 1]])
-
-    for i in range(len(summer_columns)):
-        df[error_columns[i]] = df[[summer_columns[i], winter_columns[i]]].isnull().apply(lambda x: 1 if any(x) else 0, axis = 1)
-
-
-    # fig = go.Figure(data=go.Heatmap(
-    #     z = df[error_columns].T.values,
-    #     y = error_columns,
-    #     # y=programmers,
-    #     colorscale = [(0, "white"), (1, "black")],
-    #     zmin = np.min(df[error_columns].min().values),
-    #     zmax = np.max(df[error_columns].max().values),
-    #     ))
-    # fig.update_layout(title="Missing Structure", title_font={'size': 27}, title_x=0.5)
-
-    fig = px.imshow(df[error_columns].T, color_continuous_scale = [(0, "white"), (1, "black")], range_color = [0, np.max(df[error_columns].max().values) ],
-                    title="Missing Structure")
-    fig.update_layout(title_font={'size': 27}, title_x=0.5)
-
-    return fig
-
-
-@app.callback([Output('fix-button', 'children'),],
-              [
-                  Input('fix-button', 'n_clicks'),
-
-              ])
-def error_table(nclicks):
-    if nclicks == None or nclicks % 2 == 0:
-        return ["fix me"]
-    else:
-        return ["Undo"]
 
 @app.server.route('/downloads/<path:path>')
 def serve_static(path):
