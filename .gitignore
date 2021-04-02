@@ -1,7 +1,3 @@
-# this project
-data/*
-Resources/*
-
 # Compiled source #
 ###################
 *.com
@@ -148,3 +144,6 @@ Backup[ ]of[ ]*.numbers/
 
 ### Mathematica
 *.nb
+
+## H5
+*.h5
