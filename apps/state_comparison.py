@@ -36,17 +36,77 @@ def find_virus_columns(virus):
 
 
 
-state_comparison_layout = html.Div(
-        [dbc.Row([
-                dbc.Col(html.Div(
-                                dbc.Card(
-                                    html.H3(children='Comparison across state',
-                                        className="text-center text-light bg-dark"), body=True, color="dark"),
-                                ),
-                        style = {"width": "100%",  "align-items": "center", "justify-content": "center"},
-                        width= {"size": 8, "offset": 2})
-                ]),
+LEFT_COLUMN = dbc.Jumbotron(
+    [
+        html.H4(children="Select bank & dataset size", className="display-5"),
+        html.Hr(className="my-2"),
+        dbc.FormGroup(
+            [
+                dbc.Label("State"),
+                dcc.Dropdown(
+                    id='multi_state',
+                    options=[{'label': i, 'value': i} for i in sorted(df["S_STATE"].dropna().unique())],
+                    value=['WI', 'CO'],
+                    multi=True,
+                    style={'width': '90%', 'margin-left': '5px'},
+                    placeholder="Select states", ),
+            ]),
+        dbc.FormGroup(
+            [
+                dbc.Label("Inspection"),
+                dcc.Dropdown(
+                    id='parallel_inspection',
+                    options=[{'label': i, 'value': i} for i in ["1ST", "2ND"]],
+                    value=['1ST'],
+                    style={'width': '90%', 'margin-left': '5px'},
+                ),
+            ]),
+        dbc.FormGroup(
+            [
+                dbc.Label("Year"),
+                dcc.Dropdown(
+                    id="parallel_year",
+                    options=[
+                        {"label": col, "value": col} for col in year_list
+                    ],
+                    value="all",
+                    style={'width': '90%', 'margin-left': '5px'},
+                ),
+            ]
+        ),
+    ]
+)
 
+RIGHT_PLOT = [
+    dbc.CardHeader(html.H5("State comparison")),
+    dbc.CardBody(
+        [
+            dcc.Loading(
+                id="loading-bigrams-comps",
+                children=[
+                    dbc.Alert(
+                        "Something's gone wrong! Give us a moment, but try loading this page again if problem persists.",
+                        id="no-data-alert-bigrams_comp",
+                        color="warning",
+                        style={"display": "none"},
+                    ),
+
+                    dcc.Graph(id="parallel-graph"),
+                ],
+                type="default",
+            )
+        ],
+        style={"marginTop": 0, "marginBottom": 0},
+    ),
+]
+
+state_comparison_layout = html.Div(
+        [
+        dbc.Row([
+            dbc.Col(LEFT_COLUMN, align="center", md = 4),
+            dbc.Col(
+                dbc.Card(RIGHT_PLOT), md=8)
+            ], style={"marginTop": 30}, align="center", ),
         html.Br(),
         dbc.Row([
                 dbc.Col(html.Div(
@@ -62,48 +122,8 @@ state_comparison_layout = html.Div(
                     ),
                         ),
                     style={"width": "100%", "align-items": "center", "justify-content": "center"},
-                    width={"size": 8, "offset": 4})
+                    width={"size": 8, "offset": 1})
                 ]),
-            dbc.Row([
-                dbc.Col(dbc.Card(
-                    [
-                        dbc.FormGroup(
-                            [
-                                dbc.Label("State"),
-                                dcc.Dropdown(
-                                    id='multi_state',
-                                    options=[{'label': i, 'value': i} for i in sorted(df["S_STATE"].dropna().unique())],
-                                    value=['WI', 'CO'],
-                                    multi=True,
-                                    style={'width': '70%', 'margin-left': '5px'},
-                                    placeholder="Select states", ),
-                            ]),
-                        dbc.FormGroup(
-                            [
-                                dbc.Label("Inspection"),
-                                dcc.Dropdown(
-                                    id='parallel_inspection',
-                                    options=[{'label': i, 'value': i} for i in ["1ST", "2ND"]],
-                                    value=['1ST'],
-                                    style={'width': '70%', 'margin-left': '5px'},
-                                ),
-                            ]),
-                        dbc.FormGroup(
-                            [
-                                dbc.Label("Year"),
-                                dcc.Dropdown(
-                                    id="parallel_year",
-                                    options=[
-                                        {"label": col, "value": col} for col in year_list
-                                    ],
-                                    value="all",
-                                ),
-                            ]
-                        ),
-                    ], body=True)),
-
-                dbc.Col([
-                    dcc.Graph(id="parallel-graph")], md=8), ]),
         ])
 
 
@@ -210,20 +230,12 @@ def parallel_plot(state, inspection):
     # )
     # )
 
-    fig.update_layout(
-        plot_bgcolor='white',
-        paper_bgcolor='white'
-    )
+    # fig.update_layout(
+    #     plot_bgcolor='white',
+    #     paper_bgcolor='white'
+    # )
 
-    fig.update_layout(legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=1.02,
-        xanchor="right",
-        x=1
-    ))
 
-    fig.update_layout(showlegend=True)
 
     # fig.update_traces(mode="markers+lines")
     return data, columns, fig

@@ -180,7 +180,7 @@ Data_Import = [
 
 sidebar = html.Div(
     [
-        html.H2("Wisconsin Seed Potato Program",
+        html.H3("Menu",
                 className="display-5 text-light"),
         html.Hr(style=LINEBREAK_STYLE),
         # html.P(

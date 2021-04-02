@@ -29,13 +29,7 @@ def find_virus_columns(virus):
             re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
 
 
-prevalent_disease_block = html.Div([dbc.Row([
-                dbc.Col(dbc.Card(html.H3(children='Disease Prevalence',
-                                         className="text-center text-light bg-dark"), body=True, color="dark")
-                , className="mt-4 mb-4", width= {"size": 8, "offset": 2})
-        ],align="center",),
-            dbc.Row([
-                dbc.Col(dbc.Card(
+left_column = dbc.Card(
                     [
                         dbc.FormGroup(
                             [
@@ -79,11 +73,92 @@ prevalent_disease_block = html.Div([dbc.Row([
                                     multi=True,
                                     value=df["VARIETY"].value_counts()[:3].index),
                             ]),
-                    ], body=True, style={'height':'70vh'})),
+                    ], body=True, style={'height':'70vh'})
+
+LEFT_COLUMN = dbc.Jumbotron(
+    [
+        html.H4(children="Select bank & dataset size", className="display-5"),
+        html.Hr(className="my-2"),
+        dbc.FormGroup(
+            [
+                dbc.Label("Select Inspection Season"),
+                # html.P(
+                #             "(Lower is faster. Higher is more precise)",
+                #             style={"fontSize": 10, "font-weight": "lighter"},
+                #         ),
+                dcc.Dropdown(
+                    id="season_inspection",
+                    options=[
+                        {"label": col, "value": col} for col in
+                        ["summer", "winter", "summer and winter"]
+                    ],
+                    value="summer", ),
+            ]),
+        dbc.FormGroup(
+            [
+                dbc.Label("Select Disease Type"),
+                dcc.Dropdown(
+                    id="disease_type",
+                    options=[
+                        {"label": col, "value": col} for col in ["MOS", "LR", "MIX", "ST", "BRR"]
+                    ],
+                    value="LR", ),
+            ]),
+        dbc.FormGroup(
+            [
+                dbc.Label("Select State"),
+                dcc.Dropdown(
+                    id="state_type",
+                    options=[
+                        {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
+                    ],
+                    value="WI", ),
+            ]),
+        dbc.FormGroup(
+            [
+                dbc.Label("Select Potato Variety"),
+                dcc.Dropdown(
+                    id="disease_potato_variety",
+                    options=[
+                        {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+                    ],
+                    multi=True,
+                    value=df["VARIETY"].value_counts()[:3].index),
+            ]),
+    ],
+)
+
+RIGHT_PLOT = [
+    dbc.CardHeader(html.H5("Prevalent Disease")),
+    dbc.CardBody(
+        [
+            dcc.Loading(
+                id="loading-bigrams-comps",
+                children=[
+                    dbc.Alert(
+                        "Something's gone wrong! Give us a moment, but try loading this page again if problem persists.",
+                        id="no-data-alert-bigrams_comp",
+                        color="warning",
+                        style={"display": "none"},
+                    ),
+
+                    dcc.Graph(id="prevalence-graph", config={"displayModeBar": False},),
+                ],
+                type="default",
+            )
+        ],
+        style={"marginTop": 0, "marginBottom": 0},
+    ),
+]
+
+
+prevalent_disease_block = html.Div([
+            dbc.Row([
+                dbc.Col(LEFT_COLUMN, align="center", md = 4),
                 dbc.Col(
-                    dbc.Card(dcc.Graph(id="prevalence-graph"), body = True, style={'height':'70vh'},),   md = 8)
+                    dbc.Card(RIGHT_PLOT), md=8)
             ],
-                align="center", ),
+                style={"marginTop": 30}, align="center", ),
         ])
 
 @app.callback(
@@ -130,11 +205,34 @@ def prevalent_disease(season, disease, state, variety):
     # fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_type[1]],
     #                          mode='lines+markers',
     #                          name='lines+markers'))
-    fig.update_layout(showlegend=True)
+
     fig.update_layout(
-        title="Prevalent Disease",
+        # title="Prevalent Disease",
+        autosize=True,
+        height=480,
+        width= 680,
         xaxis_title="Year",
         yaxis_title="Percentage of potato with {}".format(disease),
+        showlegend=True,
+        legend=dict(
+            yanchor="top",
+            y=-0.2,
+            xanchor="center",
+            x=0.5
+        ),
+        xaxis={
+            "autorange": True,
+            "showline": True,
+        },
+        yaxis={
+            "autorange": True,
+            "showgrid": True,
+            "showline": True,
+            "type": "linear",
+            # "zeroline": False,
+        },
 
     )
+
+
     return fig

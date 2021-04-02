@@ -28,14 +28,7 @@ def find_virus_columns(virus):
             re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
 
 acres_layout = html.Div([
-        dbc.Row([
-            dbc.Col(html.Div(
-                dbc.Card(html.H3(children='Acres Rejection',
-                                     className="text-center text-light bg-dark"), body=True, color="dark")
-            , className="mb-4"),style = {"width": "100%",  "align-items": "center", "justify-content": "center"},
-            width= {"size": 8, "offset": 2}),
-
-            ]),
+       html.Br(),
 
         dcc.Dropdown(
             id='acres_rejection',

@@ -20,30 +20,30 @@ from app import app
 
 PAGE_SIZE = 5
 summer_columns = ["CERT_N",
-                      "SNAME",
-                      "GCODE",
-                      "VARIETY",
-                      "S_GRW",
-                      "S_G",
-                      "S_YR",
-                      "S_GCODE",
-                      "S_STATE"]
+                  "SNAME",
+                  "GCODE",
+                  "VARIETY",
+                  "S_GRW",
+                  "S_G",
+                  "S_YR",
+                  "S_GCODE",
+                  "S_STATE"]
 
 winter_columns = ["winter_{}".format(x) for x in summer_columns]
 error_columns = ["error_{}".format(x) for x in summer_columns]
 rejection_column = ["AC_REJ", "winter_AC_REJ"]
-combined_columns =[]
+combined_columns = []
 for i in range(len(summer_columns)):
     combined_columns.append(summer_columns[i])
     combined_columns.append(winter_columns[i])
 
 
 card_content = [
-    dbc.CardHeader("Table"),
+    # dbc.CardHeader("Table"),
     dbc.CardBody(
         [
-            html.P("User data (.csv/xlsx/txt format)", className = 'font-weight-bolder', style = {"padding-top": '2px'}),
-
+            html.P("User data (.csv/xlsx/txt format)",
+                   className='font-weight-bolder', style={"padding-top": '2px', "font-size": '25px'}),
             dcc.Upload(
                 id='upload-data',
                 children=html.Div([
@@ -65,21 +65,52 @@ card_content = [
             ),
             html.P(
                 "Please choose a csv/xlsx/txt file from your laptop",
-                className="font-weight-lighter", style = {"padding-top": '20px'}
+                className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
             ),
-            html.Div(id='output-data-preview'),
-            html.Br(),
-            html.Br(),
 
+html.Div([
+            dcc.Tabs(
+                id="tabs-with-classes",
+                value='tab-1',
+                parent_className='custom-tabs',
+                className='custom-tabs-container',
+                children=[
+                    dcc.Tab(
+                        label='Data Table',
+                        value='tab-1',
+                        className='custom-tab',
+                        selected_className='custom-tab--selected'
+                    ),
+                    dcc.Tab(
+                        label='Errors Summary',
+                        value='tab-2',
+                        className='custom-tab',
+                        selected_className='custom-tab--selected'
+                    ),
+                    dcc.Tab(
+                        label='Errors Structure',
+                        value='tab-3', className='custom-tab',
+                        selected_className='custom-tab--selected'
+                    ),
+                    dcc.Tab(
+                        label='Errors Analysis',
+                        value='tab-4',
+                        className='custom-tab',
+                        selected_className='custom-tab--selected'
+                    ),
+                ]),
+            html.Div(id='tabs-content-classes'),
+            html.Br(),
+            html.Br(),])
         ]
     ),
 ]
 
 homepage = html.Div([
+    dcc.Store(id='store-uploaded-data'),
     dbc.Row(
         [
-        dbc.Col(dbc.Card(card_content, color="light", outline=True)),
-
+            dbc.Col(dbc.Card(card_content, color="light", outline=True)),
         ]
     ),
 ])
@@ -100,183 +131,244 @@ def parse_data(contents, filename):
         elif 'txt' or 'tsv' in filename:
             # Assume that the user upl, delimiter = r'\s+'oaded an excel file
             df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')), delimiter = r'\s+')
+                io.StringIO(decoded.decode('utf-8')), delimiter=r'\s+')
     except Exception as e:
         print(e)
         return html.Div([
             'There was an error processing this file.'
         ])
-
     return df
 
-@app.callback(Output('output-data-preview', 'children'),
-            [
-                Input('upload-data', 'contents'),
-                Input('upload-data', 'filename')
-            ])
-def data_preview(contents, filename):
+
+@app.callback([Output('tabs-content-classes', 'children'),Output('store-uploaded-data', 'data')],
+              [Input('tabs-with-classes', 'value'),
+              Input('upload-data', 'contents'),
+              Input('upload-data', 'filename')])
+def render_content(tab, contents, filename):
     if contents:
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
 
-        return  html.Div([
+        if tab == 'tab-1':
+            return html.Div([
+                html.Br(),
+                dash_table.DataTable(
+                    id="data-preview",
+                    data=df.to_dict('records'),
+                    columns=[{'name': i, 'id': i} for i in df.columns],
+                    filter_action='native',
+                    page_action='native',
+                    page_size=15,
+                    virtualization=True,
+                    sort_action='custom',
+                    sort_mode='single',
+                    sort_by=[],
+                    style_cell={  # ensure adequate header width when text is shorter than cell's text
+                        'minWidth': 95, 'maxWidth': 95, 'width': 95
+                    },
+                    style_data={
+                        'whiteSpace': 'normal',
+                        'height': 'auto'
+                    }
+                ),
 
-            dash_table.DataTable(
-                id = "data-preview",
-                data=df.to_dict('rows'),
-                columns=[{'name': i, 'id': i} for i in df.columns],
-                filter_action='native',
-                page_action='native',
-                page_size=15,
-                virtualization=True,
-                sort_action='custom',
-                sort_mode='single',
-                sort_by=[],
-                style_cell={  # ensure adequate header width when text is shorter than cell's text
-                    'minWidth': 95, 'maxWidth': 95, 'width': 95
-                },
-                style_data = {
-                    'whiteSpace': 'normal',
-                    'height': 'auto'
-                }
-            ),
+                html.Br(),
+                html.Br(),
+                html.P(
+                    "Please click the button below if you want to fill all missing data",
+                    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
+                ),
+                dbc.Button(children="fix me",  color="primary",
+                           outline=True, id="fix-button", className="mr-1", block=True),
+                html.Br()
+            ]), df.to_dict('records')
+        elif tab == 'tab-2':
+            return html.Div([
+                html.P(
+                    "Please click the button below if you want to fill all missing data",
+                    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
+                ),
+                dbc.Button(children="fix me",  color="primary",
+                           outline=True, id="fix-button", className="mr-1", block=True),
+                html.P(
+                    "Error Summary",
+                    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '30px', 'text-align': 'center', 'font-weight': 'bold'}
+                ),
+                html.Br(),
+                dash_table.DataTable(
+                    id="error-summary",
+                    page_action='native',
+                    sort_action='custom',
+                    sort_mode='single',
+                    sort_by=[],
+                    style_cell={  # ensure adequate header width when text is shorter than cell's text
+                        'minWidth': 95, 'maxWidth': 95, 'width': 95
+                    }
+                ),
+                html.P(
+                    "Note: The ' Number of errors ' contains both wrong value and missing value.",
+                    className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
+                ),
+            ]), df.to_dict('records')
+        elif tab == 'tab-3':
+            return html.Div([
+                html.P(
+                    "Please click the button below if you want to fill all missing data",
+                    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
+                ),
+                dbc.Button(children="fix me",  color="primary",
+                           outline=True, id="fix-button", className="mr-1", block=True),
+                dbc.Row(
+                    dbc.Col(
+                        dcc.Graph(id="error-structure-graph"),
+                        width={"size": 10, "offset": 1},
+                    )
+                ),
+                dbc.Row(
+                    dbc.Col(
+                        dcc.Graph(id="missing-structure-graph"),
+                        width={"size": 10, "offset": 1},
+                    )
+                ),
+                html.Br(),
+            ]), df.to_dict('records')
+        elif tab == 'tab-4':
+            return html.Div([
+                html.P(
+                    "Please click the button below if you want to fill all missing data",
+                    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
+                ),
+                dbc.Button(children="fix me",  color="primary",
+                           outline=True, id="fix-button", className="mr-1", block=True),
+                html.P(
+                    "Similarity between Two Similar Column Names(in %)",
+                    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '30px', 'text-align': 'center', 'font-weight': 'bold'}
+                ),
 
-            html.Br(),
-            html.Br(),
-            dbc.Button(children="fix me", color="primary", outline = True, id="fix-button", className="mr-1"),
-            html.Br(),
-            html.Br(),
-            dash_table.DataTable(
-                id="error-summary",
-                page_action='native',
-                sort_action='custom',
-                sort_mode='single',
-                sort_by=[],
-                style_cell={  # ensure adequate header width when text is shorter than cell's text
-                    'minWidth': 95, 'maxWidth': 95, 'width': 95
-                }
-            ),
-            dbc.Row(
-                dbc.Col(
-                    dcc.Graph(id="error-structure-graph"),
-                    width={"size": 10, "offset": 1},
-                )
-            ),
-            dbc.Row(
-                dbc.Col(
-                    dcc.Graph(id="missing-structure-graph"),
-                    width={"size": 10, "offset": 1},
-                )
-            ),
-            html.Br(),
-            html.Br(),
+                dbc.Card(
+                    dbc.CardBody(
+                        [
+                            dbc.Row(
+                                [dbc.Col(
+                                    dbc.FormGroup(
+                                        [
+                                            dbc.Label(
+                                                "Columns(in Summer and Winter)"),
+                                            dcc.Dropdown(
+                                                id="similar_columns",
+                                                options=[
+                                                    {"label": col, "value": col} for col in ["VARIETY", "S_G"]
+                                                ],
+                                                value="VARIETY",
+                                                placeholder="Select a Column",),
 
-            dbc.Card(
-                dbc.CardBody(
-                [
-                    dbc.Row(
-                        [dbc.Col(
-                            dbc.FormGroup(
-                                [
-                                    dbc.Label("Columns"),
-                                    dcc.Dropdown(
-                                        id="similar_columns",
-                                        options=[
-                                            {"label": col, "value": col} for col in ["VAREITY", "S_G"]
-                                        ],
-                                        value="VARIETY"),
-                                ]), ),
-                        dbc.Col(
-                            dbc.FormGroup(
-                                [
-                                    dbc.Label("Text"),
-                                    dbc.Input(id = 'quantity-value', type="number", min=0, max=1, step=0.01),
-                                ]), ),]
-                    ),
-                    html.Br(),
-                    dbc.Row(
-                        dbc.Col(
-
-                            dash_table.DataTable(
-                                id='similar_string_table',
-                                virtualization=True,
-                                page_action='native',
-                                page_size=15,
-                                style_cell={  # ensure adequate header width when text is shorter than cell's text
-                                    'minWidth': 95, 'maxWidth': 95, 'width': 95
-                                },
-                                # style_data_conditional=[{
-                                #     'if': {'column_editable': False},
-                                #     'backgroundColor': 'rgb(30, 30, 30)',
-                                #     'color': 'white'
-                                # }],
-                                style_header_conditional=[{
-                                    'if': {'column_editable': False},
-                                    'backgroundColor': 'rgb(30, 30, 30)',
-                                    'color': 'white'
-                                }],
+                                        ]), ),
+                                 dbc.Col(
+                                    dbc.FormGroup(
+                                        [
+                                            dbc.Label("Text"),
+                                            dbc.Input(id="suscipious-input", placeholder="Type something...", type="text"),
+                                        ]), ),
+                                dbc.Col(
+                                    dbc.FormGroup(
+                                        [
+                                            dbc.Label("Frequency"),
+                                            dbc.Input(id="suscipious-frequency",type="number"),
+                                        ]), ),
+                                ]
                             ),
-                        )
-                    )]
-                ),
-            ),
-            html.Br(),
-            html.Br(),
+                            html.Br(),
+                            dbc.Row(
+                                dbc.Col(
 
-            html.Hr(),
-            dbc.Row([
-                dbc.Col(
-                    dbc.Card(
-                        dbc.CardBody(
-                            [
-                                html.Div(dcc.Dropdown(
-                                    id="target_column",
-                                    options=[
-                                                {"label": col, "value": col} for col in summer_columns
-                                            ] + [
-                                                {"label": col, "value": col} for col in rejection_column
-                                            ],
-                                    value="SNAME"
-                                ), style={"width": "30%"}, ),
-                                html.Br(),
-                                dash_table.DataTable(
-                                    id='problematic_table',
-                                    virtualization=True,
-                                    page_action='native',
-                                    page_size=15,
-                                    sort_action='custom',
-                                    sort_mode='single',
-                                    sort_by=[],
-                                    style_cell={  # ensure adequate header width when text is shorter than cell's text
-                                        'minWidth': 95, 'maxWidth': 95, 'width': 95
-                                    },
-                                    style_data_conditional=[{
-                                        'if': {'column_editable': False},
-                                        'backgroundColor': 'rgb(30, 30, 30)',
-                                        'color': 'white'
-                                    }],
-                                    style_header_conditional=[{
-                                        'if': {'column_editable': False},
-                                        'backgroundColor': 'rgb(30, 30, 30)',
-                                        'color': 'white'
-                                    }],
-                                ),
-                                html.Br(),
-                                dbc.Button([
-                                    html.A(id='download-link', children='Download File'),
-                                ],
-                                    outline=True, color="warning", className="mr-1")
-                            ]
-                        ),
+                                    dash_table.DataTable(
+                                        id='similar_string_table',
+                                        editable=True,
+                                        virtualization=True,
+                                        page_action='native',
+                                        page_size=15,
+                                        style_cell={  # ensure adequate header width when text is shorter than cell's text
+                                            'minWidth': 95, 'maxWidth': 95, 'width': 95
+                                        },
+                                        # style_data_conditional=[{
+                                        #     'if': {'column_editable': False},
+                                        #     'backgroundColor': 'rgb(30, 30, 30)',
+                                        #     'color': 'white'
+                                        # }],
+                                        style_header_conditional=[{
+                                            'if': {'column_editable': False},
+                                            'backgroundColor': 'rgb(30, 30, 30)',
+                                            'color': 'white'
+                                        }],
+                                    ),
+                                )
+                            )]
                     ),
-                    width=12,
                 ),
-            ]),
+                html.Br(),
+                html.Br(),
 
-        ])
+                html.Hr(),
+                dbc.Row([
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.P(
+                                        "Details of the Errors",
+                                        className='font-weight-bolder', style={"padding-top": '20px', "font-size": '30px', 'text-align': 'center', 'font-weight': 'bold'}
+                                    ),
+                                    html.Div(dcc.Dropdown(
+                                        id="target_column",
+                                        options=[
+                                            {"label": col, "value": col} for col in summer_columns
+                                        ] + [
+                                            {"label": col, "value": col} for col in rejection_column
+                                        ],
+                                        value="SNAME"
+                                    ), style={"width": "30%"}, ),
+                                    html.Br(),
 
+                                    dash_table.DataTable(
+                                        id='problematic_table',
+                                        virtualization=True,
+                                        page_action='native',
+                                        page_size=15,
+                                        sort_action='custom',
+                                        sort_mode='single',
+                                        sort_by=[],
+                                        style_cell={  # ensure adequate header width when text is shorter than cell's text
+                                            'minWidth': 95, 'maxWidth': 95, 'width': 95
+                                        },
+                                        style_data_conditional=[{
+                                            'if': {'column_editable': False},
+                                            'backgroundColor': 'rgb(30, 30, 30)',
+                                            'color': 'white'
+                                        }],
+                                        style_header_conditional=[{
+                                            'if': {'column_editable': False},
+                                            'backgroundColor': 'rgb(30, 30, 30)',
+                                            'color': 'white'
+                                        }],
+                                    ),
+                                    html.Br(),
+                                    dbc.Button([
+                                        html.A(id='download-link',
+                                               children='Download File'),
+                                    ],
+                                        outline=True, color="warning", className="mr-1")
+                                ]
+                            ),
+                        ),
+                        width=12,
+                    ),
+                ]),
 
+            ]), df.to_dict('records')
+
+    else:
+        return None, None
 
 
 def to_string(filter):
@@ -344,7 +436,8 @@ def construct_filter(derived_query_structure, df, complexOperator=None):
     # construct the query string; return it and the filtered dataframe
     return ('{} {} {}'.format(
         left_query,
-        to_string(derived_query_structure) if left_query != '' and right_query != '' else '',
+        to_string(
+            derived_query_structure) if left_query != '' and right_query != '' else '',
         right_query
     ).strip(), right_df)
 
@@ -353,16 +446,14 @@ def construct_filter(derived_query_structure, df, complexOperator=None):
 @app.callback([Output('error-summary', 'data'),
                Output('error-summary', 'columns')],
               [
-                 Input('error-summary', 'sort_by'),
-                  Input('upload-data', 'contents'),
-                  Input('upload-data', 'filename'),
+    Input('error-summary', 'sort_by'),
+                  Input("store-uploaded-data", "data"),
                   Input("fix-button", "n_clicks")
-              ])
-def error_table(sort_by, contents, filename, n_clicks):
+])
+def error_table(sort_by, data,  n_clicks):
     # if contents:
-    contents = contents[0]
-    filename = filename[0]
-    df = parse_data(contents, filename)
+
+    df = pd.DataFrame(data)
     if len(sort_by):
         df = df.sort_values(
             sort_by[0]['column_id'],
@@ -373,32 +464,35 @@ def error_table(sort_by, contents, filename, n_clicks):
         # No sort is applied
         df = df
 
-    if  n_clicks is None or n_clicks % 2 == 0:
+    if n_clicks is None or n_clicks % 2 == 0:
         pass
     elif n_clicks % 2 == 1:
         for i in range(0, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i + 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                df[combined_columns[i + 1]])
             df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
                 df[combined_columns[i + 1]])
 
         for i in range(1, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i - 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                df[combined_columns[i - 1]])
             df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
                 df[combined_columns[i - 1]])
-
 
     errors = []
     missing_values = []
     rows = []
     for i, column in enumerate(summer_columns):
-        missing = len(df[(df[summer_columns[i]].isnull()) | (df[winter_columns[i]].isnull())])
+        missing = len(df[(df[summer_columns[i]].isnull())
+                         | (df[winter_columns[i]].isnull())])
         missing_values.append(missing)
 
         error = len(df[df[summer_columns[i]] != df[winter_columns[i]]])
         errors.append(error)
 
         msg = " at row "
-        indices = df[df[summer_columns[i]] != df[winter_columns[i]]].index.tolist()
+        indices = df[df[summer_columns[i]] !=
+                     df[winter_columns[i]]].index.tolist()
         for index in indices:
             msg = msg + str(index) + " "
         rows.append(msg)
@@ -424,10 +518,9 @@ def error_table(sort_by, contents, filename, n_clicks):
         Input('upload-data', 'contents'),
         Input('upload-data', 'filename'),
         Input("data-preview", "derived_filter_query_structure")
-
     ]
 )
-def page_and_sort( sort_by, contents, filename, derived_query_structure):
+def page_and_sort(sort_by, contents, filename, derived_query_structure):
     if contents:
         contents = contents[0]
         filename = filename[0]
@@ -443,7 +536,8 @@ def page_and_sort( sort_by, contents, filename, derived_query_structure):
         # No sort is applied
         dff = df
 
-    (pd_query_string, df_filtered) = construct_filter(derived_query_structure, dff)
+    (pd_query_string, df_filtered) = construct_filter(
+        derived_query_structure, dff)
 
     if pd_query_string != '':
         df_filtered = df_filtered.query(pd_query_string)
@@ -451,32 +545,30 @@ def page_and_sort( sort_by, contents, filename, derived_query_structure):
     return df_filtered.to_dict('records')
 
 
-
 # Heatmap to examine the distribution of errors
 @app.callback(
     Output('error-structure-graph', "figure"),
     [
-        Input('upload-data', 'contents'),
-        Input('upload-data', 'filename'),
+        Input("store-uploaded-data", "data"),
         Input("fix-button", "n_clicks")
     ]
 )
-def error_structure(contents, filename, n_clicks):
-    if contents:
-        contents = contents[0]
-        filename = filename[0]
-        df = parse_data(contents, filename)
+def error_structure(data, n_clicks):
+    if data:
+        df = pd.DataFrame(data)
 
-    if  n_clicks is None or n_clicks % 2 == 0:
+    if n_clicks is None or n_clicks % 2 == 0:
         pass
     elif n_clicks % 2 == 1:
         for i in range(0, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i + 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                df[combined_columns[i + 1]])
             df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
                 df[combined_columns[i + 1]])
 
         for i in range(1, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i - 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                df[combined_columns[i - 1]])
             df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
                 df[combined_columns[i - 1]])
 
@@ -485,7 +577,9 @@ def error_structure(contents, filename, n_clicks):
 
     fig = px.imshow(df[error_columns].T, color_continuous_scale=px.colors.sequential.Greys,
                     title="Errors Structure")
-    fig.update_layout(title_font={'size': 27}, title_x=0.5)
+    fig.update_layout(title_font={'size': 27}, xaxis=dict(
+        title="row index", titlefont_size=16,
+        tickfont_size=14,), title_x=0.5)
 
     return fig
 
@@ -494,115 +588,131 @@ def error_structure(contents, filename, n_clicks):
 @app.callback(
     Output('missing-structure-graph', "figure"),
     [
-        Input('upload-data', 'contents'),
-        Input('upload-data', 'filename'),
+        Input("store-uploaded-data", "data"),
         Input("fix-button", "n_clicks")
     ]
 )
-def missing_structure(contents, filename, n_clicks):
-    if contents:
-        contents = contents[0]
-        filename = filename[0]
-        df = parse_data(contents, filename)
+def missing_structure(data, n_clicks):
+    if data:
+        df = pd.DataFrame(data)
 
-    if  n_clicks is None or n_clicks % 2 == 0:
+    if n_clicks is None or n_clicks % 2 == 0:
         pass
     elif n_clicks % 2 == 1:
         for i in range(0, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i + 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                df[combined_columns[i + 1]])
             df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
                 df[combined_columns[i + 1]])
 
         for i in range(1, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i - 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                df[combined_columns[i - 1]])
             df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
                 df[combined_columns[i - 1]])
 
     for i in range(len(summer_columns)):
-        df[error_columns[i]] = df[[summer_columns[i], winter_columns[i]]].isnull().apply(lambda x: any(x), axis = 1)
+        df[error_columns[i]] = df[[summer_columns[i], winter_columns[i]]
+                                  ].isnull().apply(lambda x: any(x), axis=1)
 
     fig = px.imshow(df[error_columns].T, color_continuous_scale=px.colors.sequential.Greys,
                     title="Missing Structure")
-    fig.update_layout(title_font={'size': 27}, title_x=0.5)
+    fig.update_layout(title_font={'size': 27}, xaxis=dict(
+        title="row index", titlefont_size=16,
+        tickfont_size=14,), title_x=0.5)
 
     return fig
 
 
-@app.callback([Output('fix-button', 'children'),],
+@app.callback([Output('fix-button', 'children'), ],
               [
                   Input('fix-button', 'n_clicks'),
 
-              ])
+])
 def error_table(nclicks):
     if nclicks == None or nclicks % 2 == 0:
-        return ["fix me"]
+        return ["FIX ERRORS"]
     else:
         return ["Undo"]
 
 
 @app.callback([Output('similar_string_table', 'data'),
-                Output('similar_string_table', 'columns'),],
+               Output('similar_string_table', 'columns'), ],
               [Input('similar_columns', 'value'),
-               Input('upload-data', 'contents'),
-               Input('upload-data', 'filename')
+                Input("store-uploaded-data", "data"),
                ])
+def error_highlight_table(dropdown_value, data):
+    if data:
+        df = pd.DataFrame(data)
 
-def error_highlight_table(dropdown_value, contents, filename):
-    if contents:
-        contents = contents[0]
-        filename = filename[0]
-        df = parse_data(contents, filename)
-
-    print(df)
     a = dropdown_value
-    b = "winter_{a}".format(a = dropdown_value)
+    b = "winter_{a}".format(a=dropdown_value)
 
-    print(a,b)
-
+    # Fill missing value
     for i in range(0, len(combined_columns), 2):
-        df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i + 1]])
+        df[combined_columns[i]] = df[combined_columns[i]].fillna(
+            df[combined_columns[i + 1]])
         df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
             df[combined_columns[i + 1]])
 
     for i in range(1, len(combined_columns), 2):
-        df[combined_columns[i]] = df[combined_columns[i]].fillna(df[combined_columns[i - 1]])
+        df[combined_columns[i]] = df[combined_columns[i]].fillna(
+            df[combined_columns[i - 1]])
         df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
             df[combined_columns[i - 1]])
 
+    # Check all unique mismatches
     temp = df.loc[df[a] != df[b], [a, b]].drop_duplicates()
-    print(temp)
-    temp["jaro_distance"] = temp.apply(lambda x: jellyfish.jaro_distance(x[a], x[b]), axis=1)
+    # Calculate similarity
+    temp["jaro_distance"] = temp.apply(
+        lambda x: jellyfish.jaro_distance(x[a], x[b]), axis=1)
+    # sort by similarity
     temp = temp.sort_values(by="jaro_distance", ascending=False)
 
-
-    columns = [{'id': c, 'name': c,} for c in temp.columns]
+    columns = [{'id': c, 'name': c, } for c in temp.columns]
 
     return temp.to_dict('records'), columns
 
 
 # Generate the table with highlighted errors
 @app.callback([Output('problematic_table', 'data'),
-                Output('problematic_table', 'columns'),],
+               Output('problematic_table', 'columns'), ],
               [Input('target_column', 'value'),
-               Input('upload-data', 'contents'),
-               Input('upload-data', 'filename'),
-                Input('problematic_table', 'sort_by'),
-                Input("problematic_table", "derived_filter_query_structure")
+               Input("store-uploaded-data", "data"),
+               Input('problematic_table', 'sort_by'),
+               Input("problematic_table", "derived_filter_query_structure"),
+               Input("fix-button", "n_clicks")
                ])
-def error_highlight_table(dropdown_value, contents, filename, sort_by, derived_query_structure):
-    if contents:
-        contents = contents[0]
-        filename = filename[0]
-        df = parse_data(contents, filename)
+def error_highlight_table(dropdown_value, data, sort_by, derived_query_structure, n_clicks):
+    if data:
+        df = pd.DataFrame(data)
+    if n_clicks is None or n_clicks % 2 == 0:
+        pass
+    elif n_clicks % 2 == 1:
+        for i in range(0, len(combined_columns), 2):
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                df[combined_columns[i + 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                df[combined_columns[i + 1]])
+
+        for i in range(1, len(combined_columns), 2):
+            df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                df[combined_columns[i - 1]])
+            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                df[combined_columns[i - 1]])
 
     if dropdown_value in summer_columns:
         target_indices = summer_columns.index(dropdown_value)
         winter_dropdown = winter_columns[target_indices]
-        result_df = df[df[summer_columns[target_indices]] != df[winter_columns[target_indices]]  ]
+        result_df = df[df[summer_columns[target_indices]]
+                       != df[winter_columns[target_indices]]]
+        result_cols = ["SummerID", "CY", "CERT_N",
+                       dropdown_value, winter_dropdown]
 
         # data = result_df.to_dict('records')
 
-        columns = [{'id': c, 'name': c, 'editable': (c != dropdown_value and c != winter_dropdown)} for c in result_df.columns]
+        columns = [{'id': c, 'name': c, 'editable': (
+            c != dropdown_value and c != winter_dropdown)} for c in result_cols]
     elif dropdown_value in rejection_column:
         result_df = df[df[dropdown_value] < 0]
         # data = result_df.to_dict('records')
@@ -619,12 +729,35 @@ def error_highlight_table(dropdown_value, contents, filename, sort_by, derived_q
         # No sort is applied
         dff = result_df
 
-    (pd_query_string, df_filtered) = construct_filter(derived_query_structure, dff)
+    (pd_query_string, df_filtered) = construct_filter(
+        derived_query_structure, dff)
 
     if pd_query_string != '':
         df_filtered = df_filtered.query(pd_query_string)
 
-    return df_filtered.to_dict('records'), columns
+    return df_filtered[result_cols].to_dict('records'), columns
+
+
+@app.callback(Output('suscipious-frequency', 'value'),
+              [Input('similar_columns', 'value'),
+               Input("suscipious-input", "value"),
+                Input("store-uploaded-data", "data"),
+               ])
+def calculate_frequency(summer_column, input, data):
+    df = pd.DataFrame(data)
+    target_indices = summer_columns.index(summer_column)
+    winter_column = winter_columns[target_indices]
+
+    target = input
+
+    if target not in df[summer_column].unique() and target not in df[winter_column].unique():
+        return 0
+    elif target not in df[summer_column].unique():
+        return df[winter_column].value_counts()[target]
+    elif target not in df[winter_column].unique():
+        return df[summer_column].value_counts()[target]
+    else:
+        return df[summer_column].value_counts()[target] + df[summer_column].value_counts()[target]
 
 
 @app.server.route('/downloads/<path:path>')
@@ -633,5 +766,3 @@ def serve_static(path):
     return flask.send_from_directory(
         os.path.join(root_dir, 'downloads'), path
     )
-
-

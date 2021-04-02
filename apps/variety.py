@@ -33,22 +33,12 @@ def find_virus_columns(virus):
     return [x for x in df.columns.tolist() if
             re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
 
-variety_layout = html.Div(
-        [dbc.Row([
-            dbc.Col(html.Div(
-                            dbc.Card(
-                                html.H3(children='Sensitive and tolerant variety',
-                                    className="text-center text-light bg-dark"), body=True, color="dark"),
-                            ),
-                    style = {"width": "100%",  "align-items": "center", "justify-content": "center"},
-                    width= {"size": 8, "offset": 2})
-            ]),
 
-        html.Br(),
-        dbc.Row([
-            dbc.Col(dbc.Card(
-                [
-                    dbc.FormGroup(
+LEFT_COLUMN = dbc.Jumbotron(
+    [
+        html.H4(children="Select bank & dataset size", className="display-5"),
+        html.Hr(className="my-2"),
+        dbc.FormGroup(
                         [
                             dbc.Label("Season"),
                             dcc.Dropdown(
@@ -58,45 +48,72 @@ variety_layout = html.Div(
                                 ],
                                 value="summer", ),
                         ]),
-                    dbc.FormGroup(
-                        [
-                            dbc.Label("Disease"),
-                            dcc.Dropdown(
-                                id="disease_type_variety",
-                                options=[
-                                    {"label": col, "value": col} for col in ["MOS", "LR", "MIX", "ST", "BRR"]
-                                ],
-                                value="LR", ),
-                        ]),
-                    dbc.FormGroup(
-                        [
-                            dbc.Label("Variety"),
-                            dcc.Dropdown(
-                                id="potato_variety",
-                                options=[
-                                    {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
-                                ],
-                                multi= True,
-                                value= df["VARIETY"].value_counts()[:10].index ),
-                        ]),
-                    dbc.FormGroup(
-                        [
-                            dbc.Label("Year"),
-                            dcc.Dropdown(
-                                id="sensitive_year",
-                                options=[
-                                    {"label": col, "value": col} for col in year_list
-                                ],
-                                value="all",
-                            ),
-                        ]
-                            ),
+        dbc.FormGroup(
+            [
+                dbc.Label("Disease"),
+                dcc.Dropdown(
+                    id="disease_type_variety",
+                    options=[
+                        {"label": col, "value": col} for col in ["MOS", "LR", "MIX", "ST", "BRR"]
+                    ],
+                    value="LR", ),
+            ]),
+        dbc.FormGroup(
+            [
+                dbc.Label("Variety"),
+                dcc.Dropdown(
+                    id="potato_variety",
+                    options=[
+                        {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+                    ],
+                    multi= True,
+                    value= df["VARIETY"].value_counts()[:10].index ),
+            ]),
+        dbc.FormGroup(
+            [
+                dbc.Label("Year"),
+                dcc.Dropdown(
+                    id="sensitive_year",
+                    options=[
+                        {"label": col, "value": col} for col in year_list
+                    ],
+                    value="all",
+                ),
+            ]
+                ),
+    ]
+)
 
+RIGHT_PLOT = [
+    dbc.CardHeader(html.H5("Sensitive/tolerant variety")),
+    dbc.CardBody(
+        [
+            dcc.Loading(
+                id="loading-bigrams-comps",
+                children=[
+                    dbc.Alert(
+                        "Something's gone wrong! Give us a moment, but try loading this page again if problem persists.",
+                        id="no-data-alert-bigrams_comp",
+                        color="warning",
+                        style={"display": "none"},
+                    ),
 
-                ], body=True, )),
-            dbc.Col(dcc.Graph(id="sensitivity-graph"), md=8),
+                    dcc.Graph(id="sensitivity-graph"),
+                ],
+                type="default",
+            )
         ],
-            align="center", ),])
+        style={"marginTop": 0, "marginBottom": 0},
+    ),
+]
+
+variety_layout = html.Div(
+        [
+        dbc.Row([
+            dbc.Col(LEFT_COLUMN, md = 4 ,style={"height": "100%"},),
+            dbc.Col(
+                dbc.Card(RIGHT_PLOT), md=8, style={"height": "100%"},)
+        ], style={"marginTop": 30}, align="center", ),])
 
 
 @app.callback(
@@ -140,10 +157,21 @@ def sensitivity_graph(season, disease, variety):
                                  name=disease_type[1] + " " + "winter"))
     fig.update_layout(showlegend=True)
     fig.update_layout(
-        title="Sensitive/tolerant variety",
+        # title="Sensitive/tolerant variety",
         xaxis_title="Potato Variety",
         yaxis_title="Percentage of potato with {}".format(disease),
-
     )
+
+    fig.update_layout(legend=dict(
+        yanchor="top",
+        y=-0.45,
+        xanchor="center",
+        x=0.5
+    ))
+
+    # fig.add_annotation(x=4, y=4,
+    #                    text="Text annotation without arrow",
+
+
     return fig
 
