@@ -149,6 +149,7 @@ def render_content(tab, contents, filename):
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
+        print(df)
 
         if tab == 'tab-1':
             return html.Div([
