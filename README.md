@@ -1,17 +1,29 @@
 # potato-seed-cert
 Data analysis and visualization code for the potato seed certification database
 
-1. Clone this repository
+
+## Steps to run this website locally
+Users with strong programming skills might like to modify the existing code and run a version of the website locally.
+
+1. Download and install the Heroku [CLI]https://devcenter.heroku.com/articles/heroku-cli.
+
+
+2.log in to your Heroku account and follow the prompts to create a new SSH public key.
+```
+heroku login
+```
+
+3. Clone this repository
 ```
 heroku git:clone -a potatodash
 ```
-2. Get inside the BioKlustering-Website folder, create and activate a python virtual environment:
+4. Get inside the BioKlustering-Website folder, create and activate a python virtual environment:
 ```
 cd potatodash
 python3 -m venv virtual-env
 source virtual-env/bin/activate
 ```
-3. Install the necessary packages with
+5. Install the necessary packages with
 ```
 pip3 install -r requirements.txt
 ```
