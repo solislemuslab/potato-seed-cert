@@ -5,14 +5,12 @@ Data analysis and visualization code for the potato seed certification database
 ## Steps to run this website locally
 Users with strong programming skills might like to modify the existing code and run a version of the website locally.
 
-1. Download and install the Heroku [CLI]https://devcenter.heroku.com/articles/heroku-cli.
+1. Download and install the Heroku [CLI.](https://devcenter.heroku.com/articles/heroku-cli)
 
-
-2.log in to your Heroku account and follow the prompts to create a new SSH public key.
+2. log in to your Heroku account and follow the prompts to create a new SSH public key.
 ```
 heroku login
 ```
-
 3. Clone this repository
 ```
 heroku git:clone -a potatodash
