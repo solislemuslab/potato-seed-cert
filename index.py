@@ -4,7 +4,6 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
-import dash_auth
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
@@ -47,7 +46,7 @@ SIDEBAR_STYLE = {
     "transition": "all 0.5s",
     "padding": "0.5rem 1rem",
     "background-color": "black",
-    "font-color": "white"
+    "font-color":"white"
 }
 
 SIDEBAR_HIDEN = {
@@ -62,7 +61,7 @@ SIDEBAR_HIDEN = {
     "transition": "all 0.5s",
     "padding": "0rem 0rem",
     "background-color": "black",
-    "font-color": "white"
+    "font-color":"white"
 }
 
 
@@ -84,7 +83,7 @@ CONTENT_STYLE1 = {
 }
 
 LINEBREAK_STYLE = {
-    'border': '1px solid white'
+  'border': '1px solid white'
 }
 
 
@@ -92,9 +91,9 @@ Statistical_Test = [
     html.Li(
         dbc.Row(
             [
-                dbc.Col("Statistical Test", className='text-light'),
+                dbc.Col("Statistical Test", className = 'text-light'),
                 dbc.Col(
-                    html.I(className="fas fa-chevron-right mr-3",  style={'color': 'white'}), width="auto"
+                    html.I(className="fas fa-chevron-right mr-3",  style ={'color': 'white'}), width="auto"
                 ),
             ],
             className="my-1",
@@ -104,8 +103,7 @@ Statistical_Test = [
     ),
     dbc.Collapse(
         [
-            dbc.NavLink("Statistical test", href="/stat-test",
-                        className='text-light'),
+            dbc.NavLink("Statistical test", href="/stat-test", className = 'text-light'),
         ],
         id="submenu-2-collapse",
     ),
@@ -117,9 +115,9 @@ Visualization = [
         # use Row and Col components to position the chevrons
         dbc.Row(
             [
-                dbc.Col("Data Visualization", className='text-light'),
+                dbc.Col("Data Visualization", className= 'text-light'),
                 dbc.Col(
-                    html.I(className="fas fa-chevron-right mr-3",  style={'color': 'white'}), width="auto"
+                    html.I(className="fas fa-chevron-right mr-3",  style ={'color': 'white'}), width="auto"
                 ),
             ],
             className="my-1",
@@ -130,22 +128,14 @@ Visualization = [
     # we use the Collapse component to hide and reveal the navigation links
     dbc.Collapse(
         [
-            dbc.NavLink("Disease-Prevalence-1",
-                        href="/disease-prevalence/1", className='text-light'),
-            dbc.NavLink("Disease-Prevalence-2",
-                        href="/disease-prevalence/2", className='text-light'),
-            dbc.NavLink("State-Comparison-1",
-                        href="/state-comparison/1", className='text-light'),
-            dbc.NavLink("State-Comparison-2",
-                        href="/state-comparison/2", className='text-light'),
-            dbc.NavLink("Acre-Rejection-1", href="/acre-rejection/1",
-                        className='text-light'),
-            dbc.NavLink("Acre-Rejection-2", href="/acre-rejection/2",
-                        className='text-light'),
-            dbc.NavLink("Variety-1", href="/Variety/1",
-                        className='text-light'),
-            dbc.NavLink("Variety-2", href="/Variety/2",
-                        className='text-light'),
+            dbc.NavLink("Disease-Prevalence-1", href="/disease-prevalence/1", className = 'text-light'),
+            dbc.NavLink("Disease-Prevalence-2", href="/disease-prevalence/2", className = 'text-light'),
+            dbc.NavLink("State-Comparison-1", href="/state-comparison/1", className = 'text-light'),
+            dbc.NavLink("State-Comparison-2", href="/state-comparison/2", className = 'text-light'),
+            dbc.NavLink("Acre-Rejection-1", href="/acre-rejection/1", className = 'text-light'),
+            dbc.NavLink("Acre-Rejection-2", href="/acre-rejection/2", className = 'text-light'),
+            dbc.NavLink("Variety-1", href="/Variety/1", className = 'text-light'),
+            dbc.NavLink("Variety-2", href="/Variety/2", className = 'text-light'),
         ],
         id="submenu-1-collapse",
     ),
@@ -157,9 +147,9 @@ Data_Import = [
         # use Row and Col components to position the chevrons
         dbc.Row(
             [
-                dbc.Col("Data Import", className='text-light'),
+                dbc.Col("Data Import", className= 'text-light'),
                 dbc.Col(
-                    html.I(className="fas fa-chevron-right mr-3",  style={'color': 'white'}), width="auto"
+                    html.I(className="fas fa-chevron-right mr-3",  style ={'color': 'white'}), width="auto"
                 ),
             ],
             className="my-1",
@@ -170,8 +160,7 @@ Data_Import = [
     # we use the Collapse component to hide and reveal the navigation links
     dbc.Collapse(
         [
-            dbc.NavLink("Data Import", href="/data-import",
-                        className='text-light'),
+            dbc.NavLink("Data Import", href="/data-import", className = 'text-light'),
         ],
         id="submenu-4-collapse",
     ),
@@ -179,11 +168,12 @@ Data_Import = [
 ]
 
 
+
+
 sidebar = html.Div(
     [
-        html.H3("Menu",
-                className="display-5 text-light"),
-        html.Hr(style=LINEBREAK_STYLE),
+        html.H2("Virus", className="display-4 text-light"),
+        html.Hr(style = LINEBREAK_STYLE),
         # html.P(
         #     "A sidebar with collapsible navigation links", className="lead"
         # ),
@@ -197,7 +187,6 @@ sidebar = html.Div(
 )
 
 content = html.Div(id="page-content", style=CONTENT_STYLE)
-
 
 @app.callback(
     [
@@ -228,14 +217,6 @@ def toggle_sidebar(n, nclick):
 
     return sidebar_style, content_style, cur_nclick
 
-
-VALID_USERNAME_PASSWORD_PAIRS = {
-    'hello1': 'world1'
-}
-auth = dash_auth.BasicAuth(
-    app,
-    VALID_USERNAME_PASSWORD_PAIRS
-)
 app.layout = html.Div([dcc.Store(id='side_click'),
                        dcc.Location(id="url"),
                        navbar.navbar,
@@ -243,8 +224,6 @@ app.layout = html.Div([dcc.Store(id='side_click'),
                        content])
 
 # this function is used to toggle the is_open property of each Collapse
-
-
 def toggle_collapse(n, is_open):
     if n:
         return not is_open
@@ -258,7 +237,7 @@ def set_navitem_class(is_open):
     return ""
 
 
-for i in [1, 2, 3, 4]:
+for i in [1, 2, 3,4]:
     app.callback(
         Output(f"submenu-{i}-collapse", "is_open"),
         [Input(f"submenu-{i}", "n_clicks")],
@@ -302,7 +281,6 @@ def render_page_content(pathname):
             html.P(f"The pathname {pathname} was not recognised..."),
         ]
     )
-
 
 if __name__ == "__main__":
     app.run_server(port=8000, debug=True)
