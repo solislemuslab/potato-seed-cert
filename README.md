@@ -4,22 +4,21 @@ Data analysis and visualization code for the potato seed certification database
 
 ## Folder Structure 
 ```
-project
-│   README.md
-│   file001.txt    
-│
-└───folder1
-│   │   file011.txt
-│   │   file012.txt
-│   │
-│   └───subfolder1
-│       │   file111.txt
-│       │   file112.txt
-│       │   ...
-│   
-└───folder2
-    │   file021.txt
-    │   file022.txt
+project_name/
+├── README.md             # overview of the project
+├── data/                 # data files used in the project
+│   ├── README.md         # describes where data came from
+│   └── sub-folder/       # may contain subdirectories
+├── processed_data/       # intermediate files from the analysis
+├── manuscript/           # manuscript describing the results
+├── results/              # results of the analysis (data, tables, figures)
+├── src/                  # contains all code in the project
+│   ├── LICENSE           # license for your code
+│   ├── requirements.txt  # software requirements and dependencies
+│   └── ...
+└── doc/                  # documentation for your project
+    ├── index.rst
+    └── ...
 ```
 
 ## Steps to run this website locally
