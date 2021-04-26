@@ -2,6 +2,26 @@
 Data analysis and visualization code for the potato seed certification database
 
 
+## Folder Structure 
+```
+project
+│   README.md
+│   file001.txt    
+│
+└───folder1
+│   │   file011.txt
+│   │   file012.txt
+│   │
+│   └───subfolder1
+│       │   file111.txt
+│       │   file112.txt
+│       │   ...
+│   
+└───folder2
+    │   file021.txt
+    │   file022.txt
+```
+
 ## Steps to run this website locally
 Users with strong programming skills might like to modify the existing code and run a version of the website locally.
 
