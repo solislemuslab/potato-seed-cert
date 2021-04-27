@@ -4,10 +4,21 @@ Data analysis and visualization code for the potato seed certification database
 
 ## Folder Structure 
 ```
-project_name/
-├── README.md             # overview of the project
-├── data/                 # data files used in the project
-│   ├── README.md         # describes where data came from
+potato-seed-cert/
+├── README.md                       # overview of the project
+├── notes.md                        # overview of the project
+├── Index.py                        # overview of the project
+├── app.py                          # overview of the project
+├── apps/                           # data files used in the project
+│   ├── acres.py                    # describes where data came from
+│   ├── data_visualization.py       # describes where data came from
+│   ├── layout.py                   # describes where data came from
+│   ├── navbar.py                   # describes where data came from
+│   ├── prevalent_disease.py        # describes where data came from
+│   ├── state_comparison.py         # describes where data came from
+│   ├── statistical_test.py         # describes where data came from
+│   ├── upload.py                   # describes where data came from
+│   ├── variety.py                  # describes where data came from
 │   └── sub-folder/       # may contain subdirectories
 ├── processed_data/       # intermediate files from the analysis
 ├── manuscript/           # manuscript describing the results
