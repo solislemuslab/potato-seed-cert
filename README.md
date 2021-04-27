@@ -21,11 +21,11 @@ potato-seed-cert/
 │   ├── variety.py                  # describes where data came from
 │   └── sub-folder/       # may contain subdirectories
 ├── processed_data/       # intermediate files from the analysis
-├── manuscript/           # manuscript describing the results
+├── requirements.txt                # software requirements and dependencies
 ├── results/              # results of the analysis (data, tables, figures)
-├── src/                  # contains all code in the project
-│   ├── LICENSE           # license for your code
-│   ├── requirements.txt  # software requirements and dependencies
+├── assets/                  # contains all code in the project
+│   ├── tabs.css                    # css style for tabs
+│   ├── requirements.txt            # software requirements and dependencies
 │   └── ...
 └── doc/                  # documentation for your project
     ├── index.rst
