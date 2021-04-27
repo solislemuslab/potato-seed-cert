@@ -10,6 +10,7 @@ import numpy as np
 from dash.dependencies import Input, Output,  State
 import pandas as pd
 import xlrd
+import openpyxl
 import base64
 import io
 import flask
@@ -125,8 +126,9 @@ def parse_data(contents, filename):
             # Assume that the user uploaded a CSV or TXT file
             df = pd.read_csv(
                 io.StringIO(decoded.decode('utf-8')))
-        elif 'xls' in filename:
+        elif 'xls' or "xlsx" in filename:
             # Assume that the user uploaded an excel file
+            print("a")
             df = pd.read_excel(io.BytesIO(decoded))
         elif 'txt' or 'tsv' in filename:
             # Assume that the user upl, delimiter = r'\s+'oaded an excel file
