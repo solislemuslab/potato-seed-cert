@@ -7,27 +7,27 @@ Data analysis and visualization code for the potato seed certification database
 potato-seed-cert/
 ├── README.md                       # overview of the project
 ├── notes.md                        # overview of the project
-├── Index.py                        # overview of the project
-├── app.py                          # overview of the project
-├── apps/                           # data files used in the project
-│   ├── acres.py                    # describes where data came from
-│   ├── data_visualization.py       # describes where data came from
-│   ├── layout.py                   # describes where data came from
-│   ├── navbar.py                   # describes where data came from
-│   ├── prevalent_disease.py        # describes where data came from
-│   ├── state_comparison.py         # describes where data came from
-│   ├── statistical_test.py         # describes where data came from
-│   ├── upload.py                   # describes where data came from
-│   ├── variety.py                  # describes where data came from
-│   └── sub-folder/       # may contain subdirectories
-├── processed_data/       # intermediate files from the analysis
-├── requirements.txt                # software requirements and dependencies
-├── results/              # results of the analysis (data, tables, figures)
-├── assets/                  # contains all code in the project
-│   ├── tabs.css                    # css style for tabs
-│   ├── requirements.txt            # software requirements and dependencies
+├── Index.py                        
+├── app.py                          
+├── apps/                          
+│   ├── acres.py                    
+│   ├── data_visualization.py       
+│   ├── layout.py                   
+│   ├── navbar.py                   
+│   ├── prevalent_disease.py        
+│   ├── state_comparison.py         
+│   ├── statistical_test.py         
+│   ├── upload.py                   
+│   ├── variety.py                  
+│   └── sub-folder/       
+├── processed_data/      
+├── requirements.txt                
+├── results/              
+├── assets/                  
+│   ├── tabs.css                    
+│   ├── requirements.txt            
 │   └── ...
-└── doc/                  # documentation for your project
+└── doc/                  
     ├── index.rst
     └── ...
 ```
