@@ -32,6 +32,11 @@ potato-seed-cert/
     └── ...
 ```
 
+* Bullet list
+    * Nested bullet
+        * Sub-nested bullet etc
+* Bullet list item 2
+
 ## Steps to run this website locally
 Users with strong programming skills might like to modify the existing code and run a version of the website locally.
 
