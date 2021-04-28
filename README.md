@@ -35,23 +35,20 @@ potato-seed-cert/
 ## Steps to run this website locally
 Users with strong programming skills might like to modify the existing code and run a version of the website locally.
 
-1. Download and install the Heroku [CLI.](https://devcenter.heroku.com/articles/heroku-cli)
+1. Clone this repository
 
-2. log in to your Heroku account and follow the prompts to create a new SSH public key.
 ```
-heroku login
+git clone https://github.com/solislemuslab/bioklustering
 ```
-3. Clone this repository
+
+
+2. Get inside the BioKlustering-Website folder, create and activate a python virtual environment:
+
 ```
-heroku git:clone -a potatodash
+
 ```
-4. Get inside the BioKlustering-Website folder, create and activate a python virtual environment:
-```
-cd potatodash
-python3 -m venv virtual-env
-source virtual-env/bin/activate
-```
-5. Install the necessary packages with
+
+3. Install the necessary packages with
 ```
 pip3 install -r requirements.txt
 ```
@@ -104,4 +101,9 @@ urllib3==1.26.4
 Werkzeug==1.0.1
 xlrd==2.0.1
 
+```
+
+4. Run the website with
+```
+python3 Index.py
 ```
