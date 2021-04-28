@@ -45,7 +45,7 @@ git clone https://github.com/solislemuslab/bioklustering
 2. Get inside the BioKlustering-Website folder, create and activate a python virtual environment:
 
 ```
-
+https://github.com/solislemuslab/potato-seed-cert
 ```
 
 3. Install the necessary packages with
