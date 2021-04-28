@@ -32,10 +32,21 @@ potato-seed-cert/
     └── ...
 ```
 
-* Bullet list
-    * Nested bullet
+* apps which contains the core files for all tabs
+    * acres.py:                     
+    * data_visualization.py       
+    * layout.py                   
+    * navbar.py                   
+    * prevalent_disease.py        
+    * state_comparison.py         
+    * statistical_test.py         
+    * upload.py                   
+    * variety.py 
         * Sub-nested bullet etc
-* Bullet list item 2
+* Index.py: loads different apps on different urls links
+* app.py: define the dash instance
+* requirements.txt:
+* 
 
 ## Steps to run this website locally
 Users with strong programming skills might like to modify the existing code and run a version of the website locally.
