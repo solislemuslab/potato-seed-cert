@@ -28,7 +28,7 @@ potato-seed-cert/
 
 ```
 
-* apps which contains the core files for all tabs
+* <span style="background-color:grey">apps</span> which contains the core files for all tabs
     * acres.py: plot the rejected acre by varieties and growers with bar chart                   
     * data_visualization.py: collect all plots under tabs      
     * layout.py：layout template for the sidebar                 
