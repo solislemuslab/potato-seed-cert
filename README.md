@@ -4,11 +4,7 @@ Data analysis and visualization code for the potato seed certification database
 
 ## Folder Structure 
 ```
-potato-seed-cert/
-├── README.md                       # overview of the project
-├── notes.md                        # overview of the project
-├── Index.py                        
-├── app.py                          
+potato-seed-cert/                    
 ├── apps/                          
 │   ├── acres.py                    
 │   ├── data_visualization.py       
@@ -19,34 +15,37 @@ potato-seed-cert/
 │   ├── statistical_test.py         
 │   ├── upload.py                   
 │   ├── variety.py                  
-│   └── sub-folder/       
-├── processed_data/      
-├── requirements.txt                
-├── results/              
+│   └── sub-folder/   
 ├── assets/                  
-│   ├── tabs.css                    
-│   ├── requirements.txt            
-│   └── ...
-└── doc/                  
-    ├── index.rst
-    └── ...
+│   ├── tabs.css                                
+│   └── download.png
+├── .gitignore
+├── Index.py  
+├── README.md                                                                  
+├── app.py   
+├── notes.md 
+├── requirements.txt                
+
 ```
 
 * apps which contains the core files for all tabs
     * acres.py: plot the rejected acre by varieties and growers with bar chart                   
-    * data_visualization.py       
+    * data_visualization.py: collect all plots under tabs      
     * layout.py：layout template for the sidebar                 
     * navbar.py: navigation bar on the top of the page                   
     * prevalent_disease.py: plot the prevalent disease over time with line plot       
     * state_comparison.py: compare disease rate across various diseases with parallel coordinated plots     
     * statistical_test.py: implement two statitical tests to check the correlation         
-    * upload.py: upload data, data validation (missing value and string similarity check)                   
+    * upload.py: upload data, data validation (missing value and string similarity check)             
     * variety.py: plot the sensitive and tolerant varieity 
-        * Sub-nested bullet etc
+* assets which contains the css files and images
+    * tabs.css: tabs outlook in the data import section
+    * download.img: the image attached to download button
 * Index.py: loads different apps on different urls links
 * app.py: core app definition, CSS loading, import and attach layout
-* requirements.txt:
-* 
+* notes.md: discussion notes with Renee
+* requirements.txt: requirements to run the code
+ 
 
 ## Steps to run this website locally
 Users with strong programming skills might like to modify the existing code and run a version of the website locally.
