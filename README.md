@@ -33,18 +33,18 @@ potato-seed-cert/
 ```
 
 * apps which contains the core files for all tabs
-    * acres.py:                     
+    * acres.py: plot the rejected acre by varieties and growers with bar chart                   
     * data_visualization.py       
-    * layout.py                   
-    * navbar.py                   
-    * prevalent_disease.py        
-    * state_comparison.py         
-    * statistical_test.py         
-    * upload.py                   
-    * variety.py 
+    * layout.py：layout template for the sidebar                 
+    * navbar.py: navigation bar on the top of the page                   
+    * prevalent_disease.py: plot the prevalent disease over time with line plot       
+    * state_comparison.py: compare disease rate across various diseases with parallel coordinated plots     
+    * statistical_test.py: implement two statitical tests to check the correlation         
+    * upload.py: upload data, data validation (missing value and string similarity check)                   
+    * variety.py: plot the sensitive and tolerant varieity 
         * Sub-nested bullet etc
 * Index.py: loads different apps on different urls links
-* app.py: define the dash instance
+* app.py: core app definition, CSS loading, import and attach layout
 * requirements.txt:
 * 
 
