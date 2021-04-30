@@ -28,7 +28,7 @@ potato-seed-cert/
 
 ```
 
-* <span style="background-color:grey">apps</span> which contains the core files for all tabs
+* <span class = "filename" >apps</span> which contains the core files for all tabs
     * acres.py: plot the rejected acre by varieties and growers with bar chart                   
     * data_visualization.py: collect all plots under tabs      
     * layout.py：layout template for the sidebar                 
@@ -123,4 +123,11 @@ xlrd==2.0.1
 4. Run the website with
 ```
 python3 Index.py
+```
+
+```css
+.filename {
+   style="background-color:grey"
+}
+
 ```
