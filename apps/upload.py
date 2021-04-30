@@ -10,7 +10,6 @@ import numpy as np
 from dash.dependencies import Input, Output,  State
 import pandas as pd
 import xlrd
-import openpyxl
 import base64
 import io
 import flask
@@ -69,40 +68,40 @@ card_content = [
                 className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
             ),
 
-html.Div([
-            dcc.Tabs(
-                id="tabs-with-classes",
-                value='tab-1',
-                parent_className='custom-tabs',
-                className='custom-tabs-container',
-                children=[
-                    dcc.Tab(
-                        label='Data Table',
-                        value='tab-1',
-                        className='custom-tab',
-                        selected_className='custom-tab--selected'
-                    ),
-                    dcc.Tab(
-                        label='Errors Summary',
-                        value='tab-2',
-                        className='custom-tab',
-                        selected_className='custom-tab--selected'
-                    ),
-                    dcc.Tab(
-                        label='Errors Structure',
-                        value='tab-3', className='custom-tab',
-                        selected_className='custom-tab--selected'
-                    ),
-                    dcc.Tab(
-                        label='Errors Analysis',
-                        value='tab-4',
-                        className='custom-tab',
-                        selected_className='custom-tab--selected'
-                    ),
-                ]),
-            html.Div(id='tabs-content-classes'),
-            html.Br(),
-            html.Br(),])
+            html.Div([
+                dcc.Tabs(
+                    id="tabs-with-classes",
+                    value='tab-1',
+                    parent_className='custom-tabs',
+                    className='custom-tabs-container',
+                    children=[
+                        dcc.Tab(
+                            label='Data Table',
+                            value='tab-1',
+                            className='custom-tab',
+                            selected_className='custom-tab--selected'
+                        ),
+                        dcc.Tab(
+                            label='Errors Summary',
+                            value='tab-2',
+                            className='custom-tab',
+                            selected_className='custom-tab--selected'
+                        ),
+                        dcc.Tab(
+                            label='Errors Structure',
+                            value='tab-3', className='custom-tab',
+                            selected_className='custom-tab--selected'
+                        ),
+                        dcc.Tab(
+                            label='Errors Analysis',
+                            value='tab-4',
+                            className='custom-tab',
+                            selected_className='custom-tab--selected'
+                        ),
+                    ]),
+                html.Div(id='tabs-content-classes'),
+                html.Br(),
+                html.Br(), ])
         ]
     ),
 ]
@@ -117,6 +116,8 @@ homepage = html.Div([
 ])
 
 # Parse the uploaded data file
+
+
 def parse_data(contents, filename):
     content_type, content_string = contents.split(',')
 
@@ -126,9 +127,8 @@ def parse_data(contents, filename):
             # Assume that the user uploaded a CSV or TXT file
             df = pd.read_csv(
                 io.StringIO(decoded.decode('utf-8')))
-        elif 'xls' or "xlsx" in filename:
+        elif 'xls' in filename:
             # Assume that the user uploaded an excel file
-            print("a")
             df = pd.read_excel(io.BytesIO(decoded))
         elif 'txt' or 'tsv' in filename:
             # Assume that the user upl, delimiter = r'\s+'oaded an excel file
@@ -142,16 +142,15 @@ def parse_data(contents, filename):
     return df
 
 
-@app.callback([Output('tabs-content-classes', 'children'),Output('store-uploaded-data', 'data')],
+@app.callback([Output('tabs-content-classes', 'children'), Output('store-uploaded-data', 'data')],
               [Input('tabs-with-classes', 'value'),
-              Input('upload-data', 'contents'),
-              Input('upload-data', 'filename')])
+               Input('upload-data', 'contents'),
+               Input('upload-data', 'filename')])
 def render_content(tab, contents, filename):
     if contents:
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
-        print(df)
 
         if tab == 'tab-1':
             return html.Div([
@@ -178,22 +177,16 @@ def render_content(tab, contents, filename):
 
                 html.Br(),
                 html.Br(),
-                html.P(
-                    "Please click the button below if you want to fill all missing data",
-                    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
-                ),
-                dbc.Button(children="fix me",  color="primary",
-                           outline=True, id="fix-button", className="mr-1", block=True),
+                # html.P(
+                #    "Please click the button below if you want to fill all missing data",
+                #    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
+                # ),
+                # dbc.Button(children="fix me",  color="primary",
+                #           outline=True, id="fix-button", className="mr-1", block=True),''',
                 html.Br()
             ]), df.to_dict('records')
         elif tab == 'tab-2':
             return html.Div([
-                html.P(
-                    "Please click the button below if you want to fill all missing data",
-                    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
-                ),
-                dbc.Button(children="fix me",  color="primary",
-                           outline=True, id="fix-button", className="mr-1", block=True),
                 html.P(
                     "Error Summary",
                     className='font-weight-bolder', style={"padding-top": '20px', "font-size": '30px', 'text-align': 'center', 'font-weight': 'bold'}
@@ -213,15 +206,16 @@ def render_content(tab, contents, filename):
                     "Note: The ' Number of errors ' contains both wrong value and missing value.",
                     className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
                 ),
-            ]), df.to_dict('records')
-        elif tab == 'tab-3':
-            return html.Div([
                 html.P(
                     "Please click the button below if you want to fill all missing data",
                     className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
                 ),
                 dbc.Button(children="fix me",  color="primary",
                            outline=True, id="fix-button", className="mr-1", block=True),
+
+            ]), df.to_dict('records')
+        elif tab == 'tab-3':
+            return html.Div([
                 dbc.Row(
                     dbc.Col(
                         dcc.Graph(id="error-structure-graph"),
@@ -235,15 +229,16 @@ def render_content(tab, contents, filename):
                     )
                 ),
                 html.Br(),
-            ]), df.to_dict('records')
-        elif tab == 'tab-4':
-            return html.Div([
                 html.P(
                     "Please click the button below if you want to fill all missing data",
                     className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
                 ),
                 dbc.Button(children="fix me",  color="primary",
                            outline=True, id="fix-button", className="mr-1", block=True),
+
+            ]), df.to_dict('records')
+        elif tab == 'tab-4':
+            return html.Div([
                 html.P(
                     "Similarity between Two Similar Column Names(in %)",
                     className='font-weight-bolder', style={"padding-top": '20px', "font-size": '30px', 'text-align': 'center', 'font-weight': 'bold'}
@@ -271,15 +266,17 @@ def render_content(tab, contents, filename):
                                     dbc.FormGroup(
                                         [
                                             dbc.Label("Text"),
-                                            dbc.Input(id="suscipious-input", placeholder="Type something...", type="text"),
+                                            dbc.Input(
+                                                id="suscipious-input", placeholder="Type something...", type="text"),
                                         ]), ),
-                                dbc.Col(
+                                 dbc.Col(
                                     dbc.FormGroup(
                                         [
                                             dbc.Label("Frequency"),
-                                            dbc.Input(id="suscipious-frequency",type="number"),
+                                            dbc.Input(
+                                                id="suscipious-frequency", type="number"),
                                         ]), ),
-                                ]
+                                 ]
                             ),
                             html.Br(),
                             dbc.Row(
@@ -306,7 +303,33 @@ def render_content(tab, contents, filename):
                                         }],
                                     ),
                                 )
-                            )]
+                            ),
+                            html.P(
+                                "If you want to replace the error message with the correct one, please type the error message in the first box and the correct one in the second box",
+                                className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px'}
+                            ),
+                            html.Br(),
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        dbc.FormGroup(
+                                            [
+                                                dbc.Label("Error message"),
+                                                dbc.Input(
+                                                    id="error_input", placeholder="Type the value that should be replaced", type="text"),
+                                            ]), ),
+                                    dbc.Col(
+                                        dbc.FormGroup(
+                                            [
+                                                dbc.Label("Correct message"),
+                                                dbc.Input(
+                                                    id="correct_input", placeholder="Type the correct one", type="text"),
+                                            ]), ),
+                                    dbc.Button(children="comfirm",  color="primary",
+                                               outline=True, id="fixerror-button", className="mr-1", block=True),
+                                ]
+                            ),
+                            html.Br(), ]
                     ),
                 ),
                 html.Br(),
@@ -336,6 +359,7 @@ def render_content(tab, contents, filename):
                                     dash_table.DataTable(
                                         id='problematic_table',
                                         virtualization=True,
+                                        export_format="csv",
                                         page_action='native',
                                         page_size=15,
                                         sort_action='custom',
@@ -367,6 +391,14 @@ def render_content(tab, contents, filename):
                         width=12,
                     ),
                 ]),
+                html.Br(),
+                html.P(
+                    "Please click the button below if you want to fill all missing data",
+                    className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
+                ),
+                dbc.Button(children="fix me",  color="primary",
+                           outline=True, id="fix-button", className="mr-1", block=True),
+
 
             ]), df.to_dict('records')
 
@@ -639,10 +671,22 @@ def error_table(nclicks):
         return ["Undo"]
 
 
+@app.callback([Output('fixerror-button', 'children'), ],
+              [
+                  Input('fixerror-button', 'n_clicks'),
+
+])
+def error_table2(nclicks):
+    if nclicks == None or nclicks % 2 == 0:
+        return ["FIX ERRORS"]
+    else:
+        return ["Undo"]
+
+
 @app.callback([Output('similar_string_table', 'data'),
                Output('similar_string_table', 'columns'), ],
               [Input('similar_columns', 'value'),
-                Input("store-uploaded-data", "data"),
+               Input("store-uploaded-data", "data"),
                ])
 def error_highlight_table(dropdown_value, data):
     if data:
@@ -744,7 +788,7 @@ def error_highlight_table(dropdown_value, data, sort_by, derived_query_structure
 @app.callback(Output('suscipious-frequency', 'value'),
               [Input('similar_columns', 'value'),
                Input("suscipious-input", "value"),
-                Input("store-uploaded-data", "data"),
+               Input("store-uploaded-data", "data"),
                ])
 def calculate_frequency(summer_column, input, data):
     df = pd.DataFrame(data)
