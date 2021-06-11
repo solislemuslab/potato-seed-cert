@@ -53,7 +53,7 @@ Users with strong programming skills might like to modify the existing code and 
 1. Clone this repository
 
 ```
-https://github.com/solislemuslab/potato-seed-cert
+git clone https://github.com/solislemuslab/potato-seed-cert
 ```
 
 
