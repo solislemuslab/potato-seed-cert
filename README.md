@@ -53,14 +53,14 @@ Users with strong programming skills might like to modify the existing code and 
 1. Clone this repository
 
 ```
-git clone https://github.com/solislemuslab/potato-seed-cert
+https://github.com/solislemuslab/potato-seed-cert
 ```
 
 
 2. Get inside the BioKlustering-Website folder, create and activate a python virtual environment:
 
 ```
-cd potato-seed-cert
+cd potatto-seed-cert
 python3 -m venv virtual-env
 source virtual-env/bin/activate
 ```
@@ -69,7 +69,6 @@ source virtual-env/bin/activate
 ```
 pip3 install -r requirements.txt
 ```
-This step can take several minutes.
 
 A list of packages can be found in the requirements.txt file and is listed below:
 ```
