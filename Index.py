@@ -232,6 +232,7 @@ app.layout = html.Div([dcc.Store(id='side_click'),
                        dcc.Location(id="url"),
                        navbar.navbar,
                        sidebar,
+                       dcc.Store(id='store-uploaded-data'),
                        content])
 
 # this function is used to toggle the is_open property of each Collapse
