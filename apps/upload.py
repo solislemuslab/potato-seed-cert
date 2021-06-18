@@ -107,7 +107,7 @@ card_content = [
 ]
 
 homepage = html.Div([
-    dcc.Store(id='store-uploaded-data'),
+    # dcc.Store(id='store-uploaded-data'),
     dbc.Row(
         [
             dbc.Col(dbc.Card(card_content, color="light", outline=True)),

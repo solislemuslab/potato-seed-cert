@@ -63,11 +63,11 @@ LEFT_COLUMN = dbc.Jumbotron(
                 dbc.Label("Variety"),
                 dcc.Dropdown(
                     id="potato_variety",
-                    options=[
-                        {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
-                    ],
-                    multi= True,
-                    value= df["VARIETY"].value_counts()[:10].index ),
+                    # options=[
+                    #     {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+                    # ],
+                    multi= True)
+                    # value= df["VARIETY"].value_counts()[:10].index ),
             ]),
         dbc.FormGroup(
             [
@@ -83,6 +83,24 @@ LEFT_COLUMN = dbc.Jumbotron(
                 ),
     ]
 )
+
+@app.callback(
+    [Output("potato_variety", "options"),
+    Output("potato_variety", "value")],
+    [
+        Input("store-uploaded-data", "data")
+    ],
+)
+def left_column_dropdown(data):
+    if data:
+        df = pd.DataFrame(data)
+
+    options = [
+                  {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+              ]
+    value = df["VARIETY"].value_counts()[:10].index
+
+    return options, value
 
 RIGHT_PLOT = [
     dbc.CardHeader(html.H5("Sensitive/tolerant variety")),
@@ -122,10 +140,13 @@ variety_layout = html.Div(
         Input("season_inspection_vareity", "value"),
         Input("disease_type_variety", "value"),
         Input("potato_variety", "value"),
-        Input("sensitive_year","value")
+        Input("sensitive_year","value"),
+        Input("store-uploaded-data", "data")
     ],
 )
-def sensitivity_graph(season, disease, variety,year):
+def sensitivity_graph(season, disease, variety, year, data):
+    if data:
+        df = pd.DataFrame(data)
     fig = go.Figure()
     #print(frequent_varity)
     frequent_variety = df["VARIETY"].value_counts()[:20].index

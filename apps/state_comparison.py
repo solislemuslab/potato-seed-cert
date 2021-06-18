@@ -45,8 +45,8 @@ LEFT_COLUMN = dbc.Jumbotron(
                 dbc.Label("State"),
                 dcc.Dropdown(
                     id='multi_state',
-                    options=[{'label': i, 'value': i}
-                             for i in sorted(df["S_STATE"].dropna().unique())],
+                    # options=[{'label': i, 'value': i}
+                    #          for i in sorted(df["S_STATE"].dropna().unique())],
                     value=['WI', 'CO'],
                     multi=True,
                     style={'width': '90%', 'margin-left': '5px'},
@@ -77,6 +77,21 @@ LEFT_COLUMN = dbc.Jumbotron(
         ),
     ]
 )
+
+@app.callback(
+    [Output("multi_state", "options")],
+    [
+     Input("store-uploaded-data", "data")
+     ]
+)
+def dropdown_option(data):
+    if data:
+        df = pd.DataFrame(data)
+
+    options = [{'label': i, 'value': i}
+               for i in sorted(df["S_STATE"].dropna().unique())]
+
+    return options
 
 RIGHT_PLOT = [
     dbc.CardHeader(html.H5("State comparison")),
@@ -142,24 +157,19 @@ state_comparison_layout = html.Div(
      Output("parallel-graph", "figure")],
     [Input("multi_state", "value"),
      Input("parallel_inspection", "value"),
-     Input("parallel_year","value")]
+     Input("parallel_year","value"),
+     Input("store-uploaded-data", "data")
+     ]
 )
-def parallel_plot(state, inspection,year):
+def parallel_plot(state, inspection,year, data):
     print("year is: ")
     print(year)
     print(year=="all")
     print(type(year))
-    #print(type(int(year)))
-    #print(type(df["CY"][0]))
-    #print(df["S_YR"]==int(year))
-   # print(df.loc[df["S_YR"] == int(year)])
-    #print(df)
-    #df=df.loc[df["CY"] == int(year)]
-    #print(df["CY"])
-    #print(df[df["CY"] == year])
-    #print(df)
-    #print(list(df["CY"]==year))
-    #print(df.columns.str.startswith("NO"))
+
+    if data:
+        df = pd.DataFrame(data)
+
     if(year!="all"):
         number_column = list(df.loc[df["S_YR"] == int(year)].columns[df.columns.str.startswith("NO")])
     #number_column

@@ -35,17 +35,17 @@ acres_layout = html.Div([
 
     dbc.Row([dbc.Col(dcc.Dropdown(
         id='acres_rejection',
-        options=[{'label': i, 'value': i}
-                 for i in sorted(df["LNAME"].dropna().unique())],
-        value=df["LNAME"].dropna().unique()[:10],
+        # options=[{'label': i, 'value': i}
+        #          for i in sorted(df["LNAME"].dropna().unique())],
+        # value=df["LNAME"].dropna().unique()[:10],
         multi=True,
         style={'width': '70%', 'margin-left': '5px'}
     )),
         dbc.Col(dcc.Dropdown(
             id='acres_rejection_variety',
-            options=[{'label': i, 'value': i}
-                     for i in sorted(df["VARIETY"].dropna().unique())],
-            value=df["VARIETY"].dropna().unique()[:10],
+            # options=[{'label': i, 'value': i}
+            #          for i in sorted(df["VARIETY"].dropna().unique())],
+            # value=df["VARIETY"].dropna().unique()[:10],
             multi=True,
             style={'width': '70%', 'margin-left': '5px'}
         )),
@@ -58,15 +58,40 @@ acres_layout = html.Div([
 
 ])
 
+@app.callback(
+    [Output("acres_rejection", "options"),
+     Output("acres_rejection", "value"),
+     Output("acres_rejection_variety", "options"),
+     Output("acres_rejection_variety", "value")
+     ],
+    [
+        Input("store-uploaded-data", "data")
+    ],
+)
+def acre_rejection(data):
+    if data:
+        df = pd.DataFrame(data)
+    acre_options = [{'label': i, 'value': i}
+               for i in sorted(df["LNAME"].dropna().unique())]
+    acre_value = df["LNAME"].dropna().unique()[:10]
+
+    variety_options = [{'label': i, 'value': i}
+               for i in sorted(df["VARIETY"].dropna().unique())]
+    variety_value = df["VARIETY"].dropna().unique()[:10]
+
+    return acre_options, acre_value, variety_options, variety_value
 
 @app.callback(
     Output("Acres_rej_bar", "figure"),
     # Output('Acres_rej_segment', 'figure') ],
     [
         Input("acres_rejection", "value"),
+        Input("store-uploaded-data", "data")
     ],
 )
-def acre_rejection(lots):
+def acre_rejection(lots, data):
+    if data:
+        df = pd.DataFrame(data)
     temp = df.groupby("LNAME").sum()[
         ["ACRES", "AC_REJ", "winter_ACRES", "winter_AC_REJ"]]
     temp["rej_pct"] = temp["AC_REJ"] / temp["ACRES"]
@@ -169,9 +194,12 @@ def acre_rejection(lots):
     # Output('Acres_rej_segment', 'figure') ],
     [
         Input("acres_rejection_variety", "value"),
+        Input("store-uploaded-data", "data")
     ],
 )
-def acre_rejection(lots):
+def acre_rejection(lots, data):
+    if data:
+        df = pd.DataFrame(data)
     temp = df.groupby("VARIETY").sum()[
         ["ACRES", "AC_REJ", "winter_ACRES", "winter_AC_REJ"]]
     print(temp)
