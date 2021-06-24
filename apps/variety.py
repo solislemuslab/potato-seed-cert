@@ -63,11 +63,11 @@ LEFT_COLUMN = dbc.Jumbotron(
                 dbc.Label("Variety"),
                 dcc.Dropdown(
                     id="potato_variety",
-                    # options=[
-                    #     {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
-                    # ],
-                    multi= True)
-                    # value= df["VARIETY"].value_counts()[:10].index ),
+                    options=[
+                        {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+                    ],
+                    multi= True,
+                    value= df["VARIETY"].value_counts()[:10].index ),
             ]),
         dbc.FormGroup(
             [
@@ -77,30 +77,12 @@ LEFT_COLUMN = dbc.Jumbotron(
                     options=[
                         {"label": col, "value": col} for col in year_list
                     ],
-                    value="2007",
+                    value="all",
                 ),
             ]
                 ),
     ]
 )
-
-@app.callback(
-    [Output("potato_variety", "options"),
-    Output("potato_variety", "value")],
-    [
-        Input("store-uploaded-data", "data")
-    ],
-)
-def left_column_dropdown(data):
-    if data:
-        df = pd.DataFrame(data)
-
-    options = [
-                  {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
-              ]
-    value = df["VARIETY"].value_counts()[:10].index
-
-    return options, value
 
 RIGHT_PLOT = [
     dbc.CardHeader(html.H5("Sensitive/tolerant variety")),
@@ -140,23 +122,14 @@ variety_layout = html.Div(
         Input("season_inspection_vareity", "value"),
         Input("disease_type_variety", "value"),
         Input("potato_variety", "value"),
-        Input("sensitive_year","value"),
-        Input("store-uploaded-data", "data")
     ],
 )
-def sensitivity_graph(season, disease, variety, year, data):
-    if data:
-        df = pd.DataFrame(data)
+def sensitivity_graph(season, disease, variety):
     fig = go.Figure()
-    #print(frequent_varity)
     frequent_variety = df["VARIETY"].value_counts()[:20].index
-    print(frequent_variety)
+
     if "summer" in season:
-        if(year=="all"):
-            temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
-            ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
-        else:
-             temp = df.loc[df["S_YR"] == int(year)][df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+        temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
             ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
 
         for column in temp.columns[1:]:
@@ -170,12 +143,9 @@ def sensitivity_graph(season, disease, variety, year, data):
                                  name=disease_type[1] + " " + "summer"))
 
     if "winter" in season:
-        if(year=="all"):
-            temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+        temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
             ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
-        else:
-            temp = df.loc[df["S_YR"] == int(year)][df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
-            ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
+
         for column in temp.columns[1:]:
             new_column = column.replace("N", "_PCT")
             temp[new_column] = temp[column] / temp.iloc[:, 0]
