@@ -19,19 +19,20 @@ import re
 import plotly.graph_objects as go
 import pathlib
 
-PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../datasets").resolve()
-df = pd.read_csv(DATA_PATH.joinpath("cleaned_potato.csv"))
+# PATH = pathlib.Path(__file__).parent
+# DATA_PATH = PATH.joinpath("../datasets").resolve()
+# df = pd.read_csv(DATA_PATH.joinpath("cleaned_potato.csv"))
 
 
 virus_list = ["LR","ST","MIX","MOS"]
-year_list = list(np.sort(df["S_YR"].unique()))
+# year_list = list(np.sort(df["S_YR"].unique()))
+year_list = list(range(2000, 2017))
 year_list.append("all")
 category = ["S_STATE","VARIETY","S_G"]
 
-def find_virus_columns(virus):
-    return [x for x in df.columns.tolist() if
-            re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
+# def find_virus_columns(virus):
+#     return [x for x in df.columns.tolist() if
+#             re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
 
 
 LEFT_COLUMN = dbc.Jumbotron(
@@ -63,11 +64,11 @@ LEFT_COLUMN = dbc.Jumbotron(
                 dbc.Label("Variety"),
                 dcc.Dropdown(
                     id="potato_variety",
-                    options=[
-                        {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
-                    ],
-                    multi= True,
-                    value= df["VARIETY"].value_counts()[:10].index ),
+                    # options=[
+                    #     {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+                    # ],
+                    multi= True)
+                    # value= df["VARIETY"].value_counts()[:10].index ),
             ]),
         dbc.FormGroup(
             [
@@ -77,12 +78,30 @@ LEFT_COLUMN = dbc.Jumbotron(
                     options=[
                         {"label": col, "value": col} for col in year_list
                     ],
-                    value="all",
+                    value="2007",
                 ),
             ]
                 ),
     ]
 )
+
+@app.callback(
+    [Output("potato_variety", "options"),
+    Output("potato_variety", "value")],
+    [
+        Input("store-uploaded-data", "data")
+    ],
+)
+def left_column_dropdown(data):
+    if data:
+        df = pd.DataFrame(data)
+
+    options = [
+                  {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+              ]
+    value = df["VARIETY"].value_counts()[:10].index
+
+    return options, value
 
 RIGHT_PLOT = [
     dbc.CardHeader(html.H5("Sensitive/tolerant variety")),
@@ -122,14 +141,23 @@ variety_layout = html.Div(
         Input("season_inspection_vareity", "value"),
         Input("disease_type_variety", "value"),
         Input("potato_variety", "value"),
+        Input("sensitive_year","value"),
+        Input("store-uploaded-data", "data")
     ],
 )
-def sensitivity_graph(season, disease, variety):
+def sensitivity_graph(season, disease, variety, year, data):
+    if data:
+        df = pd.DataFrame(data)
     fig = go.Figure()
+    #print(frequent_varity)
     frequent_variety = df["VARIETY"].value_counts()[:20].index
-
+    print(frequent_variety)
     if "summer" in season:
-        temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+        if(year=="all"):
+            temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+            ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
+        else:
+             temp = df.loc[df["S_YR"] == int(year)][df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
             ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
 
         for column in temp.columns[1:]:
@@ -138,22 +166,25 @@ def sensitivity_graph(season, disease, variety):
 
         disease_type = [x for x in temp.columns if x.find(disease) != -1]
 
-        fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_type[1]],
-                                 mode='lines+markers',
+        fig.add_trace(go.Bar(x=temp.index, y=temp[disease_type[1]],
+                                 # mode='lines+markers',
                                  name=disease_type[1] + " " + "summer"))
 
     if "winter" in season:
-        temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+        if(year=="all"):
+            temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
             ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
-
+        else:
+            temp = df.loc[df["S_YR"] == int(year)][df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+            ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
         for column in temp.columns[1:]:
             new_column = column.replace("N", "_PCT")
             temp[new_column] = temp[column] / temp.iloc[:, 0]
 
         disease_type = [x for x in temp.columns if x.find(disease) != -1]
 
-        fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_type[1]],
-                                 mode='lines+markers',
+        fig.add_trace(go.Bar(x=temp.index, y=temp[disease_type[1]],
+                                 # mode='lines+markers',
                                  name=disease_type[1] + " " + "winter"))
     fig.update_layout(showlegend=True)
     fig.update_layout(
