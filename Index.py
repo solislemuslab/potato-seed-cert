@@ -104,7 +104,7 @@ Statistical_Test = [
     dbc.Collapse(
         [
             dbc.NavLink("Statistical test", href="/stat-test",
-                        className='text-light'),
+                        className='text-light', active = "exact"),
         ],
         id="submenu-2-collapse",
     ),
@@ -129,22 +129,22 @@ Visualization = [
     # we use the Collapse component to hide and reveal the navigation links
     dbc.Collapse(
         [
-            dbc.NavLink("Disease-Prevalence-1",
-                        href="/disease-prevalence/1", className='text-light'),
-            dbc.NavLink("Disease-Prevalence-2",
-                        href="/disease-prevalence/2", className='text-light'),
-            dbc.NavLink("State-Comparison-1",
-                        href="/state-comparison/1", className='text-light'),
-            dbc.NavLink("State-Comparison-2",
-                        href="/state-comparison/2", className='text-light'),
-            dbc.NavLink("Acre-Rejection-1", href="/acre-rejection/1",
-                        className='text-light'),
-            dbc.NavLink("Acre-Rejection-2", href="/acre-rejection/2",
-                        className='text-light'),
-            dbc.NavLink("Variety-1", href="/Variety/1",
-                        className='text-light'),
-            dbc.NavLink("Variety-2", href="/Variety/2",
-                        className='text-light'),
+            dbc.NavLink("Disease Prevalence",
+                        href="/disease-prevalence/1", className='text-light', active = "exact"),
+            # dbc.NavLink("Disease-Prevalence-2",
+            #             href="/disease-prevalence/2", className='text-light'),
+            dbc.NavLink("State Comparison",
+                        href="/state-comparison/1", className='text-light', active = "exact"),
+            # dbc.NavLink("State-Comparison-2",
+            #             href="/state-comparison/2", className='text-light'),
+            dbc.NavLink("Acre Rejection", href="/acre-rejection/1",
+                        className='text-light', active = "exact"),
+            # dbc.NavLink("Acre-Rejection-2", href="/acre-rejection/2",
+            #             className='text-light'),
+            dbc.NavLink("Variety", href="/Variety/1",
+                        className='text-light', active = "exact"),
+            # dbc.NavLink("Variety-2", href="/Variety/2",
+            #             className='text-light'),
         ],
         id="submenu-1-collapse",
     ),
@@ -170,7 +170,7 @@ Data_Import = [
     dbc.Collapse(
         [
             dbc.NavLink("Data Import", href="/data-import",
-                        className='text-light'),
+                        className='text-light', active = "exact"),
         ],
         id="submenu-4-collapse",
     ),
@@ -232,6 +232,7 @@ app.layout = html.Div([dcc.Store(id='side_click'),
                        dcc.Location(id="url"),
                        navbar.navbar,
                        sidebar,
+                       dcc.Store(id='store-uploaded-data'),
                        content])
 
 # this function is used to toggle the is_open property of each Collapse
@@ -297,4 +298,4 @@ def render_page_content(pathname):
 
 
 if __name__ == "__main__":
-    app.run_server(port=8000, debug=False)
+    app.run_server(port=8000, debug= False)
