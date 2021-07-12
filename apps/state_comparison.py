@@ -39,7 +39,7 @@ category = ["S_STATE", "VARIETY", "S_G"]
 
 LEFT_COLUMN = dbc.Jumbotron(
     [
-        html.H4(children="Select bank & dataset size", className="display-5"),
+        html.H4(children="Data Selection", className="display-5"),
         html.Hr(className="my-2"),
         dbc.FormGroup(
             [
@@ -71,7 +71,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                     options=[
                         {"label": col, "value": col} for col in year_list
                     ],
-                    value="2007",
+                    value="all",
                     style={'width': '90%', 'margin-left': '5px'},
                 ),
             ]
@@ -80,7 +80,7 @@ LEFT_COLUMN = dbc.Jumbotron(
 )
 
 @app.callback(
-    [Output("multi_state", "options")],
+    Output("multi_state", "options"),
     [
      Input("store-uploaded-data", "data")
      ]
@@ -163,58 +163,61 @@ state_comparison_layout = html.Div(
      ]
 )
 def parallel_plot(state, inspection,year, data):
-    print("year is: ")
-    print(year)
-    print(year=="all")
-    print(type(year))
-
+    colors = ["blue", "green", "red", "cyan", "magenta", "yellow", "black", "orange", "lime", "royalblue", "pink", "purple", "maroon", "silver", "lime"]
+    colorscales = {int(i): color for i, color in enumerate(colors)}
     if data:
         df = pd.DataFrame(data)
 
+
+
     if(year!="all"):
         number_column = list(df.loc[df["S_YR"] == int(year)].columns[df.columns.str.startswith("NO")])
-    #number_column
+
     else:
         number_column = list(df.columns[df.columns.str.startswith("NO")])
     number_column = number_column + ["PLTCT_1", "PLTCT_2"]
-    #number_column
-    print(year=="all")
+
     if(year=="all"):
-         temp=df.copy()
+        temp=df.copy()
     else:
-       
         temp = df.loc[df["S_YR"] == int(year)].copy()
-    # frequent_state = temp["S_STATE"].value_counts()[:10].index.to_list()
+
+    # Encode each state to a number for coloring purpose
+    unique_states = temp["S_STATE"].unique()
+    # Remove errors in state, such as 2016
+    unique_states = [state for state in unique_states if isinstance(state, str)]
+    state_id = {state: i for i, state in enumerate(unique_states)}
+    print(state_id)
+
     temp = temp.groupby("S_STATE").sum()[number_column]
-    print(temp)
 
     for column in temp.columns:
-        #     print(column)
         if "1ST" in column:
-
             new_column = column.replace("NO", "PCT")
-            print(new_column)
             temp[new_column] = temp[column] / temp["PLTCT_1"]
         elif "2ND" in column:
-
             new_column = column.replace("NO", "PCT")
-            #         print(new_column)
             temp[new_column] = temp[column] / temp["PLTCT_2"]
     first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
     second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND",
                   "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
 
-    #print(temp)
 
     first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
     second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND",
                   "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
 
+
+
     if inspection == "1ST":
-        temp = temp.loc[year,state, first_ins].reset_index()
+        print(temp)
+        temp = temp.loc[state, first_ins].reset_index()
+        temp["State_id"] = temp["S_STATE"].map(state_id)
+        temp["line_color"] = temp["State_id"].map(colorscales)
+        print(temp)
         fig = go.Figure(data=go.Parcoords(
-            line=dict(color=temp["PCT_MOS_1ST"],
-                      colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
+            line=dict(color=temp["State_id"],
+                      colorscale = [[0,'blue'],[0.5,'lightseagreen'],[1,'gold']]),
             dimensions=list([
                 dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
                      #                 constraintrange = [4,8],
@@ -230,9 +233,12 @@ def parallel_plot(state, inspection,year, data):
         )
     else:
         temp = temp.loc[state, second_ins].reset_index()
+        temp["State_id"] = temp["S_STATE"].map(state_id)
+        temp["line_color"] = temp["State_id"].map(colorscales)
+        print(temp)
         fig = go.Figure(data=go.Parcoords(
-            line=dict(color=temp["PCT_MOS_2ND"],
-                      colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
+            line=dict(color=temp["State_id"],
+                      colorscale = [[0,'blue'],[0.5,'lightseagreen'],[1,'gold']]),
             dimensions=list([
                 dict(range=[temp["PCT_LR_2ND"].min() * 0.5, temp["PCT_LR_2ND"].max() * 1.2],
                      #                 constraintrange = [4,8],
