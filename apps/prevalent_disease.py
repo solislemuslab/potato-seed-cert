@@ -16,11 +16,11 @@ import plotly.graph_objects as go
 # DATA_PATH = PATH.joinpath("../datasets").resolve()
 # df = pd.read_csv(DATA_PATH.joinpath("cleaned_potato.csv"))
 
-virus_list = ["LR","ST","MIX","MOS"]
+virus_list = ["LR", "ST", "MIX", "MOS"]
 # year_list = list(np.sort(df["S_YR"].unique()))
 year_list = list(range(2000, 2017))
 year_list.append("all")
-category = ["S_STATE","VARIETY","S_G"]
+category = ["S_STATE", "VARIETY", "S_G"]
 
 # def find_virus_columns(virus):
 #     return [x for x in df.columns.tolist() if
@@ -75,7 +75,7 @@ category = ["S_STATE","VARIETY","S_G"]
 
 LEFT_COLUMN = dbc.Jumbotron(
     [
-        html.H4(children="Select bank & dataset size", className="display-5"),
+        html.H4(children="Data Selection", className="display-5"),
         html.Hr(className="my-2"),
         dbc.FormGroup(
             [
@@ -98,9 +98,11 @@ LEFT_COLUMN = dbc.Jumbotron(
                 dcc.Dropdown(
                     id="disease_type",
                     options=[
-                        {"label": col, "value": col} for col in ["MOS", "LR", "MIX", "ST", "BRR"]
+                       {"label": col, "value": col} for col in ["MOS", "LR", "MIX", "ST", "BRR"]
                     ],
-                    value="LR", ),
+                    value=["LR", "ST"],
+                    multi=True
+                ),
             ]),
         dbc.FormGroup(
             [
@@ -121,33 +123,36 @@ LEFT_COLUMN = dbc.Jumbotron(
                     #     {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
                     # ],
                     multi=True)
-                    # value=df["VARIETY"].value_counts()[:3].index),
+                # value=df["VARIETY"].value_counts()[:3].index),
             ]),
     ],
 )
 
+
 @app.callback(
     [Output("state_type", "options"),
      Output("disease_potato_variety", "options"),
-     Output("disease_potato_variety", "value")
+     Output("disease_potato_variety", "value"),
+
      ],
     [
-     Input("store-uploaded-data", "data")
-     ]
+        Input("store-uploaded-data", "data")
+    ]
 )
 def dropdown_option(data):
     if data:
         df = pd.DataFrame(data)
 
     state_options = [
-                  {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
-              ]
+        {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
+    ]
     variety_options = [
         {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
     ]
     variety_value = df["VARIETY"].value_counts()[:3].index
 
     return state_options, variety_options, variety_value
+
 
 RIGHT_PLOT = [
     dbc.CardHeader(html.H5("Prevalent Disease")),
@@ -163,7 +168,8 @@ RIGHT_PLOT = [
                         style={"display": "none"},
                     ),
 
-                    dcc.Graph(id="prevalence-graph", config={"displayModeBar": False},),
+                    dcc.Graph(id="prevalence-graph",
+                              config={"displayModeBar": False},),
                 ],
                 type="default",
             )
@@ -174,13 +180,14 @@ RIGHT_PLOT = [
 
 
 prevalent_disease_block = html.Div([
-            dbc.Row([
-                dbc.Col(LEFT_COLUMN, align="center", md = 4),
-                dbc.Col(
-                    dbc.Card(RIGHT_PLOT), md=8)
-            ],
-                style={"marginTop": 30}, align="center", ),
-        ])
+    dbc.Row([
+        dbc.Col(LEFT_COLUMN, align="center", md=4),
+        dbc.Col(
+            dbc.Card(RIGHT_PLOT), md=8)
+    ],
+        style={"marginTop": 30}, align="center", ),
+])
+
 
 @app.callback(
     Output("prevalence-graph", "figure"),
@@ -192,7 +199,9 @@ prevalent_disease_block = html.Div([
         Input("store-uploaded-data", "data")
     ],
 )
-def prevalent_disease(season, disease, state, variety, data):
+def prevalent_disease(season, diseases, state, variety, data):
+    print(type(diseases))
+
     fig = go.Figure()
     if data:
         df = pd.DataFrame(data)
@@ -205,11 +214,20 @@ def prevalent_disease(season, disease, state, variety, data):
             new_column = column.replace("NO", "PCT")
             temp[new_column] = temp[column] / temp.iloc[:, 0]
 
-        disease_type = [x for x in temp.columns if x.find(disease) != -1]
+        disease_types = []
+        for disease in diseases:
+            for col in temp.columns:
+                if col.find(disease) != -1 and col.find("PCT") != -1:
+                    print(col, disease)
+                    disease_types.append(col)
+        print(disease_types)
 
-        fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_type[1]],
-                                 mode='lines+markers',
-                                 name=disease_type[1] + " " + "summer"))
+        #     disease_type = [x for x in temp.columns if x.find(diseases) != -1]
+        #     print(disease_type)
+        for i, disease_type in enumerate(disease_types):
+            fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_types[i]],
+                                     mode='lines+markers',
+                                     name=disease_types[i] + " " + "summer"))
 
     if "winter" in season:
 
@@ -219,11 +237,19 @@ def prevalent_disease(season, disease, state, variety, data):
             new_column = column.replace("N", "_PCT")
             temp[new_column] = temp[column] / temp.iloc[:, 0]
 
-        disease_type = [x for x in temp.columns if x.find(disease) != -1]
+        disease_types = []
+        for disease in diseases:
+            for col in temp.columns:
+                if col.find(disease) != -1 and col.find("PCT") != -1:
+                    print(col, disease)
+                    disease_types.append(col)
 
-        fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_type[1]],
-                                 mode='lines+markers',
-                                 name=disease_type[1] + " " + "winter"))
+        #     disease_type = [x for x in temp.columns if x.find(disease) != -1]
+
+        for i, disease_type in enumerate(disease_types):
+            fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_types[i]],
+                                     mode='lines+markers',
+                                     name=disease_types[i] + " " + "winter"))
 
     # fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_type[1]],
     #                          mode='lines+markers',
@@ -233,7 +259,7 @@ def prevalent_disease(season, disease, state, variety, data):
         # title="Prevalent Disease",
         autosize=True,
         height=480,
-        width= 680,
+        width=680,
         xaxis_title="Year",
         yaxis_title="Percentage of potato with {}".format(disease),
         showlegend=True,
@@ -256,6 +282,5 @@ def prevalent_disease(season, disease, state, variety, data):
         },
 
     )
-
 
     return fig
