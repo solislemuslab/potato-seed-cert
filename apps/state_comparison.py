@@ -20,33 +20,34 @@ import re
 import plotly.graph_objects as go
 import pathlib
 
-PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../datasets").resolve()
-df = pd.read_csv(DATA_PATH.joinpath("cleaned_potato.csv"))
+# PATH = pathlib.Path(__file__).parent
+# DATA_PATH = PATH.joinpath("../datasets").resolve()
+# df = pd.read_csv(DATA_PATH.joinpath("cleaned_potato.csv"))
 
 
 virus_list = ["LR", "ST", "MIX", "MOS"]
-year_list = list(np.sort(df["S_YR"].unique()))
+# year_list = list(np.sort(df["S_YR"].unique()))
+year_list = list(range(2000, 2017))
 year_list.append("all")
 category = ["S_STATE", "VARIETY", "S_G"]
 
 
-def find_virus_columns(virus):
-    return [x for x in df.columns.tolist() if
-            re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
+# def find_virus_columns(virus):
+#     return [x for x in df.columns.tolist() if
+#             re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
 
 
 LEFT_COLUMN = dbc.Jumbotron(
     [
-        html.H4(children="Select bank & dataset size", className="display-5"),
+        html.H4(children="Data Selection", className="display-5"),
         html.Hr(className="my-2"),
         dbc.FormGroup(
             [
                 dbc.Label("State"),
                 dcc.Dropdown(
                     id='multi_state',
-                    options=[{'label': i, 'value': i}
-                             for i in sorted(df["S_STATE"].dropna().unique())],
+                    # options=[{'label': i, 'value': i}
+                    #          for i in sorted(df["S_STATE"].dropna().unique())],
                     value=['WI', 'CO'],
                     multi=True,
                     style={'width': '90%', 'margin-left': '5px'},
@@ -77,6 +78,23 @@ LEFT_COLUMN = dbc.Jumbotron(
         ),
     ]
 )
+
+
+@app.callback(
+    Output("multi_state", "options"),
+    [
+        Input("store-uploaded-data", "data")
+    ]
+)
+def dropdown_option(data):
+    if data:
+        df = pd.DataFrame(data)
+
+    options = [{'label': i, 'value': i}
+               for i in sorted(df["S_STATE"].dropna().unique())]
+
+    return options
+
 
 RIGHT_PLOT = [
     dbc.CardHeader(html.H5("State comparison")),
@@ -141,44 +159,67 @@ state_comparison_layout = html.Div(
      Output("parallel-graph-table", "columns"),
      Output("parallel-graph", "figure")],
     [Input("multi_state", "value"),
-     Input("parallel_inspection", "value")]
+     Input("parallel_inspection", "value"),
+     Input("parallel_year", "value"),
+     Input("store-uploaded-data", "data")
+     ]
 )
-def parallel_plot(state, inspection):
-    number_column = list(df.columns[df.columns.str.startswith("NO")])
+def parallel_plot(state, inspection, year, data):
+    colors = ["blue", "green", "red", "cyan", "magenta", "yellow",
+              "black", "orange", "lime", "royalblue", "pink", "purple", "maroon"]
+    colorscales = {int(i): color for i, color in enumerate(colors)}
+    if data:
+        df = pd.DataFrame(data)
+
+    if(year != "all"):
+        number_column = list(df.loc[df["S_YR"] == int(
+            year)].columns[df.columns.str.startswith("NO")])
+
+    else:
+        number_column = list(df.columns[df.columns.str.startswith("NO")])
     number_column = number_column + ["PLTCT_1", "PLTCT_2"]
-    number_column
-    temp = df.copy()
-    # frequent_state = temp["S_STATE"].value_counts()[:10].index.to_list()
+
+    if(year == "all"):
+        temp = df.copy()
+    else:
+        temp = df.loc[df["S_YR"] == int(year)].copy()
+
+    # Encode each state to a number for coloring purpose
+    unique_states = temp["S_STATE"].unique()
+    # Remove errors in state, such as 2016
+    unique_states = [
+        state for state in unique_states if isinstance(state, str)]
+    state_id = {state: i for i, state in enumerate(unique_states)}
+
     temp = temp.groupby("S_STATE").sum()[number_column]
-    temp
 
     for column in temp.columns:
-        #     print(column)
         if "1ST" in column:
-
             new_column = column.replace("NO", "PCT")
-            print(new_column)
             temp[new_column] = temp[column] / temp["PLTCT_1"]
         elif "2ND" in column:
-
             new_column = column.replace("NO", "PCT")
-            #         print(new_column)
             temp[new_column] = temp[column] / temp["PLTCT_2"]
     first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
     second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND",
                   "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
-
-    print(temp)
 
     first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
     second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND",
                   "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
 
     if inspection == "1ST":
+        print(temp)
         temp = temp.loc[state, first_ins].reset_index()
+        temp["State_id"] = temp["S_STATE"].map(state_id)
+        temp["Line_color"] = temp["State_id"].map(colorscales)
+        print(temp["Line_color"])
+
         fig = go.Figure(data=go.Parcoords(
-            line=dict(color=temp["PCT_MOS_1ST"],
-                      colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
+            line=dict(color=temp["State_id"],
+                      colorscale=colors
+                      # color=str(colorscales[temp["State_id"]])
+                      ),
             dimensions=list([
                 dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
                      #                 constraintrange = [4,8],
@@ -194,9 +235,13 @@ def parallel_plot(state, inspection):
         )
     else:
         temp = temp.loc[state, second_ins].reset_index()
+        temp["State_id"] = temp["S_STATE"].map(state_id)
+        temp["Line_color"] = temp["State_id"].map(colorscales)
         fig = go.Figure(data=go.Parcoords(
-            line=dict(color=temp["PCT_MOS_2ND"],
-                      colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
+            line=dict(color=temp["State_id"],
+                      colorscale=colors
+                      # str(temp["Line_color"])
+                      ),
             dimensions=list([
                 dict(range=[temp["PCT_LR_2ND"].min() * 0.5, temp["PCT_LR_2ND"].max() * 1.2],
                      #                 constraintrange = [4,8],

@@ -25,37 +25,54 @@ from apps import prevalent_disease, acres, navbar, variety, state_comparison, up
 tabs_styles = {
     'height': '44px'
 }
-# tab_style = {
-#     'borderBottom': '1px solid #d6d6d6',
-#     'padding': '6px',
-#     'fontWeight': 'bold'
-# }
-#
-# tab_selected_style = {
-#     'borderTop': '1px solid #d6d6d6',
-#     'borderBottom': '1px solid #d6d6d6',
-#     'backgroundColor': '#119DFF',
-#     'color': 'white',
-#     'padding': '6px'
-# }
+tab_style = {
+    'borderBottom': '1px solid #d6d6d6',
+    'padding': '6px',
+    'fontWeight': 'bold'
+}
+
+tab_selected_style = {
+    'borderTop': '1px solid #d6d6d6',
+    'borderBottom': '1px solid #d6d6d6',
+    'backgroundColor': '#119DFF',
+    'color': 'Blue',
+    'padding': '6px'
+}
 
 data_visualization_layout = html.Div([
-    html.H3("Data visualization"),
+    html.H3("Datas visualization"),
     html.Br(),
     dcc.Tabs(id="tabs-styled-with-inline", value='tab-1', children=[
-            dcc.Tab(label='State Comparison', value='tab-1', className='custom-tab',
+        dcc.Tab(label='State Comparison', value='tab-1', className='custom-tab',
+                selected_className='custom-tab--selected', style=tab_style, selected_style=tab_selected_style),
+        dcc.Tab(label='Prevalent Disease', value='tab-2', className='custom-tab',
+                selected_className='custom-tab--selected', style=tab_style, selected_style=tab_selected_style),
+        dcc.Tab(label='Sensitive Variety', value='tab-3', className='custom-tab',
                 selected_className='custom-tab--selected'),
-            dcc.Tab(label='Prevalent Disease', value='tab-2', className='custom-tab',
+        dcc.Tab(label='Acre Rejection', value='tab-4', className='custom-tab',
                 selected_className='custom-tab--selected'),
-            dcc.Tab(label='Sensitive Variety', value='tab-3', className='custom-tab',
-                selected_className='custom-tab--selected'),
-            dcc.Tab(label='Acre Rejection', value='tab-4', className='custom-tab',
-                selected_className='custom-tab--selected'),
-        ], parent_className='custom-tabs',
-        className='custom-tabs-container',),
-        html.Div(id='tabs-content-inline')
+    ], parent_className='custom-tabs',
+        className='custom-tabs-container', style=tabs_styles),
+    html.Div(id='tabs-content-inline')
 
 ])
+# data_visualization_layout = html.Div([
+#    html.H3("Data visualization"),
+#    html.Br(),
+#    dcc.Tabs(id="tabs-styled-with-inline", value='tab-1', children=[
+#        dcc.Tab(label='State Comparison1', value='tab-1',
+#                style=tab_style, selected_style=tab_selected_style),
+#        dcc.Tab(label='Prevalent Disease', value='tab-2',
+#                style=tab_style, selected_style=tab_selected_style),
+#        dcc.Tab(label='Sensitive Variety', value='tab-3',
+#                style=tab_style, selected_style=tab_selected_style),
+#        dcc.Tab(label='Acre Rejection', value='tab-4',
+#                style=tab_style, selected_style=tab_selected_style),
+#    ], style=tabs_styles),
+#    html.Div(id='tabs-content-inline')
+
+# ])
+
 
 @app.callback(Output('tabs-content-inline', 'children'),
               Input('tabs-styled-with-inline', 'value'))
@@ -68,4 +85,3 @@ def render_content(tab):
         return variety.variety_layout
     elif tab == 'tab-4':
         return acres.acres_layout
-

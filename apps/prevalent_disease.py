@@ -12,68 +12,66 @@ import re
 import plotly.graph_objects as go
 
 # get relative data folder
-PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../datasets").resolve()
+# PATH = pathlib.Path(__file__).parent
+# DATA_PATH = PATH.joinpath("../datasets").resolve()
+# df = pd.read_csv(DATA_PATH.joinpath("cleaned_potato.csv"))
 
-# owner: shivp Kaggle. Source: https://data.mendeley.com/datasets
-# dataset was modified. Original data: https://www.kaggle.com/shivkp/customer-behaviour
-df = pd.read_csv(DATA_PATH.joinpath("cleaned_potato.csv"))
-
-virus_list = ["LR","ST","MIX","MOS"]
-year_list = list(np.sort(df["S_YR"].unique()))
+virus_list = ["LR", "ST", "MIX", "MOS"]
+# year_list = list(np.sort(df["S_YR"].unique()))
+year_list = list(range(2000, 2017))
 year_list.append("all")
-category = ["S_STATE","VARIETY","S_G"]
+category = ["S_STATE", "VARIETY", "S_G"]
 
-def find_virus_columns(virus):
-    return [x for x in df.columns.tolist() if
-            re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
+# def find_virus_columns(virus):
+#     return [x for x in df.columns.tolist() if
+#             re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
 
 
-left_column = dbc.Card(
-                    [
-                        dbc.FormGroup(
-                            [
-                                dbc.Label("Season"),
-                                dcc.Dropdown(
-                                    id="season_inspection",
-                                    options=[
-                                        {"label": col, "value": col} for col in
-                                        ["summer", "winter", "summer and winter"]
-                                    ],
-                                    value="summer", ),
-                            ]),
-                        dbc.FormGroup(
-                            [
-                                dbc.Label("Disease"),
-                                dcc.Dropdown(
-                                    id="disease_type",
-                                    options=[
-                                        {"label": col, "value": col} for col in ["MOS", "LR", "MIX", "ST", "BRR"]
-                                    ],
-                                    value="LR", ),
-                            ]),
-                        dbc.FormGroup(
-                            [
-                                dbc.Label("State"),
-                                dcc.Dropdown(
-                                    id="state_type",
-                                    options=[
-                                        {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
-                                    ],
-                                    value="WI", ),
-                            ]),
-                        dbc.FormGroup(
-                            [
-                                dbc.Label("Variety"),
-                                dcc.Dropdown(
-                                    id="disease_potato_variety",
-                                    options=[
-                                        {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
-                                    ],
-                                    multi=True,
-                                    value=df["VARIETY"].value_counts()[:3].index),
-                            ]),
-                    ], body=True, style={'height':'70vh'})
+# left_column = dbc.Card(
+#                     [
+#                         dbc.FormGroup(
+#                             [
+#                                 dbc.Label("Season"),
+#                                 dcc.Dropdown(
+#                                     id="season_inspection",
+#                                     options=[
+#                                         {"label": col, "value": col} for col in
+#                                         ["summer", "winter", "summer and winter"]
+#                                     ],
+#                                     value="summer", ),
+#                             ]),
+#                         dbc.FormGroup(
+#                             [
+#                                 dbc.Label("Disease"),
+#                                 dcc.Dropdown(
+#                                     id="disease_type",
+#                                     options=[
+#                                         {"label": col, "value": col} for col in ["MOS", "LR", "MIX", "ST", "BRR"]
+#                                     ],
+#                                     value="LR", ),
+#                             ]),
+#                         dbc.FormGroup(
+#                             [
+#                                 dbc.Label("State"),
+#                                 dcc.Dropdown(
+#                                     id="state_type",
+#                                     # options=[
+#                                     #     {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
+#                                     # ],
+#                                     value="WI", ),
+#                             ]),
+#                         dbc.FormGroup(
+#                             [
+#                                 dbc.Label("Variety"),
+#                                 dcc.Dropdown(
+#                                     id="disease_potato_variety",
+#                                     options=[
+#                                         {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+#                                     ],
+#                                     multi=True,
+#                                     value=df["VARIETY"].value_counts()[:3].index),
+#                             ]),
+#                     ], body=True, style={'height':'70vh'})
 
 LEFT_COLUMN = dbc.Jumbotron(
     [
@@ -100,18 +98,20 @@ LEFT_COLUMN = dbc.Jumbotron(
                 dcc.Dropdown(
                     id="disease_type",
                     options=[
-                        {"label": col, "value": col} for col in ["MOS", "LR", "MIX", "ST", "BRR"]
+                       {"label": col, "value": col} for col in ["MOS", "LR", "MIX", "ST", "BRR"]
                     ],
-                    value="LR", ),
+                    value=["LR", "ST"],
+                    multi=True
+                ),
             ]),
         dbc.FormGroup(
             [
                 dbc.Label("Select State"),
                 dcc.Dropdown(
                     id="state_type",
-                    options=[
-                        {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
-                    ],
+                    # options=[
+                    #     {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
+                    # ],
                     value="WI", ),
             ]),
         dbc.FormGroup(
@@ -119,14 +119,40 @@ LEFT_COLUMN = dbc.Jumbotron(
                 dbc.Label("Select Potato Variety"),
                 dcc.Dropdown(
                     id="disease_potato_variety",
-                    options=[
-                        {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
-                    ],
-                    multi=True,
-                    value=df["VARIETY"].value_counts()[:3].index),
+                    # options=[
+                    #     {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+                    # ],
+                    multi=True)
+                # value=df["VARIETY"].value_counts()[:3].index),
             ]),
     ],
 )
+
+
+@app.callback(
+    [Output("state_type", "options"),
+     Output("disease_potato_variety", "options"),
+     Output("disease_potato_variety", "value"),
+
+     ],
+    [
+        Input("store-uploaded-data", "data")
+    ]
+)
+def dropdown_option(data):
+    if data:
+        df = pd.DataFrame(data)
+
+    state_options = [
+        {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
+    ]
+    variety_options = [
+        {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+    ]
+    variety_value = df["VARIETY"].value_counts()[:3].index
+
+    return state_options, variety_options, variety_value
+
 
 RIGHT_PLOT = [
     dbc.CardHeader(html.H5("Prevalent Disease")),
@@ -142,7 +168,8 @@ RIGHT_PLOT = [
                         style={"display": "none"},
                     ),
 
-                    dcc.Graph(id="prevalence-graph", config={"displayModeBar": False},),
+                    dcc.Graph(id="prevalence-graph",
+                              config={"displayModeBar": False},),
                 ],
                 type="default",
             )
@@ -153,13 +180,14 @@ RIGHT_PLOT = [
 
 
 prevalent_disease_block = html.Div([
-            dbc.Row([
-                dbc.Col(LEFT_COLUMN, align="center", md = 4),
-                dbc.Col(
-                    dbc.Card(RIGHT_PLOT), md=8)
-            ],
-                style={"marginTop": 30}, align="center", ),
-        ])
+    dbc.Row([
+        dbc.Col(LEFT_COLUMN, align="center", md=4),
+        dbc.Col(
+            dbc.Card(RIGHT_PLOT), md=8)
+    ],
+        style={"marginTop": 30}, align="center", ),
+])
+
 
 @app.callback(
     Output("prevalence-graph", "figure"),
@@ -167,12 +195,14 @@ prevalent_disease_block = html.Div([
         Input("season_inspection", "value"),
         Input("disease_type", "value"),
         Input("state_type", "value"),
-        Input("disease_potato_variety", "value")
+        Input("disease_potato_variety", "value"),
+        Input("store-uploaded-data", "data")
     ],
 )
-def prevalent_disease(season, disease, state, variety):
-    print('a')
+def prevalent_disease(season, disease, state, variety, data):
     fig = go.Figure()
+    if data:
+        df = pd.DataFrame(data)
 
     if "summer" in season:
         temp = df[(df["S_STATE"] == state) & (df["VARIETY"].isin(variety))].groupby("CY").sum()[
@@ -210,7 +240,7 @@ def prevalent_disease(season, disease, state, variety):
         # title="Prevalent Disease",
         autosize=True,
         height=480,
-        width= 680,
+        width=680,
         xaxis_title="Year",
         yaxis_title="Percentage of potato with {}".format(disease),
         showlegend=True,
@@ -233,6 +263,5 @@ def prevalent_disease(season, disease, state, variety):
         },
 
     )
-
 
     return fig

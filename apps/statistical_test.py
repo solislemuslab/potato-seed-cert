@@ -19,9 +19,9 @@ LINEBREAK_STYLE = {
 }
 
 # get relative data folder
-PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../datasets").resolve()
-df = pd.read_csv(DATA_PATH.joinpath("cleaned_potato.csv"))
+# PATH = pathlib.Path(__file__).parent
+# DATA_PATH = PATH.joinpath("../datasets").resolve()
+# df = pd.read_csv(DATA_PATH.joinpath("cleaned_potato.csv"))
 
 diseases = ["BLEG_PCT_C", "RHIZOC", "VERT_C",
             "ASTRYELOS", "EBLIGHT"	, "LBLIGHT", "WILT_PCT_C"]
@@ -34,6 +34,23 @@ sources = ["SNAME",
            "S_YR",
            "S_GCODE",
            "S_STATE"]
+df_grower = ['Atwater','B Kuczmarski','Baginski','Bjornstad','Bula Potato',
+ 'Bushman','Buyan','CETS','CSS','Childstock','Crown','Diercks','Droge','Droge Farms','Eagle River Se',
+ 'Ebbesson','Enander','Fleischman D','Gallenberg D','Gallenberg Fms','Goldeneye','Greenleaf Org','Guenthner Po',
+ 'H Miller','Haenni Farms','Hafner','Hanson','Hartman','Haskett','J Gallenberg','J Jorde',
+ 'J Nicholes','John Miller','Johnson','Jonk Seed Farm','Jorde Certi','Jorde Certifie','Jorde Mike','Kakes',
+ 'Kent Farms','Kimm Pot','Kroeker Farms,','LHIlls','Larson Farms','London','London Hill','MSU','Maine Seed','Mangels','Manhattan',
+ 'Mark Kuehl','Mark Stremick','Martin','Mattek','McCain','Miller Farms J','Myrna Stremick','Myrna stremick',
+ 'NDS','Neu Ground Lab','Nilson Farms','PEI Produce', 'Paquin','Parkinson Seed', 'Phytocu','Rine Ridge',
+ 'Royce Atwater','Salen','San Luis','Schroeder Bros', 'Schroeder Farm','Schutter', 'Scidmore Farms','Seed Pro',
+ 'Seidl','Sklarczyk', 'Skogman','Sowinski','Sping Creek','State Farm','Steinmann','Summit Farms','Summit Labs',
+ 'Sunny Valley','Sunnydale','Sunrain Variet','T Spychalla','Technico/Sham',
+ 'Tetonia','Thompson','UI/Teutonia','UW Breeding','Uihlein Fm','Val TCulture','Van Erkel','Wild',
+ 'Wirz','Worley','Zeloski -ER','Zeloski, Felix']
+df_state = ['AK', 'CO', 'ID', 'MB', 'ME', 'MI', 'MN', 'MT', 'NB', 'ND', 'NE',
+       'NY', 'PE', 'WI']
+df_year = list(range(2000, 2017))
+
 chi_test_columns = ["Null HYpothesis",
                     "Alternative Hypothesis", "Chi-Square score", "df", "P-value"]
 anova_columns = ["Null HYpothesis",
@@ -51,7 +68,7 @@ homepage = html.Div([
                             dcc.Dropdown(
                                 id="state_type",
                                 options=[{"label": "All", "value": "All"}] + [
-                                    {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
+                                    {"label": col, "value": col} for col in df_state
                                 ],
                                 value="All", ),
                         ]),
@@ -63,7 +80,7 @@ homepage = html.Div([
                             dcc.Dropdown(
                                 id="year",
                                 options=[{"label": "All", "value": "All"}] + [
-                                    {"label": col, "value": col} for col in sorted(df["S_YR"].dropna().unique())
+                                    {"label": col, "value": col} for col in df_year
                                 ],
                                 value="All", ),
                         ])
@@ -75,7 +92,7 @@ homepage = html.Div([
                             dcc.Dropdown(
                                 id="grower",
                                 options=[{"label": "All", "value": "All"}] + [
-                                    {"label": col, "value": col} for col in sorted(df["S_G"].dropna().unique())
+                                    {"label": col, "value": col} for col in df_grower
                                 ],
                                 value="All"),
                         ]),
@@ -283,7 +300,6 @@ homepage = html.Div([
                                                      "placement": 'top'}
                                         ),
                                     ]),
-
                             ]),
 
                     ], body=True, style={'height': '55vh'}), md=4),
@@ -293,8 +309,6 @@ homepage = html.Div([
                         [
                             html.H5("ANOVA Test Result "),
                             html.Div(id="anova-summary"),
-
-
                         ],
                         body=True, style={'height': '55vh'},)
                 ],
@@ -302,6 +316,32 @@ homepage = html.Div([
         ])
 ])
 
+# @app.callback(
+#     [Output("state_type", "options"),
+#      Output("year", "options"),
+#      Output("grower", "options")],
+#     [
+#      Input("store-uploaded-data", "data")
+#      ]
+# )
+# def dropdown_option(data):
+#     if data:
+#         df = pd.DataFrame(data)
+#
+#     state_options = [{"label": "All", "value": "All"}] + [
+#         {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
+#     ]
+#
+#     year_options = [{"label": "All", "value": "All"}] + [
+#         {"label": col, "value": col} for col in sorted(df["S_YR"].dropna().unique())
+#     ]
+#
+#     grower_options = [{"label": "All", "value": "All"}] + [
+#         {"label": col, "value": col} for col in sorted(df["S_G"].dropna().unique())
+#     ]
+#
+#     return state_options, year_options, grower_options
+#
 
 @app.callback(
     Output("Pchi_square-message", "is_open"),
@@ -336,10 +376,13 @@ def toggle_modal(n1, n2, is_open):
         Input("col-name", "value"),
         Input("state_type", "value"),
         Input("year", "value"),
-        Input("grower", "value")
+        Input("grower", "value"),
+        Input("store-uploaded-data", "data")
     ],
 )
-def Observed_Contingency_Table(row, col, state, year, grower):
+def Observed_Contingency_Table(row, col, state, year, grower, data):
+    if data:
+        df = pd.DataFrame(data)
     # temp = df[(df["S_STATE"].isin([state])) & (df["VARIETY"].isin([variety])) & (df["S_G"].isin([grower])) ]
     temp = df.copy()
     if state != "All":
@@ -364,10 +407,13 @@ def Observed_Contingency_Table(row, col, state, year, grower):
         Input("slider-chisquare", "value"),
         Input("state_type", "value"),
         Input("year", "value"),
-        Input("grower", "value")
+        Input("grower", "value"),
+        Input("store-uploaded-data", "data")
     ],
 )
-def chi_square_test(row, col, significance_level, state, year, grower):
+def chi_square_test(row, col, significance_level, state, year, grower, data):
+    if data:
+        df = pd.DataFrame(data)
     temp = df.copy()
     if state != "All":
         temp = temp[(temp["S_STATE"].isin([state]))]
@@ -392,7 +438,6 @@ def chi_square_test(row, col, significance_level, state, year, grower):
             {
                 'if': {
                     'column_id': 'Alternative Hypothesis',
-
                     # since using .format, escape { with {{
                     'filter_query': '{{P-value}} <= {}'.format(significance_level)
                 },
@@ -402,7 +447,6 @@ def chi_square_test(row, col, significance_level, state, year, grower):
             {
                 'if': {
                     'column_id': 'Null HYpothesis',
-
                     # since using .format, escape { with {{
                     'filter_query': '{{P-value}} > {}'.format(significance_level)
                 },
@@ -421,10 +465,13 @@ def chi_square_test(row, col, significance_level, state, year, grower):
         Input("slider-anova", "value"),
         Input("state_type", "value"),
         Input("year", "value"),
-        Input("grower", "value")
+        Input("grower", "value"),
+        Input("store-uploaded-data", "data")
     ],
 )
-def anova_test(row, col, significance_level, state, year, grower):
+def anova_test(row, col, significance_level, state, year, grower, data):
+    if data:
+        df = pd.DataFrame(data)
     temp = df.copy()
     if state != "All":
         temp = temp[(temp["S_STATE"].isin([state]))]

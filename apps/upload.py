@@ -64,7 +64,7 @@ card_content = [
                 multiple=True
             ),
             html.P(
-                "Please choose a csv/xlsx/txt file from your laptop",
+                "Please choose a csv/xlsx/txt file from your device",
                 className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
             ),
 
@@ -107,7 +107,7 @@ card_content = [
 ]
 
 homepage = html.Div([
-    dcc.Store(id='store-uploaded-data'),
+    # dcc.Store(id='store-uploaded-data'),
     dbc.Row(
         [
             dbc.Col(dbc.Card(card_content, color="light", outline=True)),
@@ -202,8 +202,12 @@ def render_content(tab, contents, filename):
                         'minWidth': 95, 'maxWidth': 95, 'width': 95
                     }
                 ),
+                # html.P(
+                #    "Note: The ' Number of errors ' contains both wrong value and missing value.",
+                #    className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
+                # ),
                 html.P(
-                    "Note: The ' Number of errors ' contains both wrong value and missing value.",
+                    "Note: 'NUMBER OF ERRORS' contains mismatch between winter and summer column, as well as missing value.",
                     className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
                 ),
                 html.P(
@@ -359,6 +363,7 @@ def render_content(tab, contents, filename):
                                     dash_table.DataTable(
                                         id='problematic_table',
                                         virtualization=True,
+                                        export_format="csv",
                                         page_action='native',
                                         page_size=15,
                                         sort_action='custom',
@@ -535,7 +540,7 @@ def error_table(sort_by, data,  n_clicks):
         {'Column Name': summer_columns,
          'Number of errors': errors,
          'Number of missing values': missing_values,
-         'Index of erros': rows,
+         'Index of errors': rows,
          })
 
     data = error_df.to_dict('rows')
@@ -672,10 +677,10 @@ def error_table(nclicks):
 
 @app.callback([Output('fixerror-button', 'children'), ],
               [
-                  Input('fixerror-button', 'n_errorclicks'),
+                  Input('fixerror-button', 'n_clicks'),
 
 ])
-def error_tables(nclicks):
+def error_table2(nclicks):
     if nclicks == None or nclicks % 2 == 0:
         return ["FIX ERRORS"]
     else:
