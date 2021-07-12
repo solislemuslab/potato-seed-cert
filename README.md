@@ -1,6 +1,11 @@
 # potato-seed-cert
 Data analysis and visualization code for the potato seed certification database
 
+# Usage
+
+Potato-Seed-Cert is browser-based (preferably Google Chrome), and thus, no installation is needed. Users simply need to click on the following link: xxxxx.
+
+More details are available in the documentation: [DOCS.md](https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md).
 
 ## Folder Structure 
 ```
@@ -127,4 +132,15 @@ xlrd==2.0.1
 python3 Index.py
 ```
 
+# Contributions
 
+Users interested in expanding functionalities in Potato-Seed-Cert are welcome to do so.
+See details on how to contribute in [CONTRIBUTING.md](https://github.com/solislemuslab/potato-seed-cert/blob/master/CONTRIBUTING.md)
+
+# License
+Potato-Seed-Cert is licensed under the [GNU General Public ](https://www.gnu.org/licenses/) licence. &copy; SolisLemus lab projects (2021)
+
+# Feedback, issues and questions
+
+- Issues reports are encouraged through the [GitHub issue tracker](https://github.com/solislemuslab/potato-seed-cert/issuess)
+- Feedback is always welcome via the following [google form](https://forms.gle/ijwGLmV5DVFyyqyx9)
