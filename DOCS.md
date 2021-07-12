@@ -22,7 +22,7 @@ The following shows the hirearchy of the website:
 ## Home Page
 The home page contains two sections: 1) for uploading files and 2) for fitting the machine-learning models.
 
-![Website Home Page](figures/Website-Home-Page.png)
+![Website Home Page](assets/Website-Home-Page.png)
 
 #### Data Import Section
 * There is only one file required(data file).
@@ -50,7 +50,7 @@ The home page contains two sections: 1) for uploading files and 2) for fitting t
 * After choosing the 4 elements above, it will generate a line plot. The x-axis is Year, and y-axis is Percentage of potato with the disease type you chose before.
 * Note that all information are given in the data you uploaded in the first section.
 
-![Website Home Page](figures/Website-Disease_Prevalence.png)
+![Website Home Page](assets/Website-Disease_Prevalence.png)
 
 ##### State Comparison
 * The state comparison page contains 3 drop down choices:
@@ -60,7 +60,7 @@ The home page contains two sections: 1) for uploading files and 2) for fitting t
 * After choosing the 3 elements above, it will generate a line plot. It compares the susceptibility of potatoes to different diseases in different states.
 *  Note that all information are given in the data you uploaded in the first section.
 
-![Website Home Page](figures/Website-State_Comparasion.png)
+![Website Home Page](assets/Website-State_Comparasion.png)
 
 ##### Acre Rejection
 * The acre rejection page contains two bar plots based on different classification criterias:
@@ -69,7 +69,7 @@ The home page contains two sections: 1) for uploading files and 2) for fitting t
 * The y-axis of each bar plot is Rejection Percentage(ACRE_REJ/ACRE_TOTAL). The x-axis is different potato lot name or potato variety. For each potato lot name/potato variety, it shows two bars -- one for summer and one for winter.
 *  Note that all information are given in the data you uploaded in the first section.
 
-![Website Home Page](figures/Website-Acre_Rejection.png)
+![Website Home Page](assets/Website-Acre_Rejection.png)
 
 ##### Variety
 * The variety page contains 4 drop down choices:
@@ -80,7 +80,7 @@ The home page contains two sections: 1) for uploading files and 2) for fitting t
 * After choosing the 4 elements above, it will generate a bar plot. The x-axis is different kinds of potato variety, and y-axis is Percentage of potato with the disease type you chose before.
 *  Note that all information are given in the data you uploaded in the first section.
 
-![Website Home Page](figures/Website-Variety.png)
+![Website Home Page](assets/Website-Variety.png)
 
 #### Stastical Test
 * The stastical test page contains two tests result:
@@ -93,7 +93,7 @@ The home page contains two sections: 1) for uploading files and 2) for fitting t
 * After choosing the 3 elements above, it will generate a result table.
 * Note that the files will be removed everytime when you reclick the Data Import tab.
 
-![Website Home Page](figures/Website-Stastical_Test.png)
+![Website Home Page](assets/Website-Stastical_Test.png)
 
 
 
