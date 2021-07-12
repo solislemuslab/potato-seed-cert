@@ -203,7 +203,7 @@ def render_content(tab, contents, filename):
                     }
                 ),
                 html.P(
-                    "Note: The ' Number of errors ' contains both wrong value and missing value.",
+                    "Note: The ' Number of errors ' contains both mismatch between winter and summer columns and missing value.",
                     className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
                 ),
                 html.P(
