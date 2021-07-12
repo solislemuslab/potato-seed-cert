@@ -13,7 +13,7 @@ from dash.dependencies import Input, Output, State
 navbar = dbc.NavbarSimple(
     children=[
         dbc.Button("Sidebar", outline=True, color="secondary", className="mr-1", id="btn_sidebar"),
-        dbc.NavItem(dbc.NavLink("Page 1", href="#")),
+        # dbc.NavItem(dbc.NavLink("Page 1", href="#")),
         # dbc.DropdownMenu(
         #     children=[
         #         dbc.DropdownMenuItem("More pages", header=True),
