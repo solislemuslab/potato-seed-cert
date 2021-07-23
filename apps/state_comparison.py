@@ -48,7 +48,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                     id='multi_state',
                     # options=[{'label': i, 'value': i}
                     #          for i in sorted(df["S_STATE"].dropna().unique())],
-                    value=['WI', 'CO'],
+                    value=['MB', 'CO'],
                     multi=True,
                     style={'width': '90%', 'margin-left': '5px'},
                     placeholder="Select states", ),
@@ -163,12 +163,11 @@ state_comparison_layout = html.Div(
      ]
 )
 def parallel_plot(state, inspection,year, data):
-    colors = ["blue", "green", "red", "cyan", "magenta", "yellow", "black", "orange", "lime", "royalblue", "pink", "purple", "maroon", "silver", "lime"]
-    colorscales = {int(i): color for i, color in enumerate(colors)}
+    orig_state = state.copy()
+    colors = ["blue", "green", "red", "cyan", "magenta", "yellow", "black", "orange", "darkviolet", "royalblue", "pink", "purple", "maroon", "silver", "lime"]
+    colorscales = {np.linspace(0, 1, num = len(colors))[i]: color for i, color in enumerate(colors)}
     if data:
         df = pd.DataFrame(data)
-
-
 
     if(year!="all"):
         number_column = list(df.loc[df["S_YR"] == int(year)].columns[df.columns.str.startswith("NO")])
@@ -186,7 +185,10 @@ def parallel_plot(state, inspection,year, data):
     unique_states = temp["S_STATE"].unique()
     # Remove errors in state, such as 2016
     unique_states = [state for state in unique_states if isinstance(state, str)]
-    state_id = {state: i for i, state in enumerate(unique_states)}
+
+    # Construct a dictionary to assign an unique id to each state
+    state_id = {state: np.linspace(0, 1, len(colors))[i] for i, state in enumerate(unique_states)}
+
     print(state_id)
 
     temp = temp.groupby("S_STATE").sum()[number_column]
@@ -198,16 +200,17 @@ def parallel_plot(state, inspection,year, data):
         elif "2ND" in column:
             new_column = column.replace("NO", "PCT")
             temp[new_column] = temp[column] / temp["PLTCT_2"]
-    first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
-    second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND",
-                  "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
-
 
     first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
     second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND",
                   "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
 
+    # Add the state with minimum and maximum ID to fix the max id and min id value (Not dynamic)
+    state = list(set(state + ["CO", "MB"]))
 
+    scaled_color = [[np.linspace(0, 1, num=len(colors))[i], color] for i, color in enumerate(colors)]
+
+    print(scaled_color)
 
     if inspection == "1ST":
         print(temp)
@@ -216,8 +219,9 @@ def parallel_plot(state, inspection,year, data):
         temp["line_color"] = temp["State_id"].map(colorscales)
         print(temp)
         fig = go.Figure(data=go.Parcoords(
-            line=dict(color=temp["State_id"],
-                      colorscale = [[0,'blue'],[0.5,'lightseagreen'],[1,'gold']]),
+            line=dict(color=(temp["State_id"]),
+                      colorscale = scaled_color),
+            # [[0, 'blue'], [0.5, 'lightseagreen'], [1, 'gold']]
             dimensions=list([
                 dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
                      #                 constraintrange = [4,8],
@@ -237,8 +241,9 @@ def parallel_plot(state, inspection,year, data):
         temp["line_color"] = temp["State_id"].map(colorscales)
         print(temp)
         fig = go.Figure(data=go.Parcoords(
-            line=dict(color=temp["State_id"],
-                      colorscale = [[0,'blue'],[0.5,'lightseagreen'],[1,'gold']]),
+            line=dict(color=(temp["State_id"]),
+                      colorscale=scaled_color),
+            # [[0, 'blue'], [0.5, 'lightseagreen'], [1, 'gold']]
             dimensions=list([
                 dict(range=[temp["PCT_LR_2ND"].min() * 0.5, temp["PCT_LR_2ND"].max() * 1.2],
                      #                 constraintrange = [4,8],
@@ -257,6 +262,7 @@ def parallel_plot(state, inspection,year, data):
         )
         )
 
+    # temp = temp[temp["S_STATE"].isin(orig_state)]
     data = temp.to_dict('records')
     columns = [{'name': i, 'id': i} for i in temp.columns]
 
