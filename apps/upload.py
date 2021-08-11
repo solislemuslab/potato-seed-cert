@@ -64,7 +64,7 @@ card_content = [
                 multiple=True
             ),
             html.P(
-                "Please choose a csv/xlsx/txt file from your device. The four tabs below will show a summary of the database and potential errors to address prior to data analysis and visualization.",
+                "Please choose a csv/xlsx/txt file from your device. The four tabs below will show a summary of the database and potential errors to address prior to data analysis and visualization. Note that clicking on a given tab might take a couple of second to load.",
                 className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
             ),
 
@@ -203,11 +203,11 @@ def render_content(tab, contents, filename):
                     }
                 ),
                 html.P(
-                    "Note: The ' Number of errors ' contains both mismatch between winter and summer columns and missing value.",
+                    "Column Name corresponds to the variable name with identified errors (mismatches between winter and summer entries or missing value). Number of errors counts the number of mismatches between winter/summer and number of missing values. Number of missing values only counts the number of missing entries in this column. Index of errors shows the row indeces where the errors are found for this column. The button below will fill the missing data with the information from another inspection (winter/summer). Note that these checks only refer to columns that should be the same in both winter and summer (e.g. SNAME).",
                     className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
                 ),
                 html.P(
-                    "Please click the button below if you want to fill all missing data",
+                    "Please click the button below if you want to fill all missing entries",
                     className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
                 ),
                 dbc.Button(children="fix me",  color="primary",
@@ -230,7 +230,11 @@ def render_content(tab, contents, filename):
                 ),
                 html.Br(),
                 html.P(
-                    "Please click the button below if you want to fill all missing data",
+                    "Figure on top represents the location of errors in the database: x-axis represents the row index, y-axis represents the column name and the black rectangles corresponds to errors.",
+                    className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
+                ),
+                html.P(
+                    "Please click the button below if you want to fill all missing entries",
                     className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
                 ),
                 dbc.Button(children="fix me",  color="primary",
@@ -666,7 +670,7 @@ def missing_structure(data, n_clicks):
 ])
 def error_table(nclicks):
     if nclicks == None or nclicks % 2 == 0:
-        return ["FIX ERRORS"]
+        return ["FILL MISSINGNESS"]
     else:
         return ["Undo"]
 
@@ -678,7 +682,7 @@ def error_table(nclicks):
 ])
 def error_table2(nclicks):
     if nclicks == None or nclicks % 2 == 0:
-        return ["FIX ERRORS"]
+        return ["FILL MISSINGNESS"]
     else:
         return ["Undo"]
 
