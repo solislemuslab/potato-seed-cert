@@ -1,9 +1,10 @@
-# potato-seed-cert
-Data analysis and visualization code for the potato seed certification database
+# Bioinformatics Dashboard for the WI Potato and Vegetable Growers Association
+
+This is a bioinformatics online dashboard for the data analysis and data visualization of the certification database of the seed potato production.
 
 # Usage
 
-Potato-Seed-Cert is browser-based (preferably Google Chrome), and thus, no installation is needed. Users simply need to click on the following link: xxxxx.
+`Potato-Seed-Dashboard` is browser-based (preferably Google Chrome), and thus, no installation is needed. Users simply need to click on the following link: xxxxx.
 
 More details are available in the documentation: [DOCS.md](https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md).
 
