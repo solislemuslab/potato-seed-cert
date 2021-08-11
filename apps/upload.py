@@ -64,7 +64,7 @@ card_content = [
                 multiple=True
             ),
             html.P(
-                "Please choose a csv/xlsx/txt file from your device",
+                "Please choose a csv/xlsx/txt file from your device. The four tabs below will show a summary of the database and potential errors to address prior to data analysis and visualization.",
                 className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
             ),
 

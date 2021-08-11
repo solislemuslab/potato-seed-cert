@@ -25,7 +25,7 @@ navbar = dbc.NavbarSimple(
         #     label="More",
         # ),
     ],
-    brand="Wisconsin Seed Potato",
+    brand="Wisconsin Seed Potato Certification Program",
     brand_href="#",
     color="dark",
     dark=True,
