@@ -79,7 +79,7 @@ LEFT_COLUMN = dbc.Jumbotron(
         html.Hr(className="my-2"),
         dbc.FormGroup(
             [
-                dbc.Label("Select Inspection Season"),
+                dbc.Label("Inspection"),
                 # html.P(
                 #             "(Lower is faster. Higher is more precise)",
                 #             style={"fontSize": 10, "font-weight": "lighter"},
@@ -94,7 +94,7 @@ LEFT_COLUMN = dbc.Jumbotron(
             ]),
         dbc.FormGroup(
             [
-                dbc.Label("Select Disease Type"),
+                dbc.Label("Disease"),
                 dcc.Dropdown(
                     id="disease_type",
                     options=[
@@ -106,7 +106,7 @@ LEFT_COLUMN = dbc.Jumbotron(
             ]),
         dbc.FormGroup(
             [
-                dbc.Label("Select State"),
+                dbc.Label("State"),
                 dcc.Dropdown(
                     id="state_type",
                     # options=[
@@ -116,7 +116,7 @@ LEFT_COLUMN = dbc.Jumbotron(
             ]),
         dbc.FormGroup(
             [
-                dbc.Label("Select Potato Variety"),
+                dbc.Label("Variety"),
                 dcc.Dropdown(
                     id="disease_potato_variety",
                     # options=[
@@ -155,7 +155,7 @@ def dropdown_option(data):
 
 
 RIGHT_PLOT = [
-    dbc.CardHeader(html.H5("Prevalent Disease")),
+    dbc.CardHeader(html.H5("Disease Prevalence")),
     dbc.CardBody(
         [
             dcc.Loading(

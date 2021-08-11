@@ -37,11 +37,11 @@ category = ["S_STATE","VARIETY","S_G"]
 
 LEFT_COLUMN = dbc.Jumbotron(
     [
-        html.H4(children="Select bank & dataset size", className="display-5"),
+        html.H4(children="Data Selection", className="display-5"),
         html.Hr(className="my-2"),
         dbc.FormGroup(
                         [
-                            dbc.Label("Season"),
+                            dbc.Label("Inspection"),
                             dcc.Dropdown(
                                 id="season_inspection_vareity",
                                 options=[
@@ -104,7 +104,7 @@ def left_column_dropdown(data):
     return options, value
 
 RIGHT_PLOT = [
-    dbc.CardHeader(html.H5("Sensitive/tolerant variety")),
+    dbc.CardHeader(html.H5("Disease by variety")),
     dbc.CardBody(
         [
             dcc.Loading(

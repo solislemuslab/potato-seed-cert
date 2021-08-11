@@ -144,7 +144,7 @@ state_comparison_layout = html.Div(
                     width={"size": 8, "offset": 1})
                 ]),
         html.P(
-            "Note: 1μm=1×10^(-6）m，  1nm=1×10^(-9）m",
+            "Note: μ=1×10^(-6)，n=1×10^(-9)",
             className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
         ),
     ],
