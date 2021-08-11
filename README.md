@@ -8,50 +8,9 @@ This is a bioinformatics online dashboard for the data analysis and data visuali
 
 More details are available in the documentation: [DOCS.md](https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md).
 
-## Folder Structure 
-```
-potato-seed-cert/                    
-├── apps/                          
-│   ├── acres.py                    
-│   ├── data_visualization.py       
-│   ├── layout.py                   
-│   ├── navbar.py                   
-│   ├── prevalent_disease.py        
-│   ├── state_comparison.py         
-│   ├── statistical_test.py         
-│   ├── upload.py                   
-│   ├── variety.py                  
-│   └── sub-folder/   
-├── assets/                  
-│   ├── tabs.css                                
-│   └── download.png
-├── .gitignore
-├── Index.py  
-├── README.md                                                                  
-├── app.py   
-├── notes.md 
-├── requirements.txt                
+More details on the folder structure can be found on the contributing file: [CONTRIBUTING.md](https://github.com/solislemuslab/potato-seed-cert/blob/master/CONTRIBUTING.md).
 
-```
-
-* ```apps``` which contains the core files for all tabs
-    * ```acres.py:``` plot the rejected acre by varieties and growers with bar chart                   
-    * ```data_visualization.py:``` collect all plots under tabs      
-    * ```layout.py:``` layout template for the sidebar                 
-    * ```navbar.py:``` navigation bar on the top of the page                   
-    * ```prevalent_disease.py:``` plot the prevalent disease over time with line plot       
-    * ```state_comparison.py:``` compare disease rate across various diseases with parallel coordinated plots     
-    * ```statistical_test.py:``` implement two statitical tests to check the correlation         
-    * ```upload.py:``` upload data, data validation (missing value and string similarity check)             
-    * ```variety.py:``` plot the sensitive and tolerant varieity 
-* ```assets``` which contains the css files and images
-    * ```tabs.css:``` tabs outlook in the data import section
-    * ```download.img:``` the image attached to download button
-* ```Index.py:``` loads different apps on different urls links
-* ```app.py:``` core app definition, CSS loading, import and attach layout
-* ```notes.md:``` discussion notes with Renee
-* ```requirements.txt:``` requirements to run the code
- 
+While we recommend the use of the dashboard via the online link, we present below the steps to run the dashboard locally.
 
 ## Steps to run this website locally
 Users with strong programming skills might like to modify the existing code and run a version of the website locally.
@@ -136,10 +95,10 @@ python3 Index.py
 # Contributions
 
 Users interested in expanding functionalities in Potato-Seed-Cert are welcome to do so.
-See details on how to contribute in [CONTRIBUTING.md](https://github.com/solislemuslab/potato-seed-cert/blob/master/CONTRIBUTING.md)
+See details on how to contribute in [CONTRIBUTING.md](https://github.com/solislemuslab/potato-seed-cert/blob/master/CONTRIBUTING.md).
 
 # License
-Potato-Seed-Cert is licensed under the [GNU General Public ](https://www.gnu.org/licenses/) licence. &copy; SolisLemus lab projects (2021)
+`Potato-Seed-Dashboard` is licensed under the [GNU General Public ](https://www.gnu.org/licenses/) licence. &copy; SolisLemus lab projects (2021).
 
 # Feedback, issues and questions
 

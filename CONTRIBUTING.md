@@ -1,5 +1,49 @@
-# Contributing to Potato-Seed-Cert
+# Contributing to Potato-Seed-Dashboard
 The following guidelines are designed for contributors to Potato-Seed-Cert. 
+
+## Folder Structure 
+```
+potato-seed-cert/                    
+├── apps/                          
+│   ├── acres.py                    
+│   ├── data_visualization.py       
+│   ├── layout.py                   
+│   ├── navbar.py                   
+│   ├── prevalent_disease.py        
+│   ├── state_comparison.py         
+│   ├── statistical_test.py         
+│   ├── upload.py                   
+│   ├── variety.py                  
+│   └── sub-folder/   
+├── assets/                  
+│   ├── tabs.css                                
+│   └── download.png
+├── .gitignore
+├── Index.py  
+├── README.md                                                                  
+├── app.py   
+├── notes.md 
+├── requirements.txt                
+
+```
+
+* ```apps``` which contains the core files for all tabs
+    * ```acres.py:``` plot the rejected acre by varieties and growers with bar chart                   
+    * ```data_visualization.py:``` collect all plots under tabs      
+    * ```layout.py:``` layout template for the sidebar                 
+    * ```navbar.py:``` navigation bar on the top of the page                   
+    * ```prevalent_disease.py:``` plot the prevalent disease over time with line plot       
+    * ```state_comparison.py:``` compare disease rate across various diseases with parallel coordinated plots     
+    * ```statistical_test.py:``` implement two statitical tests to check the correlation         
+    * ```upload.py:``` upload data, data validation (missing value and string similarity check)             
+    * ```variety.py:``` plot the sensitive and tolerant varieity 
+* ```assets``` which contains the css files and images
+    * ```tabs.css:``` tabs outlook in the data import section
+    * ```download.img:``` the image attached to download button
+* ```Index.py:``` loads different apps on different urls links
+* ```app.py:``` core app definition, CSS loading, import and attach layout
+* ```notes.md:``` discussion notes with Renee
+* ```requirements.txt:``` requirements to run the code
 
 ## Reporting Issues
 
