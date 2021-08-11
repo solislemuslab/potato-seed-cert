@@ -94,7 +94,7 @@ python3 Index.py
 
 # Contributions
 
-Users interested in expanding functionalities in Potato-Seed-Cert are welcome to do so.
+Users interested in expanding functionalities in `Potato-Seed-Dashboard` are welcome to do so.
 See details on how to contribute in [CONTRIBUTING.md](https://github.com/solislemuslab/potato-seed-cert/blob/master/CONTRIBUTING.md).
 
 # License

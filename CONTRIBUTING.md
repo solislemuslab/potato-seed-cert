@@ -51,7 +51,7 @@ For reporting a bug or a failed function or requesting a new feature, you can si
 
 ## Contributing Code
 
-To make contributions to Potato-Seed-Cert, you need to set up your [GitHub](https://github.com) 
+To make contributions to Potato-Seed-Dashboard, you need to set up your [GitHub](https://github.com) 
 account if you do not have and sign in, and request your change(s) or contribution(s) via 
 a pull request against the ``development``
 branch of the [Potato-Seed-Cert repository](https://github.com/solislemuslab/potato-seed-cert). 
