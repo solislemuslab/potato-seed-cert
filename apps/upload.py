@@ -64,7 +64,7 @@ card_content = [
                 multiple=True
             ),
             html.P(
-                "Please choose a csv/xlsx/txt file from your device. The four tabs below will show a summary of the database and potential errors to address prior to data analysis and visualization. Note that clicking on a given tab might take a couple of second to load.",
+                "Please choose a csv/xlsx/txt file from your device. The four tabs below will show a summary of the database and potential errors to address prior to data analysis and visualization. Note that clicking on a given tab might take a couple of seconds to load.",
                 className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
             ),
 
@@ -230,7 +230,7 @@ def render_content(tab, contents, filename):
                 ),
                 html.Br(),
                 html.P(
-                    "Figure on top represents the location of errors in the database: x-axis represents the row index, y-axis represents the column name and the black rectangles corresponds to errors.",
+                    "Figure on top represents the location of errors in the database: x-axis represents the row index, y-axis represents the column name and the black rectangles corresponds to errors. Figure on bottom represents the same figure, but with missingness.",
                     className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
                 ),
                 html.P(
@@ -309,7 +309,7 @@ def render_content(tab, contents, filename):
                                 )
                             ),
                             html.P(
-                                "If you want to replace the error message with the correct one, please type the error message in the first box and the correct one in the second box",
+                                "Table above shows the potential errors found for a given column name (e.g. VARIETY). Each row represents a potential error. The first two columns correspond to the summer and winter variable, and the third column corresponds to the jaro distance which measures how similar the entries are. If you want to replace one entry with the correct one, please type the erroneous entry in the first box below and the correct one in the second box. At the bottom, you will find the `Details of errors` which is a subset of the database with errors. You can download this subset database to inspect with the Export button.",
                                 className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px'}
                             ),
                             html.Br(),
@@ -318,14 +318,14 @@ def render_content(tab, contents, filename):
                                     dbc.Col(
                                         dbc.FormGroup(
                                             [
-                                                dbc.Label("Error message"),
+                                                dbc.Label("Erroneous entry"),
                                                 dbc.Input(
                                                     id="error_input", placeholder="Type the value that should be replaced", type="text"),
                                             ]), ),
                                     dbc.Col(
                                         dbc.FormGroup(
                                             [
-                                                dbc.Label("Correct message"),
+                                                dbc.Label("Correct entry"),
                                                 dbc.Input(
                                                     id="correct_input", placeholder="Type the correct one", type="text"),
                                             ]), ),
@@ -670,7 +670,7 @@ def missing_structure(data, n_clicks):
 ])
 def error_table(nclicks):
     if nclicks == None or nclicks % 2 == 0:
-        return ["FILL MISSINGNESS"]
+        return ["FIX ERRORS"]
     else:
         return ["Undo"]
 
@@ -682,7 +682,7 @@ def error_table(nclicks):
 ])
 def error_table2(nclicks):
     if nclicks == None or nclicks % 2 == 0:
-        return ["FILL MISSINGNESS"]
+        return ["FIX ERRORS"]
     else:
         return ["Undo"]
 
