@@ -114,9 +114,9 @@ homepage = html.Div([
                            id="Pchi_square-open", className="mr-auto"),
                 dbc.Modal(
                     [
-                        dbc.ModalHeader("Person's Chi-Square Test"),
+                        dbc.ModalHeader("Pearson's Chi-Square Test"),
                         dbc.ModalBody(
-                            "This is the content of the Person's Chi-Square Test"),
+                            "The Pearson's chi-square test tests whether there is any association between two factors to be selected by the user: Disease and Source variable (e.g. source grower S_G). The user can filter the data based on State, Year and Grower and select a significance threshold for the test (usually 0.05). The observation table will display the counts of the two factors with the first column corresponding to the levels of the Disease variable and all other columns corresponding to the levels of the source variable. At the bottom, the chi-square test result will select which hypothesis is preferred by the data (null hypothesis of independence or alternative hypothesis of association), the chi-square score, degrees of freedom (df) and p-value. If the p-value is less than the selected significance level, then the null hypothesis is rejected."),
                         dbc.ModalFooter(
                             dbc.Button("Close", id="Pchi_square-close",
                                        className="ml-auto")
@@ -231,7 +231,7 @@ homepage = html.Div([
     html.Hr(style=LINEBREAK_STYLE),
     dbc.Row([
         dbc.Col(
-            html.H5("Anova Test:"),
+            html.H5("ANOVA Test:"),
             width={"size": 4}
         ),
         dbc.Col(
@@ -241,7 +241,7 @@ homepage = html.Div([
                 dbc.Modal(
                     [
                         dbc.ModalHeader("ANOVA Test"),
-                        dbc.ModalBody("This is the content of the ANOVA Test"),
+                        dbc.ModalBody("The ANOVA test tests whether there are differences in the disease prevalence means for the factors in the source variable. The user selects Disease and Source variable (e.g. source grower S_G). The user can filter the data based on State, Year and Grower and select a significance threshold for the test (usually 0.05). The ANOVA test result will select which hypothesis is preferred by the data (null hypothesis of independence or alternative hypothesis of association), the F score, degrees of freedom (df) and p-value. If the p-value is less than the selected significance level, then the null hypothesis is rejected."),
                         dbc.ModalFooter(
                             dbc.Button("Close", id="anova-close",
                                        className="ml-auto")
