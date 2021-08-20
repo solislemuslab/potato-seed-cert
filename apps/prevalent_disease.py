@@ -170,7 +170,7 @@ RIGHT_PLOT = [
                             [
                                 dbc.ModalHeader("Disease Prevalence graph"),
                                 dbc.ModalBody(
-                                    "Select: Inspection, Disease (multiple choices can be selected simultaneously), State and Potato Variety, and the plot displays a line with Year in the x-axis and prevalence of disease (%) in the y-axis. Different line colors correspond to different diseases (if multiple are selected)."),
+                                    "The user selects Inspection, Disease (multiple choices can be selected simultaneously), State and Potato Variety, and the plot displays a line with year in the x-axis and prevalence of disease (%) in the y-axis. Different line colors correspond to different diseases (if multiple are selected)."),
                                 dbc.ModalFooter(
                                     dbc.Button("Close", id="Pchi_square-close",
                                                className="ml-auto")
