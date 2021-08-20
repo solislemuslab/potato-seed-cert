@@ -56,22 +56,36 @@ TOP_ROW = dbc.Jumbotron(
         ]),
         # html.H4(children="Data Selection", className="display-5"),
         html.Hr(className="my-2"),
-        dbc.Row([dbc.Col(dcc.Dropdown(
-            id='acres_rejection',
-            # options=[{'label': i, 'value': i}
-            #          for i in sorted(df["LNAME"].dropna().unique())],
-            # value=df["LNAME"].dropna().unique()[:10],
-            multi=True,
-            style={'width': '70%', 'margin-left': '5px'}
-        )),
-            dbc.Col(dcc.Dropdown(
-                id='acres_rejection_variety',
-                # options=[{'label': i, 'value': i}
-                #          for i in sorted(df["VARIETY"].dropna().unique())],
-                # value=df["VARIETY"].dropna().unique()[:10],
-                multi=True,
-                style={'width': '70%', 'margin-left': '5px'}
-            )),
+        dbc.Row([
+            dbc.Col(
+                dbc.FormGroup(
+                    [
+                        dbc.Label("Potato Lot"),
+                        dcc.Dropdown(
+                            id='acres_rejection',
+                            # options=[{'label': i, 'value': i}
+                            #          for i in sorted(df["LNAME"].dropna().unique())],
+                            # value=df["LNAME"].dropna().unique()[:10],
+                            multi=True,
+                            style={'width': '70%', 'margin-left': '5px'}
+                        )
+                    ]),
+            ),
+            dbc.Col(
+                dbc.FormGroup(
+                    [
+                        dbc.Label("Potato Vareity"),
+                        dcc.Dropdown(
+                            id='acres_rejection_variety',
+                            # options=[{'label': i, 'value': i}
+                            #          for i in sorted(df["VARIETY"].dropna().unique())],
+                            # value=df["VARIETY"].dropna().unique()[:10],
+                            multi=True,
+                            style={'width': '70%', 'margin-left': '5px'}
+                        )
+                    ]),
+
+            ),
         ]),
     ]
 )
