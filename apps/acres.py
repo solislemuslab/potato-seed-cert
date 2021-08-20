@@ -41,9 +41,9 @@ TOP_ROW = dbc.Jumbotron(
                                id="Pchi_square-open", className="mr-auto"),
                     dbc.Modal(
                         [
-                            dbc.ModalHeader("Person's Chi-Square Test"),
+                            dbc.ModalHeader("Percentage of rejection lots"),
                             dbc.ModalBody(
-                                "This is the content of the Person's Chi-Square Test"),
+                                "The user selects the Lot Name for the figure on the left and the Potato Variety for the figure on the right. In both figures, we show the percentage of rejection acres for both summer and winter inspections (different bar color)."),
                             dbc.ModalFooter(
                                 dbc.Button("Close", id="Pchi_square-close",
                                            className="ml-auto")
@@ -60,7 +60,7 @@ TOP_ROW = dbc.Jumbotron(
             dbc.Col(
                 dbc.FormGroup(
                     [
-                        dbc.Label("Potato Lot"),
+                        dbc.Label("Lot Name"),
                         dcc.Dropdown(
                             id='acres_rejection',
                             # options=[{'label': i, 'value': i}
@@ -74,7 +74,7 @@ TOP_ROW = dbc.Jumbotron(
             dbc.Col(
                 dbc.FormGroup(
                     [
-                        dbc.Label("Potato Vareity"),
+                        dbc.Label("Potato Variety"),
                         dcc.Dropdown(
                             id='acres_rejection_variety',
                             # options=[{'label': i, 'value': i}

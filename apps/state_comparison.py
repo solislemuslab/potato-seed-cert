@@ -110,7 +110,7 @@ RIGHT_PLOT = [
                         [
                             dbc.ModalHeader("State Comparison Plot"),
                             dbc.ModalBody(
-                                "The user selects State (multiple choices can be selected simultaneously), Inspection and Year, and the plot displays different y-axes (one per disease) with the disease prevalence. Different colored lines correspond to different states. Below we displaye a table with each selected state per row with the disease prevalence of all diseases as well as the color of the line in the last column."),
+                                "The user selects State (multiple choices can be selected simultaneously), Inspection and Year, and the plot displays different y-axes (one per disease) with the disease prevalence. Different colored lines correspond to different states. Below we display a table with each selected state per row with the disease prevalence of all diseases as well as the color of the line in the last column."),
                             dbc.ModalFooter(
                                 dbc.Button("Close", id="Pchi_square-close",
                                            className="ml-auto")
