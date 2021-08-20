@@ -41,7 +41,7 @@ TOP_ROW = dbc.Jumbotron(
                                id="Pchi_square-open", className="mr-auto"),
                     dbc.Modal(
                         [
-                            dbc.ModalHeader("Percentage of rejection lots"),
+                            dbc.ModalHeader("Percentage of rejected lots"),
                             dbc.ModalBody(
                                 "The user selects the Lot Name for the figure on the left and the Potato Variety for the figure on the right. In both figures, we show the percentage of rejection acres for both summer and winter inspections (different bar color)."),
                             dbc.ModalFooter(

@@ -116,9 +116,9 @@ RIGHT_PLOT = [
                                id="Pchi_square-open", className="mr-auto"),
                     dbc.Modal(
                         [
-                            dbc.ModalHeader("Person's Chi-Square Test"),
+                            dbc.ModalHeader("Disease Prevalence by Variety"),
                             dbc.ModalBody(
-                                "This is the content of the Person's Chi-Square Test"),
+                                "The user selects Inspection, Disease, Variety (multiple choices can be selected simultaneously) and Year and the plot displays the disease prevalence in the y-axis and the potato variety in the x-axis."),
                             dbc.ModalFooter(
                                 dbc.Button("Close", id="Pchi_square-close",
                                            className="ml-auto")
