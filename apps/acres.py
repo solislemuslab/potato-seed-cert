@@ -27,28 +27,76 @@ category = ["S_STATE", "VARIETY", "S_G"]
 # def find_virus_columns(virus):
 #     return [x for x in df.columns.tolist() if
 #             re.compile(r'[SR1|SR2|winter]_P*{virus}V*$'.format(virus=virus)).search(x)]
+TOP_ROW = dbc.Jumbotron(
+    [
+        dbc.Row([
+            dbc.Col(
+                html.H5("Data Selection"),
+                width={"size": 4}
+            ),
 
+            dbc.Col(
+                [
+                    dbc.Button("Help", color="primary",
+                               id="Pchi_square-open", className="mr-auto"),
+                    dbc.Modal(
+                        [
+                            dbc.ModalHeader("Person's Chi-Square Test"),
+                            dbc.ModalBody(
+                                "This is the content of the Person's Chi-Square Test"),
+                            dbc.ModalFooter(
+                                dbc.Button("Close", id="Pchi_square-close",
+                                           className="ml-auto")
+                            ),
+                        ],
+                        id="Pchi_square-message",
+                    )],
+                width={"size": 2, "offset": 6}
+            )
+        ]),
+        # html.H4(children="Data Selection", className="display-5"),
+        html.Hr(className="my-2"),
+        dbc.Row([dbc.Col(dcc.Dropdown(
+            id='acres_rejection',
+            # options=[{'label': i, 'value': i}
+            #          for i in sorted(df["LNAME"].dropna().unique())],
+            # value=df["LNAME"].dropna().unique()[:10],
+            multi=True,
+            style={'width': '70%', 'margin-left': '5px'}
+        )),
+            dbc.Col(dcc.Dropdown(
+                id='acres_rejection_variety',
+                # options=[{'label': i, 'value': i}
+                #          for i in sorted(df["VARIETY"].dropna().unique())],
+                # value=df["VARIETY"].dropna().unique()[:10],
+                multi=True,
+                style={'width': '70%', 'margin-left': '5px'}
+            )),
+        ]),
+    ]
+)
 
 acres_layout = html.Div([
     html.Br(),
 
-    dbc.Row([dbc.Col(dcc.Dropdown(
-        id='acres_rejection',
-        # options=[{'label': i, 'value': i}
-        #          for i in sorted(df["LNAME"].dropna().unique())],
-        # value=df["LNAME"].dropna().unique()[:10],
-        multi=True,
-        style={'width': '70%', 'margin-left': '5px'}
-    )),
-        dbc.Col(dcc.Dropdown(
-            id='acres_rejection_variety',
-            # options=[{'label': i, 'value': i}
-            #          for i in sorted(df["VARIETY"].dropna().unique())],
-            # value=df["VARIETY"].dropna().unique()[:10],
-            multi=True,
-            style={'width': '70%', 'margin-left': '5px'}
-        )),
-    ]),
+    # dbc.Row([dbc.Col(dcc.Dropdown(
+    #    id='acres_rejection',
+    # options=[{'label': i, 'value': i}
+    #          for i in sorted(df["LNAME"].dropna().unique())],
+    # value=df["LNAME"].dropna().unique()[:10],
+    #    multi=True,
+    #    style={'width': '70%', 'margin-left': '5px'}
+    # )),
+    #    dbc.Col(dcc.Dropdown(
+    #        id='acres_rejection_variety',
+    # options=[{'label': i, 'value': i}
+    #          for i in sorted(df["VARIETY"].dropna().unique())],
+    # value=df["VARIETY"].dropna().unique()[:10],
+    #        multi=True,
+    #        style={'width': '70%', 'margin-left': '5px'}
+    #    )),
+    # ]),
+    TOP_ROW,
     dbc.Row([
             dbc.Col(dcc.Graph(id='Acres_rej_bar'), width=6),
             #dbc.Col(dcc.Graph(id='Acres_rej_segment'), width=6),
@@ -56,6 +104,7 @@ acres_layout = html.Div([
             ]),
 
 ])
+
 
 @app.callback(
     [Output("acres_rejection", "options"),
@@ -72,14 +121,15 @@ def acre_rejection(data):
         df = pd.DataFrame(data)
         df = df.sort_values(by=['AC_REJ'], ascending=False)
     acre_options = [{'label': i, 'value': i}
-               for i in sorted(df["LNAME"].dropna().unique())]
+                    for i in sorted(df["LNAME"].dropna().unique())]
     acre_value = df["LNAME"].dropna().unique()[:10]
 
     variety_options = [{'label': i, 'value': i}
-               for i in sorted(df["VARIETY"].dropna().unique())]
+                       for i in sorted(df["VARIETY"].dropna().unique())]
     variety_value = df["VARIETY"].dropna().unique()[:10]
 
     return acre_options, acre_value, variety_options, variety_value
+
 
 @app.callback(
     Output("Acres_rej_bar", "figure"),

@@ -95,7 +95,33 @@ def dropdown_option(data):
     return options
 
 RIGHT_PLOT = [
-    dbc.CardHeader(html.H5("State comparison")),
+    dbc.CardHeader(
+        dbc.Row([
+            dbc.Col(
+                html.H5("State comparison"),
+                width={"size": 4}
+            ),
+
+            dbc.Col(
+                [
+                    dbc.Button("Help", color="primary",
+                               id="Pchi_square-open", className="mr-auto"),
+                    dbc.Modal(
+                        [
+                            dbc.ModalHeader("Person's Chi-Square Test"),
+                            dbc.ModalBody(
+                                "This is the content of the Person's Chi-Square Test"),
+                            dbc.ModalFooter(
+                                dbc.Button("Close", id="Pchi_square-close",
+                                           className="ml-auto")
+                            ),
+                        ],
+                        id="Pchi_square-message",
+                    )],
+                width={"size": 2, "offset": 6}
+            )
+        ]),
+    ),
     dbc.CardBody(
         [
             dcc.Loading(

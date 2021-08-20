@@ -104,7 +104,32 @@ def left_column_dropdown(data):
     return options, value
 
 RIGHT_PLOT = [
-    dbc.CardHeader(html.H5("Disease by variety")),
+    dbc.CardHeader(
+        dbc.Row([
+            dbc.Col(
+                html.H5("Disease by variety"),
+                width={"size": 4}
+            ),
+            dbc.Col(
+                [
+                    dbc.Button("Help", color="primary",
+                               id="Pchi_square-open", className="mr-auto"),
+                    dbc.Modal(
+                        [
+                            dbc.ModalHeader("Person's Chi-Square Test"),
+                            dbc.ModalBody(
+                                "This is the content of the Person's Chi-Square Test"),
+                            dbc.ModalFooter(
+                                dbc.Button("Close", id="Pchi_square-close",
+                                           className="ml-auto")
+                            ),
+                        ],
+                        id="Pchi_square-message",
+                    )],
+                width={"size": 2, "offset": 6}
+            )
+        ]),
+        ),
     dbc.CardBody(
         [
             dcc.Loading(
@@ -128,11 +153,17 @@ RIGHT_PLOT = [
 
 variety_layout = html.Div(
         [
-        dbc.Row([
-            dbc.Col(LEFT_COLUMN, md = 4 ,style={"height": "100%"},),
-            dbc.Col(
-                dbc.Card(RIGHT_PLOT), md=8, style={"height": "100%"},)
-        ], style={"marginTop": 30}, align="center", ),])
+            dbc.Row([
+                dbc.Col(LEFT_COLUMN, md = 4 ,style={"height": "100%"},),
+                dbc.Col(
+                    dbc.Card(RIGHT_PLOT), md=8, style={"height": "100%"},)
+            ], style={"marginTop": 30}, align="center", ),
+            html.P(
+                "Note: μ=1×10^(-6)",
+                className="font-weight-lighter",
+                style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
+            ),
+        ])
 
 
 @app.callback(

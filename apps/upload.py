@@ -359,7 +359,6 @@ def render_content(tab, contents, filename):
                                         value="SNAME"
                                     ), style={"width": "30%"}, ),
                                     html.Br(),
-
                                     dash_table.DataTable(
                                         id='problematic_table',
                                         virtualization=True,
@@ -384,11 +383,11 @@ def render_content(tab, contents, filename):
                                         }],
                                     ),
                                     html.Br(),
-                                    dbc.Button([
-                                        html.A(id='download-link',
-                                               children='Download File'),
-                                    ],
-                                        outline=True, color="warning", className="mr-1")
+                                    # dbc.Button([
+                                    #     html.A(id='download-link',
+                                    #            children='Download File'),
+                                    # ],
+                                    #     outline=True, color="warning", className="mr-1")
                                 ]
                             ),
                         ),
