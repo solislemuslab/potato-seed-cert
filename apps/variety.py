@@ -37,11 +37,11 @@ category = ["S_STATE","VARIETY","S_G"]
 
 LEFT_COLUMN = dbc.Jumbotron(
     [
-        html.H4(children="Select bank & dataset size", className="display-5"),
+        html.H4(children="Data Selection", className="display-5"),
         html.Hr(className="my-2"),
         dbc.FormGroup(
                         [
-                            dbc.Label("Season"),
+                            dbc.Label("Inspection"),
                             dcc.Dropdown(
                                 id="season_inspection_vareity",
                                 options=[
@@ -104,7 +104,32 @@ def left_column_dropdown(data):
     return options, value
 
 RIGHT_PLOT = [
-    dbc.CardHeader(html.H5("Sensitive/tolerant variety")),
+    dbc.CardHeader(
+        dbc.Row([
+            dbc.Col(
+                html.H5("Disease by variety"),
+                width={"size": 4}
+            ),
+            dbc.Col(
+                [
+                    dbc.Button("Help", color="primary",
+                               id="Pchi_square-open", className="mr-auto"),
+                    dbc.Modal(
+                        [
+                            dbc.ModalHeader("Disease Prevalence by Variety"),
+                            dbc.ModalBody(
+                                "The user selects Inspection, Disease, Variety (multiple choices can be selected simultaneously) and Year and the plot displays the disease prevalence in the y-axis and the potato variety in the x-axis."),
+                            dbc.ModalFooter(
+                                dbc.Button("Close", id="Pchi_square-close",
+                                           className="ml-auto")
+                            ),
+                        ],
+                        id="Pchi_square-message",
+                    )],
+                width={"size": 2, "offset": 6}
+            )
+        ]),
+        ),
     dbc.CardBody(
         [
             dcc.Loading(
@@ -128,11 +153,17 @@ RIGHT_PLOT = [
 
 variety_layout = html.Div(
         [
-        dbc.Row([
-            dbc.Col(LEFT_COLUMN, md = 4 ,style={"height": "100%"},),
-            dbc.Col(
-                dbc.Card(RIGHT_PLOT), md=8, style={"height": "100%"},)
-        ], style={"marginTop": 30}, align="center", ),])
+            dbc.Row([
+                dbc.Col(LEFT_COLUMN, md = 4 ,style={"height": "100%"},),
+                dbc.Col(
+                    dbc.Card(RIGHT_PLOT), md=8, style={"height": "100%"},)
+            ], style={"marginTop": 30}, align="center", ),
+            html.P(
+                "Note: μ=1×10^(-6)",
+                className="font-weight-lighter",
+                style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
+            ),
+        ])
 
 
 @app.callback(
@@ -205,4 +236,3 @@ def sensitivity_graph(season, disease, variety, year, data):
 
 
     return fig
-

@@ -64,7 +64,7 @@ card_content = [
                 multiple=True
             ),
             html.P(
-                "Please choose a csv/xlsx/txt file from your device",
+                "Please choose a csv/xlsx/txt file from your device. The four tabs below will show a summary of the database and potential errors to address prior to data analysis and visualization. Note that clicking on a given tab might take a couple of seconds to load.",
                 className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
             ),
 
@@ -202,16 +202,12 @@ def render_content(tab, contents, filename):
                         'minWidth': 95, 'maxWidth': 95, 'width': 95
                     }
                 ),
-                # html.P(
-                #    "Note: The ' Number of errors ' contains both wrong value and missing value.",
-                #    className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
-                # ),
                 html.P(
-                    "Note: 'NUMBER OF ERRORS' contains mismatch between winter and summer column, as well as missing value.",
+                    "Column Name corresponds to the variable name with identified errors (mismatches between winter and summer entries or missing value). Number of errors counts the number of mismatches between winter/summer and number of missing values. Number of missing values only counts the number of missing entries in this column. Index of errors shows the row indeces where the errors are found for this column. The button below will fill the missing data with the information from another inspection (winter/summer). Note that these checks only refer to columns that should be the same in both winter and summer (e.g. SNAME).",
                     className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
                 ),
                 html.P(
-                    "Please click the button below if you want to fill all missing data",
+                    "Please click the button below if you want to fill all missing entries",
                     className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
                 ),
                 dbc.Button(children="fix me",  color="primary",
@@ -234,7 +230,11 @@ def render_content(tab, contents, filename):
                 ),
                 html.Br(),
                 html.P(
-                    "Please click the button below if you want to fill all missing data",
+                    "Figure on top represents the location of errors in the database: x-axis represents the row index, y-axis represents the column name and the black rectangles corresponds to errors. Figure on bottom represents the same figure, but with missingness.",
+                    className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
+                ),
+                html.P(
+                    "Please click the button below if you want to fill all missing entries",
                     className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
                 ),
                 dbc.Button(children="fix me",  color="primary",
@@ -309,7 +309,7 @@ def render_content(tab, contents, filename):
                                 )
                             ),
                             html.P(
-                                "If you want to replace the error message with the correct one, please type the error message in the first box and the correct one in the second box",
+                                "Table above shows the potential errors found for a given column name (e.g. VARIETY). Each row represents a potential error. The first two columns correspond to the summer and winter variable, and the third column corresponds to the jaro distance which measures how similar the entries are. If you want to replace one entry with the correct one, please type the erroneous entry in the first box below and the correct one in the second box. At the bottom, you will find the `Details of errors` which is a subset of the database with errors. You can download this subset database to inspect with the Export button.",
                                 className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px'}
                             ),
                             html.Br(),
@@ -318,14 +318,14 @@ def render_content(tab, contents, filename):
                                     dbc.Col(
                                         dbc.FormGroup(
                                             [
-                                                dbc.Label("Error message"),
+                                                dbc.Label("Erroneous entry"),
                                                 dbc.Input(
                                                     id="error_input", placeholder="Type the value that should be replaced", type="text"),
                                             ]), ),
                                     dbc.Col(
                                         dbc.FormGroup(
                                             [
-                                                dbc.Label("Correct message"),
+                                                dbc.Label("Correct entry"),
                                                 dbc.Input(
                                                     id="correct_input", placeholder="Type the correct one", type="text"),
                                             ]), ),
@@ -359,7 +359,6 @@ def render_content(tab, contents, filename):
                                         value="SNAME"
                                     ), style={"width": "30%"}, ),
                                     html.Br(),
-
                                     dash_table.DataTable(
                                         id='problematic_table',
                                         virtualization=True,
@@ -384,11 +383,11 @@ def render_content(tab, contents, filename):
                                         }],
                                     ),
                                     html.Br(),
-                                    dbc.Button([
-                                        html.A(id='download-link',
-                                               children='Download File'),
-                                    ],
-                                        outline=True, color="warning", className="mr-1")
+                                    # dbc.Button([
+                                    #     html.A(id='download-link',
+                                    #            children='Download File'),
+                                    # ],
+                                    #     outline=True, color="warning", className="mr-1")
                                 ]
                             ),
                         ),
@@ -540,7 +539,7 @@ def error_table(sort_by, data,  n_clicks):
         {'Column Name': summer_columns,
          'Number of errors': errors,
          'Number of missing values': missing_values,
-         'Index of errors': rows,
+         'Index of erros': rows,
          })
 
     data = error_df.to_dict('rows')
