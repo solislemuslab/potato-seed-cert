@@ -236,4 +236,3 @@ def sensitivity_graph(season, disease, variety, year, data):
 
 
     return fig
-
