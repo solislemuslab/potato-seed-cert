@@ -315,3 +315,4 @@ def prevalent_disease(season, diseases, state, variety, data):
     )
 
     return fig
+

@@ -18,7 +18,7 @@ import functools
 import re
 import plotly.graph_objects as go
 
-from apps import prevalent_disease, acres, navbar, variety, state_comparison, upload, statistical_test
+from apps import prevalent_disease, acres, navbar, variety, state_comparison, upload, statistical_test, faq
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 
@@ -86,12 +86,12 @@ LINEBREAK_STYLE = {
     'border': '1px solid white'
 }
 
-
-Statistical_Test = [
+Data_Import = [
     html.Li(
+        # use Row and Col components to position the chevrons
         dbc.Row(
             [
-                dbc.Col("Statistical Test", className='text-light'),
+                dbc.Col("Data Import", className='text-light'),
                 dbc.Col(
                     html.I(className="fas fa-chevron-right mr-3",  style={'color': 'white'}), width="auto"
                 ),
@@ -99,14 +99,15 @@ Statistical_Test = [
             className="my-1",
         ),
         style={"cursor": "pointer"},
-        id="submenu-2",
+        id="submenu-4",
     ),
+    # we use the Collapse component to hide and reveal the navigation links
     dbc.Collapse(
         [
-            dbc.NavLink("Statistical test", href="/stat-test",
+            dbc.NavLink("Data Import", href="/data-import",
                         className='text-light', active = "exact"),
         ],
-        id="submenu-2-collapse",
+        id="submenu-4-collapse",
     ),
     html.Br()
 ]
@@ -151,12 +152,11 @@ Visualization = [
     html.Br()
 ]
 
-Data_Import = [
+Statistical_Test = [
     html.Li(
-        # use Row and Col components to position the chevrons
         dbc.Row(
             [
-                dbc.Col("Data Import", className='text-light'),
+                dbc.Col("Statistical Test", className='text-light'),
                 dbc.Col(
                     html.I(className="fas fa-chevron-right mr-3",  style={'color': 'white'}), width="auto"
                 ),
@@ -164,15 +164,38 @@ Data_Import = [
             className="my-1",
         ),
         style={"cursor": "pointer"},
-        id="submenu-4",
+        id="submenu-2",
     ),
-    # we use the Collapse component to hide and reveal the navigation links
     dbc.Collapse(
         [
-            dbc.NavLink("Data Import", href="/data-import",
+            dbc.NavLink("Statistical test", href="/stat-test",
                         className='text-light', active = "exact"),
         ],
-        id="submenu-4-collapse",
+        id="submenu-2-collapse",
+    ),
+    html.Br()
+]
+
+GET_HELP = [
+    html.Li(
+        dbc.Row(
+            [
+                dbc.Col("Get help", className='text-light'),
+                dbc.Col(
+                    html.I(className="fas fa-chevron-right mr-3",  style={'color': 'white'}), width="auto"
+                ),
+            ],
+            className="my-1",
+        ),
+        style={"cursor": "pointer"},
+        id="submenu-3",
+    ),
+    dbc.Collapse(
+        [
+            dbc.NavLink("FAQ", href="/faq",
+                        className='text-light', active = "exact"),
+        ],
+        id="submenu-3-collapse",
     ),
     html.Br()
 ]
@@ -188,7 +211,8 @@ sidebar = html.Div(
         # ),
         dbc.Nav(Data_Import +
                 Visualization +
-                Statistical_Test,
+                Statistical_Test +
+                GET_HELP,
                 vertical=True,),
     ],
     style=SIDEBAR_STYLE,
@@ -287,6 +311,8 @@ def render_page_content(pathname):
         return html.P("No way! This is page 3.2!")
     elif pathname == "/stat-test":
         return statistical_test.homepage
+    elif pathname == "/faq":
+        return faq.homepage
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
         [
@@ -298,4 +324,4 @@ def render_page_content(pathname):
 
 
 if __name__ == "__main__":
-    app.run_server(port=8000, debug= False)
+    app.run_server(port=8000, debug= True)
