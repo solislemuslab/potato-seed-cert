@@ -27,7 +27,7 @@ homepage = dbc.Jumbotron(
             className="lead",
         ),
         html.P(
-            "A: You can check out the documentation (https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md). Also, check out this YouTube video."
+            "A: You can check out the documentation (https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md)."
         ),
         html.Hr(className="my-2"),
 
