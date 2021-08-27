@@ -22,21 +22,39 @@ homepage = dbc.Jumbotron(
     [
         html.H3("FAQ", className="display-5"),
         html.Br(),
+                html.P(
+            "Q: How can I learn to use the dashboard? ",
+            className="lead",
+        ),
+        html.P(
+            "A: You can check out the documentation (https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md). Also, check out this YouTube video."
+        ),
+        html.Hr(className="my-2"),
+
         html.P(
             "Q: How can I get help? ",
             className="lead",
         ),
         html.P(
-            "A: Check out the WI Fast Stats google user group where people post questions/answers. You can join to post questions: https://groups.google.com/g/wi-fast-stats "
+            "A: Make sure to check out the documentation (https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md). Also, check out the Potato Seed Dashboard google user group where people post questions/answers. You can join to post questions: https://groups.google.com/g/potato-seed-dashboard "
         ),
         html.Hr(className="my-2"),
 
         html.P(
-            "Q: I found a bug or error in the code, how can I report it?",
+            "Q: Is the Potato Seed Dashboard open-source? Where can I find the code?",
             className="lead",
         ),
         html.P(
-            "A: You should file an issue in the github repo: https://github.com/crsl4/fast-stats/issues",
+            "A: Yes, the Potato Seed Dashboard is open source and you can find all the code in the GitHub repository here: (https://github.com/solislemuslab/potato-seed-cert)."
+        ),
+        html.Hr(className="my-2"),
+
+        html.P(
+            "Q: I found a bug or error in the dashboard, how can I report it?",
+            className="lead",
+        ),
+        html.P(
+            "A: You should file an issue in the github repo: https://github.com/solislemuslab/potato-seed-cert/issues",
         ),
         html.Hr(className="my-2"),
 
@@ -45,26 +63,7 @@ homepage = dbc.Jumbotron(
             className="lead",
         ),
         html.P(
-            "A: Users feedback is very important to us! Please use this form"
-        ),
-        html.Hr(className="my-2"),
-
-        html.P(
-            "Q: If I use the website and web apps in my work, how do I cite them?",
-            className="lead",
-        ),
-        html.P(
-            "A: If you use the website or web apps in your work, we ask that you cite this paper"
-        ),
-        html.Hr(className="my-2"),
-
-        html.P(
-            "Q: Cool website! Is this a free template?",
-            className="lead",
-        ),
-        html.P(
-            'A: The design and development of the website is by "WebThemez" '
-            '(http://webthemez.com) who made it available under a Creative Commons Attribution 3.0 license.'
+            "A: Users feedback is very important to us! Please use this form: https://docs.google.com/forms/d/e/1FAIpQLSficG2nYBjuAoIuetYC-5CRm339ZEZ_-uewd_d_3nVeGFMXUA/viewform"
         ),
         html.Hr(className="my-2"),
 
