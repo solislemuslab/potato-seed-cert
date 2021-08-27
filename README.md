@@ -1,6 +1,6 @@
-# Bioinformatics Dashboard for the WI Potato and Vegetable Growers Association
+# Dashboard for the WI Potato and Vegetable Growers Association
 
-This is a bioinformatics online dashboard for the data analysis and data visualization of the certification database of the seed potato production.
+This is an online dashboard for the data analysis and data visualization of the certification database of the seed potato production.
 
 # Usage
 
