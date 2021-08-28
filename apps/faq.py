@@ -22,49 +22,70 @@ homepage = dbc.Jumbotron(
     [
         html.H3("FAQ", className="display-5"),
         html.Br(),
-                html.P(
+        html.P(
             "Q: How can I learn to use the dashboard? ",
             className="lead",
         ),
+        # html.P(
+        #    "A: You can check out the documentation (https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md)."
+        # ),
         html.P(
-            "A: You can check out the documentation (https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md)."
-        ),
+            ["A: You can check out the ",
+             html.A(children="document",
+                    href="https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md"),
+             "."
+             ]),
         html.Hr(className="my-2"),
 
         html.P(
             "Q: How can I get help? ",
             className="lead",
         ),
-        html.P(
-            "A: Make sure to check out the documentation (https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md). Also, check out the Potato Seed Dashboard google user group where people post questions/answers. You can join to post questions: https://groups.google.com/g/potato-seed-dashboard "
-        ),
+        # html.P(
+        #    "A: Make sure to check out the documentation (https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md). Also, check out the Potato Seed Dashboard google user group where people post questions/answers. You can join to post questions: https://groups.google.com/g/potato-seed-dashboard "
+        # ),
+        html.P([
+            "A: Make sure to check out the",
+            html.A(" documentation",
+                   href="https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md"),
+            ". Also, check out the Potato Seed Dashboard google user group where people post questions/answers. You can join ",
+            html.A("here", href="https://groups.google.com/g/potato-seed-dashboard"),
+            " to post questions."
+        ]),
         html.Hr(className="my-2"),
 
         html.P(
             "Q: Is the Potato Seed Dashboard open-source? Where can I find the code?",
             className="lead",
         ),
-        html.P(
-            "A: Yes, the Potato Seed Dashboard is open source and you can find all the code in the GitHub repository here: (https://github.com/solislemuslab/potato-seed-cert)."
-        ),
+        html.P([
+            "A: Yes, the Potato Seed Dashboard is open source and you can find all the code in the GitHub repository ",
+            html.A("here", href="https://github.com/solislemuslab/potato-seed-cert"),
+            "."
+        ]),
         html.Hr(className="my-2"),
 
         html.P(
             "Q: I found a bug or error in the dashboard, how can I report it?",
             className="lead",
         ),
-        html.P(
-            "A: You should file an issue in the github repo: https://github.com/solislemuslab/potato-seed-cert/issues",
-        ),
+        html.P([
+            "A: You should file an issue in the ",
+            html.A(
+                "github repo", href="https://github.com/solislemuslab/potato-seed-cert/issues"),
+            "."
+        ]),
         html.Hr(className="my-2"),
 
         html.P(
             "Q: How can I provide positive (or constructive) feedback?",
             className="lead",
         ),
-        html.P(
-            "A: Users feedback is very important to us! Please use this form: https://docs.google.com/forms/d/e/1FAIpQLSficG2nYBjuAoIuetYC-5CRm339ZEZ_-uewd_d_3nVeGFMXUA/viewform"
-        ),
+        html.P([
+            "A: Users feedback is very important to us! Please use the form ",
+            html.A("here", href="https://docs.google.com/forms/d/e/1FAIpQLSficG2nYBjuAoIuetYC-5CRm339ZEZ_-uewd_d_3nVeGFMXUA/viewform"),
+            "."
+        ]),
         html.Hr(className="my-2"),
 
     ]
