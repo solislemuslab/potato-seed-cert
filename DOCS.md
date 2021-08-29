@@ -13,13 +13,14 @@ The following shows the hierarchy of the website:
         - [Acre Rejection](#acre-rejection)
         - [Variety](#variety)
       - [Statistical Test](#statistical-test)
+      - [Get help](#get-help)
 - [Feedback](#feedback)
 
 
 
 
 ## Home Page
-The home page contains three sections: 1) "Data Import" for uploading files, 2) "Data Visualization" for creating plots, and 3) "Statistical Test" for fitting statistical models.
+The home page contains three sections: 1) "Data Import" for uploading files, 2) "Data Visualization" for creating plots, 3) "Statistical Test" for fitting statistical models, and 4) "Get Help" for frequently asked questions.
 
 ![Website Home Page](assets/Website-Home-Page.png)
 
@@ -90,7 +91,10 @@ The home page contains three sections: 1) "Data Import" for uploading files, 2) 
 
 ![Website Home Page](assets/Website-Stastical_Test.png)
 
+#### Get help
+The FAQ Page contains questions and answers to common problems and doubts.
 
+![Website FAQ Page](assets/Website-FAQ-Page.png)
 
 # Feedback
 * Issues reports are encouraged through the [GitHub Issue Tracker](https://github.com/solislemuslab/bioklustering/issues).
