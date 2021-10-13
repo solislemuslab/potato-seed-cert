@@ -11,7 +11,7 @@ from scipy.stats import chi2_contingency
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 import dash_table
-from app import app
+#from app import app
 import pathlib
 
 LINEBREAK_STYLE = {
@@ -34,21 +34,21 @@ sources = ["SNAME",
            "S_YR",
            "S_GCODE",
            "S_STATE"]
-df_grower = ['Atwater','B Kuczmarski','Baginski','Bjornstad','Bula Potato',
- 'Bushman','Buyan','CETS','CSS','Childstock','Crown','Diercks','Droge','Droge Farms','Eagle River Se',
- 'Ebbesson','Enander','Fleischman D','Gallenberg D','Gallenberg Fms','Goldeneye','Greenleaf Org','Guenthner Po',
- 'H Miller','Haenni Farms','Hafner','Hanson','Hartman','Haskett','J Gallenberg','J Jorde',
- 'J Nicholes','John Miller','Johnson','Jonk Seed Farm','Jorde Certi','Jorde Certifie','Jorde Mike','Kakes',
- 'Kent Farms','Kimm Pot','Kroeker Farms,','LHIlls','Larson Farms','London','London Hill','MSU','Maine Seed','Mangels','Manhattan',
- 'Mark Kuehl','Mark Stremick','Martin','Mattek','McCain','Miller Farms J','Myrna Stremick','Myrna stremick',
- 'NDS','Neu Ground Lab','Nilson Farms','PEI Produce', 'Paquin','Parkinson Seed', 'Phytocu','Rine Ridge',
- 'Royce Atwater','Salen','San Luis','Schroeder Bros', 'Schroeder Farm','Schutter', 'Scidmore Farms','Seed Pro',
- 'Seidl','Sklarczyk', 'Skogman','Sowinski','Sping Creek','State Farm','Steinmann','Summit Farms','Summit Labs',
- 'Sunny Valley','Sunnydale','Sunrain Variet','T Spychalla','Technico/Sham',
- 'Tetonia','Thompson','UI/Teutonia','UW Breeding','Uihlein Fm','Val TCulture','Van Erkel','Wild',
- 'Wirz','Worley','Zeloski -ER','Zeloski, Felix']
+df_grower = ['Atwater', 'B Kuczmarski', 'Baginski', 'Bjornstad', 'Bula Potato',
+             'Bushman', 'Buyan', 'CETS', 'CSS', 'Childstock', 'Crown', 'Diercks', 'Droge', 'Droge Farms', 'Eagle River Se',
+             'Ebbesson', 'Enander', 'Fleischman D', 'Gallenberg D', 'Gallenberg Fms', 'Goldeneye', 'Greenleaf Org', 'Guenthner Po',
+             'H Miller', 'Haenni Farms', 'Hafner', 'Hanson', 'Hartman', 'Haskett', 'J Gallenberg', 'J Jorde',
+             'J Nicholes', 'John Miller', 'Johnson', 'Jonk Seed Farm', 'Jorde Certi', 'Jorde Certifie', 'Jorde Mike', 'Kakes',
+             'Kent Farms', 'Kimm Pot', 'Kroeker Farms,', 'LHIlls', 'Larson Farms', 'London', 'London Hill', 'MSU', 'Maine Seed', 'Mangels', 'Manhattan',
+             'Mark Kuehl', 'Mark Stremick', 'Martin', 'Mattek', 'McCain', 'Miller Farms J', 'Myrna Stremick', 'Myrna stremick',
+             'NDS', 'Neu Ground Lab', 'Nilson Farms', 'PEI Produce', 'Paquin', 'Parkinson Seed', 'Phytocu', 'Rine Ridge',
+             'Royce Atwater', 'Salen', 'San Luis', 'Schroeder Bros', 'Schroeder Farm', 'Schutter', 'Scidmore Farms', 'Seed Pro',
+             'Seidl', 'Sklarczyk', 'Skogman', 'Sowinski', 'Sping Creek', 'State Farm', 'Steinmann', 'Summit Farms', 'Summit Labs',
+             'Sunny Valley', 'Sunnydale', 'Sunrain Variet', 'T Spychalla', 'Technico/Sham',
+             'Tetonia', 'Thompson', 'UI/Teutonia', 'UW Breeding', 'Uihlein Fm', 'Val TCulture', 'Van Erkel', 'Wild',
+             'Wirz', 'Worley', 'Zeloski -ER', 'Zeloski, Felix']
 df_state = ['AK', 'CO', 'ID', 'MB', 'ME', 'MI', 'MN', 'MT', 'NB', 'ND', 'NE',
-       'NY', 'PE', 'WI']
+            'NY', 'PE', 'WI']
 df_year = list(range(2000, 2017))
 
 chi_test_columns = ["Null HYpothesis",
@@ -343,169 +343,168 @@ homepage = html.Div([
 #     return state_options, year_options, grower_options
 #
 
-@app.callback(
-    Output("Pchi_square-message", "is_open"),
-    [Input("Pchi_square-open", "n_clicks"),
-     Input("Pchi_square-close", "n_clicks")],
-    [State("Pchi_square-message", "is_open")],
-)
-def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
-        return not is_open
-    return is_open
 
-
-@app.callback(
-    Output("anova-message", "is_open"),
-    [Input("anova-open", "n_clicks"), Input("anova-close", "n_clicks")],
-    [State("anova-message", "is_open")],
-)
-def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
-        return not is_open
-    return is_open
-
-
-@app.callback(
-    [
-        Output("observation", "data"),
-        Output("observation", "columns"),
-    ],
-    [
-        Input("row-name", "value"),
-        Input("col-name", "value"),
-        Input("state_type", "value"),
-        Input("year", "value"),
-        Input("grower", "value"),
-        Input("store-uploaded-data", "data")
-    ],
-)
-def Observed_Contingency_Table(row, col, state, year, grower, data):
-    if data:
-        df = pd.DataFrame(data)
-    # temp = df[(df["S_STATE"].isin([state])) & (df["VARIETY"].isin([variety])) & (df["S_G"].isin([grower])) ]
-    temp = df.copy()
-    if state != "All":
-        temp = temp[(temp["S_STATE"].isin([state]))]
-    if year != "All":
-        temp = temp[(temp["S_YR"].isin([year]))]
-    if grower != "All":
-        temp = temp[(temp["S_G"].isin([grower]))]
-    # temp = temp[(temp["VARIETY"].isin([variety]))]
-    # temp = df[(df["S_STATE"].isin([state]))  & (df["S_G"].isin([grower]))]
-    temp = temp.groupby([row, col]).size().unstack().fillna(0).reset_index()
-    data = temp.to_dict('records')
-    columns = [{"name": str(i), "id": str(i)} for i in temp.columns]
-    return data, columns
-
-
-@app.callback(
-    Output("chi-summary", "children"),
-    [
-        Input("row-name", "value"),
-        Input("col-name", "value"),
-        Input("slider-chisquare", "value"),
-        Input("state_type", "value"),
-        Input("year", "value"),
-        Input("grower", "value"),
-        Input("store-uploaded-data", "data")
-    ],
-)
-def chi_square_test(row, col, significance_level, state, year, grower, data):
-    if data:
-        df = pd.DataFrame(data)
-    temp = df.copy()
-    if state != "All":
-        temp = temp[(temp["S_STATE"].isin([state]))]
-    if year != "All":
-        temp = temp[(temp["S_YR"].isin([year]))]
-    if grower != "All":
-        temp = temp[(temp["S_G"].isin([grower]))]
-    temp = temp.groupby([row, col]).size().unstack().fillna(0)
-    chi, pval, dof, exp = chi2_contingency(temp)
-    chi_test_columns = [
-        "Null HYpothesis", "Alternative Hypothesis", "Chi-Square score", "df", "P-value"]
-    columns = [{"name": i, "id": i} for i in chi_test_columns]
-    data = ["independence", "Association",
-            np.round(chi, 4), dof, np.round(pval, 4)]
-    data = pd.DataFrame(data, index=chi_test_columns).T.to_dict("record")
-
-    return dash_table.DataTable(
-        id='chi-summary-table',
-        data=data,
-        columns=columns,
-        style_data_conditional=[
-            {
-                'if': {
-                    'column_id': 'Alternative Hypothesis',
-                    # since using .format, escape { with {{
-                    'filter_query': '{{P-value}} <= {}'.format(significance_level)
-                },
-                'backgroundColor': '#85144b',
-                'color': 'white'
-            },
-            {
-                'if': {
-                    'column_id': 'Null HYpothesis',
-                    # since using .format, escape { with {{
-                    'filter_query': '{{P-value}} > {}'.format(significance_level)
-                },
-                'backgroundColor': '#85144b',
-                'color': 'white'
-            },
-        ]
+def callback_stat(app):
+    @app.callback(
+        Output("Pchi_square-message", "is_open"),
+        [Input("Pchi_square-open", "n_clicks"),
+         Input("Pchi_square-close", "n_clicks")],
+        [State("Pchi_square-message", "is_open")],
     )
+    def toggle_modal(n1, n2, is_open):
+        if n1 or n2:
+            return not is_open
+        return is_open
 
-
-@app.callback(
-    Output("anova-summary", "children"),
-    [
-        Input("anova-row-name", "value"),
-        Input("anova-col-name", "value"),
-        Input("slider-anova", "value"),
-        Input("state_type", "value"),
-        Input("year", "value"),
-        Input("grower", "value"),
-        Input("store-uploaded-data", "data")
-    ],
-)
-def anova_test(row, col, significance_level, state, year, grower, data):
-    if data:
-        df = pd.DataFrame(data)
-    temp = df.copy()
-    if state != "All":
-        temp = temp[(temp["S_STATE"].isin([state]))]
-    if year != "All":
-        temp = temp[(temp["S_YR"].isin([year]))]
-    if grower != "All":
-        temp = temp[(temp["S_G"].isin([grower]))]
-    model = ols("{} ~ {}".format(row, col), data=temp[[row, col]]).fit()
-    columns = [{"name": i, "id": i} for i in anova_columns]
-    data = ["independence", "Association", np.round(
-        model.fvalue, 4), model.df_model, np.round(model.f_pvalue, 4)]
-    data = pd.DataFrame(data, index=anova_columns).T.to_dict("record")
-    print(data)
-
-    return dash_table.DataTable(
-        id='anova-summary-table',
-        data=data,
-        columns=columns,
-        style_data_conditional=[
-            {
-                'if': {
-                    'column_id': 'Alternative Hypothesis',
-                    'filter_query': '{{P-value}} <= {}'.format(significance_level)
-                },
-                'backgroundColor': '#85144b',
-                'color': 'white'
-            },
-            {
-                'if': {
-                    'column_id': 'Null HYpothesis',
-                    'filter_query': '{{P-value}} > {}'.format(significance_level)
-                },
-                'backgroundColor': '#85144b',
-                'color': 'white'
-            },
-        ]
+    @app.callback(
+        Output("anova-message", "is_open"),
+        [Input("anova-open", "n_clicks"), Input("anova-close", "n_clicks")],
+        [State("anova-message", "is_open")],
     )
+    def toggle_modal(n1, n2, is_open):
+        if n1 or n2:
+            return not is_open
+        return is_open
+
+    @app.callback(
+        [
+            Output("observation", "data"),
+            Output("observation", "columns"),
+        ],
+        [
+            Input("row-name", "value"),
+            Input("col-name", "value"),
+            Input("state_type", "value"),
+            Input("year", "value"),
+            Input("grower", "value"),
+            Input("store-uploaded-data", "data")
+        ],
+    )
+    def Observed_Contingency_Table(row, col, state, year, grower, data):
+        if data:
+            df = pd.DataFrame(data)
+        # temp = df[(df["S_STATE"].isin([state])) & (df["VARIETY"].isin([variety])) & (df["S_G"].isin([grower])) ]
+        temp = df.copy()
+        if state != "All":
+            temp = temp[(temp["S_STATE"].isin([state]))]
+        if year != "All":
+            temp = temp[(temp["S_YR"].isin([year]))]
+        if grower != "All":
+            temp = temp[(temp["S_G"].isin([grower]))]
+        # temp = temp[(temp["VARIETY"].isin([variety]))]
+        # temp = df[(df["S_STATE"].isin([state]))  & (df["S_G"].isin([grower]))]
+        temp = temp.groupby([row, col]).size(
+        ).unstack().fillna(0).reset_index()
+        data = temp.to_dict('records')
+        columns = [{"name": str(i), "id": str(i)} for i in temp.columns]
+        return data, columns
+
+    @app.callback(
+        Output("chi-summary", "children"),
+        [
+            Input("row-name", "value"),
+            Input("col-name", "value"),
+            Input("slider-chisquare", "value"),
+            Input("state_type", "value"),
+            Input("year", "value"),
+            Input("grower", "value"),
+            Input("store-uploaded-data", "data")
+        ],
+    )
+    def chi_square_test(row, col, significance_level, state, year, grower, data):
+        if data:
+            df = pd.DataFrame(data)
+        temp = df.copy()
+        if state != "All":
+            temp = temp[(temp["S_STATE"].isin([state]))]
+        if year != "All":
+            temp = temp[(temp["S_YR"].isin([year]))]
+        if grower != "All":
+            temp = temp[(temp["S_G"].isin([grower]))]
+        temp = temp.groupby([row, col]).size().unstack().fillna(0)
+        chi, pval, dof, exp = chi2_contingency(temp)
+        chi_test_columns = [
+            "Null HYpothesis", "Alternative Hypothesis", "Chi-Square score", "df", "P-value"]
+        columns = [{"name": i, "id": i} for i in chi_test_columns]
+        data = ["independence", "Association",
+                np.round(chi, 4), dof, np.round(pval, 4)]
+        data = pd.DataFrame(data, index=chi_test_columns).T.to_dict("record")
+
+        return dash_table.DataTable(
+            id='chi-summary-table',
+            data=data,
+            columns=columns,
+            style_data_conditional=[
+                {
+                    'if': {
+                        'column_id': 'Alternative Hypothesis',
+                        # since using .format, escape { with {{
+                        'filter_query': '{{P-value}} <= {}'.format(significance_level)
+                    },
+                    'backgroundColor': '#85144b',
+                    'color': 'white'
+                },
+                {
+                    'if': {
+                        'column_id': 'Null HYpothesis',
+                        # since using .format, escape { with {{
+                        'filter_query': '{{P-value}} > {}'.format(significance_level)
+                    },
+                    'backgroundColor': '#85144b',
+                    'color': 'white'
+                },
+            ]
+        )
+
+    @app.callback(
+        Output("anova-summary", "children"),
+        [
+            Input("anova-row-name", "value"),
+            Input("anova-col-name", "value"),
+            Input("slider-anova", "value"),
+            Input("state_type", "value"),
+            Input("year", "value"),
+            Input("grower", "value"),
+            Input("store-uploaded-data", "data")
+        ],
+    )
+    def anova_test(row, col, significance_level, state, year, grower, data):
+        if data:
+            df = pd.DataFrame(data)
+        temp = df.copy()
+        if state != "All":
+            temp = temp[(temp["S_STATE"].isin([state]))]
+        if year != "All":
+            temp = temp[(temp["S_YR"].isin([year]))]
+        if grower != "All":
+            temp = temp[(temp["S_G"].isin([grower]))]
+        model = ols("{} ~ {}".format(row, col), data=temp[[row, col]]).fit()
+        columns = [{"name": i, "id": i} for i in anova_columns]
+        data = ["independence", "Association", np.round(
+            model.fvalue, 4), model.df_model, np.round(model.f_pvalue, 4)]
+        data = pd.DataFrame(data, index=anova_columns).T.to_dict("record")
+        print(data)
+
+        return dash_table.DataTable(
+            id='anova-summary-table',
+            data=data,
+            columns=columns,
+            style_data_conditional=[
+                {
+                    'if': {
+                        'column_id': 'Alternative Hypothesis',
+                        'filter_query': '{{P-value}} <= {}'.format(significance_level)
+                    },
+                    'backgroundColor': '#85144b',
+                    'color': 'white'
+                },
+                {
+                    'if': {
+                        'column_id': 'Null HYpothesis',
+                        'filter_query': '{{P-value}} > {}'.format(significance_level)
+                    },
+                    'backgroundColor': '#85144b',
+                    'color': 'white'
+                },
+            ]
+        )
