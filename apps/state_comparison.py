@@ -1,4 +1,4 @@
-from app import app
+#from app import app
 
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
@@ -78,48 +78,33 @@ LEFT_COLUMN = dbc.Jumbotron(
     ]
 )
 
-@app.callback(
-    Output("multi_state", "options"),
-    [
-     Input("store-uploaded-data", "data")
-     ]
-)
-def dropdown_option(data):
-    if data:
-        df = pd.DataFrame(data)
-
-    options = [{'label': i, 'value': i}
-               for i in sorted(df["S_STATE"].dropna().unique())]
-
-    return options
-
 RIGHT_PLOT = [
     dbc.CardHeader(
         dbc.Row([
-            dbc.Col(
-                html.H5("State comparison"),
-                width={"size": 4}
-            ),
+                dbc.Col(
+                    html.H5("State comparison"),
+                    width={"size": 4}
+                ),
 
-            dbc.Col(
-                [
-                    dbc.Button("Help", color="primary",
-                               id="Pchi_square-open", className="mr-auto"),
-                    dbc.Modal(
-                        [
-                            dbc.ModalHeader("State Comparison Plot"),
-                            dbc.ModalBody(
-                                "The user selects State (multiple choices can be selected simultaneously), Inspection and Year, and the plot displays different y-axes (one per disease) with the disease prevalence. Different colored lines correspond to different states. Below we display a table with each selected state per row with the disease prevalence of all diseases as well as the color of the line in the last column."),
-                            dbc.ModalFooter(
-                                dbc.Button("Close", id="Pchi_square-close",
-                                           className="ml-auto")
-                            ),
-                        ],
-                        id="Pchi_square-message",
-                    )],
-                width={"size": 2, "offset": 6}
-            )
-        ]),
+                dbc.Col(
+                    [
+                        dbc.Button("Help", color="primary",
+                                   id="Pchi_square-open", className="mr-auto"),
+                        dbc.Modal(
+                            [
+                                dbc.ModalHeader("State Comparison Plot"),
+                                dbc.ModalBody(
+                                    "The user selects State (multiple choices can be selected simultaneously), Inspection and Year, and the plot displays different y-axes (one per disease) with the disease prevalence. Different colored lines correspond to different states. Below we display a table with each selected state per row with the disease prevalence of all diseases as well as the color of the line in the last column."),
+                                dbc.ModalFooter(
+                                    dbc.Button("Close", id="Pchi_square-close",
+                                               className="ml-auto")
+                                ),
+                            ],
+                            id="Pchi_square-message",
+                        )],
+                    width={"size": 2, "offset": 6}
+                )
+                ]),
     ),
     dbc.CardBody(
         [
@@ -145,29 +130,29 @@ RIGHT_PLOT = [
 state_comparison_layout = html.Div(
     [
         dbc.Row([
-                dbc.Col(LEFT_COLUMN, align="center", md=4),
-                dbc.Col(
-                    dbc.Card(RIGHT_PLOT), md=8)
-                ], style={"marginTop": 30}, align="center", ),
+            dbc.Col(LEFT_COLUMN, align="center", md=4),
+            dbc.Col(
+                dbc.Card(RIGHT_PLOT), md=8)
+        ], style={"marginTop": 30}, align="center", ),
         html.Br(),
         dbc.Row([
-                dbc.Col(html.Div(
-                    dash_table.DataTable(
-                        id="parallel-graph-table",
+            dbc.Col(html.Div(
+                dash_table.DataTable(
+                    id="parallel-graph-table",
 
-                        style_header={
-                            'backgroundColor': '#25597f', 'color': 'white'},
-                        style_cell={
-                            'backgroundColor': 'white',
-                            'color': 'black',
-                            'fontSize': 13,
-                            'font-family': 'Nunito Sans'}
-                    ),
+                    style_header={
+                        'backgroundColor': '#25597f', 'color': 'white'},
+                    style_cell={
+                        'backgroundColor': 'white',
+                        'color': 'black',
+                        'fontSize': 13,
+                        'font-family': 'Nunito Sans'}
                 ),
-                    style={"width": "100%", "align-items": "center",
-                           "justify-content": "center"},
-                    width={"size": 8, "offset": 1})
-                ]),
+            ),
+                style={"width": "100%", "align-items": "center",
+                       "justify-content": "center"},
+                width={"size": 8, "offset": 1})
+        ]),
         html.P(
             "Note: μ=1×10^(-6)，n=1×10^(-9)",
             className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
@@ -177,144 +162,166 @@ state_comparison_layout = html.Div(
 )
 
 
-@app.callback(
-    [Output("parallel-graph-table", "data"),
-     Output("parallel-graph-table", "columns"),
-     Output("parallel-graph", "figure")],
-    [Input("multi_state", "value"),
-     Input("parallel_inspection", "value"),
-     Input("parallel_year","value"),
-     Input("store-uploaded-data", "data")
-     ]
-)
-def parallel_plot(state, inspection,year, data):
-    orig_state = state.copy()
-    colors = ["blue", "green", "red", "cyan", "magenta", "yellow", "black", "orange", "darkviolet", "royalblue", "pink", "purple", "maroon", "silver", "lime"]
-    colorscales = {np.linspace(0, 1, num = len(colors))[i]: color for i, color in enumerate(colors)}
-    if data:
-        df = pd.DataFrame(data)
+def callback_statecomparison(app):
+    @app.callback(
+        Output("multi_state", "options"),
+        [
+            Input("store-uploaded-data", "data")
+        ]
+    )
+    def dropdown_option(data):
+        if data:
+            df = pd.DataFrame(data)
 
-    if(year!="all"):
-        number_column = list(df.loc[df["S_YR"] == int(year)].columns[df.columns.str.startswith("NO")])
+        options = [{'label': i, 'value': i}
+                   for i in sorted(df["S_STATE"].dropna().unique())]
 
-    else:
-        number_column = list(df.columns[df.columns.str.startswith("NO")])
-    number_column = number_column + ["PLTCT_1", "PLTCT_2"]
+        return options
 
-    if(year=="all"):
-        temp=df.copy()
-    else:
-        temp = df.loc[df["S_YR"] == int(year)].copy()
+    @app.callback(
+        [Output("parallel-graph-table", "data"),
+         Output("parallel-graph-table", "columns"),
+         Output("parallel-graph", "figure")],
+        [Input("multi_state", "value"),
+         Input("parallel_inspection", "value"),
+         Input("parallel_year", "value"),
+         Input("store-uploaded-data", "data")
+         ]
+    )
+    def parallel_plot(state, inspection, year, data):
+        orig_state = state.copy()
+        colors = ["blue", "green", "red", "cyan", "magenta", "yellow", "black", "orange",
+                  "darkviolet", "royalblue", "pink", "purple", "maroon", "silver", "lime"]
+        colorscales = {np.linspace(0, 1, num=len(colors))[
+            i]: color for i, color in enumerate(colors)}
+        if data:
+            df = pd.DataFrame(data)
 
-    # Encode each state to a number for coloring purpose
-    unique_states = temp["S_STATE"].unique()
-    # Remove errors in state, such as 2016
-    unique_states = [state for state in unique_states if isinstance(state, str)]
+        if(year != "all"):
+            number_column = list(df.loc[df["S_YR"] == int(
+                year)].columns[df.columns.str.startswith("NO")])
 
-    # Construct a dictionary to assign an unique id to each state
-    state_id = {state: np.linspace(0, 1, len(colors))[i] for i, state in enumerate(unique_states)}
+        else:
+            number_column = list(df.columns[df.columns.str.startswith("NO")])
+        number_column = number_column + ["PLTCT_1", "PLTCT_2"]
 
-    print(state_id)
+        if(year == "all"):
+            temp = df.copy()
+        else:
+            temp = df.loc[df["S_YR"] == int(year)].copy()
 
-    temp = temp.groupby("S_STATE").sum()[number_column]
+        # Encode each state to a number for coloring purpose
+        unique_states = temp["S_STATE"].unique()
+        # Remove errors in state, such as 2016
+        unique_states = [
+            state for state in unique_states if isinstance(state, str)]
 
-    for column in temp.columns:
-        if "1ST" in column:
-            new_column = column.replace("NO", "PCT")
-            temp[new_column] = temp[column] / temp["PLTCT_1"]
-        elif "2ND" in column:
-            new_column = column.replace("NO", "PCT")
-            temp[new_column] = temp[column] / temp["PLTCT_2"]
+        # Construct a dictionary to assign an unique id to each state
+        state_id = {state: np.linspace(0, 1, len(colors))[
+            i] for i, state in enumerate(unique_states)}
 
-    first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
-    second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND",
-                  "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
+        print(state_id)
 
-    # Add the state with minimum and maximum ID to fix the max id and min id value (Not dynamic)
-    state = list(set(state + ["CO", "MB"]))
+        temp = temp.groupby("S_STATE").sum()[number_column]
 
-    scaled_color = [[np.linspace(0, 1, num=len(colors))[i], color] for i, color in enumerate(colors)]
+        for column in temp.columns:
+            if "1ST" in column:
+                new_column = column.replace("NO", "PCT")
+                temp[new_column] = temp[column] / temp["PLTCT_1"]
+            elif "2ND" in column:
+                new_column = column.replace("NO", "PCT")
+                temp[new_column] = temp[column] / temp["PLTCT_2"]
 
-    print(scaled_color)
+        first_ins = ["PCT_LR_1ST", "PCT_MOS_1ST", "PCT_ST_1ST", "PCT_MIX_1ST"]
+        second_ins = ["PCT_LR_2ND", "PCT_MOS_2ND", "PCT_ST_2ND",
+                      "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
 
-    if inspection == "1ST":
-        print(temp)
-        temp = temp.loc[state, first_ins].reset_index()
-        temp["State_id"] = temp["S_STATE"].map(state_id)
-        temp["line_color"] = temp["State_id"].map(colorscales)
-        print(temp)
-        fig = go.Figure(data=go.Parcoords(
-            line=dict(color=(temp["State_id"]),
-                      colorscale = scaled_color),
-            # [[0, 'blue'], [0.5, 'lightseagreen'], [1, 'gold']]
-            dimensions=list([
-                dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
-                     #                 constraintrange = [4,8],
-                     label='LR', values=temp["PCT_LR_1ST"]),
-                dict(range=[temp["PCT_MOS_1ST"].min() * 0.5, temp["PCT_MOS_1ST"].max() * 1.2],
-                     label='MOS', values=temp["PCT_MOS_1ST"]),
-                dict(range=[temp["PCT_ST_1ST"].min(), temp["PCT_ST_1ST"].max()+0.5],
-                     label="ST", values=temp["PCT_ST_1ST"]),
-                dict(range=[temp["PCT_MIX_1ST"].min() * 0.5, temp["PCT_MIX_1ST"].max() * 1.2],
-                     label='MIX', values=temp["PCT_MIX_1ST"])
-            ])
-        )
-        )
-    else:
-        temp = temp.loc[state, second_ins].reset_index()
-        temp["State_id"] = temp["S_STATE"].map(state_id)
-        temp["line_color"] = temp["State_id"].map(colorscales)
-        print(temp)
-        fig = go.Figure(data=go.Parcoords(
-            line=dict(color=(temp["State_id"]),
-                      colorscale=scaled_color),
-            # [[0, 'blue'], [0.5, 'lightseagreen'], [1, 'gold']]
-            dimensions=list([
-                dict(range=[temp["PCT_LR_2ND"].min() * 0.5, temp["PCT_LR_2ND"].max() * 1.2],
-                     #                 constraintrange = [4,8],
-                     label='LR', values=temp["PCT_LR_2ND"]),
-                dict(range=[temp["PCT_MOS_2ND"].min() * 0.5, temp["PCT_MOS_2ND"].max() * 1.2],
-                     label='MOS', values=temp["PCT_MOS_2ND"]),
-                dict(range=[temp["PCT_ST_2ND"].min(), temp["PCT_ST_2ND"].max() + 0.5],
-                     label="ST", values=temp["PCT_ST_2ND"]),
-                dict(range=[temp["PCT_MIX_2ND"].min() * 0.5, temp["PCT_MIX_2ND"].max() * 1.2],
-                     label='MIX', values=temp["PCT_MIX_2ND"]),
-                dict(range=[temp["PCT_TOTV_2ND"].min() * 0.5, temp["PCT_TOTV_2ND"].max() * 1.2],
-                     label="TOTV", values=temp["PCT_TOTV_2ND"]),
-                dict(range=[temp["PCT_BRR_2ND"].min() * 0.5, temp["PCT_BRR_2ND"].max() * 1.2],
-                     label="BRR", values=temp["PCT_BRR_2ND"]),
-            ])
-        )
-        )
+        # Add the state with minimum and maximum ID to fix the max id and min id value (Not dynamic)
+        state = list(set(state + ["CO", "MB"]))
 
-    # temp = temp[temp["S_STATE"].isin(orig_state)]
-    data = temp.to_dict('records')
-    columns = [{'name': i, 'id': i} for i in temp.columns]
+        scaled_color = [[np.linspace(0, 1, num=len(colors))[i], color]
+                        for i, color in enumerate(colors)]
 
-    # return data, columns
+        print(scaled_color)
 
-    # fig = go.Figure(data=
-    # go.Parcoords(
-    #     line=dict(color=temp["PCT_MOS_1ST"],
-    #               colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
-    #     dimensions=list([
-    #         dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
-    #              #                 constraintrange = [4,8],
-    #              label='LR', values=temp["PCT_LR_1ST"]),
-    #         dict(range=[temp["PCT_MOS_1ST"].min() * 0.5, temp["PCT_MOS_1ST"].max() * 1.2],
-    #              label='MOS', values=temp["PCT_MOS_1ST"]),
-    #         dict(range=[temp["PCT_ST_1ST"].min() * 0.5, temp["PCT_ST_1ST"].max() * 1.2],
-    #              label="ST", values=temp["PCT_ST_1ST"]),
-    #         dict(range=[temp["PCT_MIX_1ST"].min() * 0.5, temp["PCT_MIX_1ST"].max() * 1.2],
-    #              label='MIX', values=temp["PCT_MIX_1ST"])
-    #     ])
-    # )
-    # )
+        if inspection == "1ST":
+            print(temp)
+            temp = temp.loc[state, first_ins].reset_index()
+            temp["State_id"] = temp["S_STATE"].map(state_id)
+            temp["line_color"] = temp["State_id"].map(colorscales)
+            print(temp)
+            fig = go.Figure(data=go.Parcoords(
+                line=dict(color=(temp["State_id"]),
+                          colorscale=scaled_color),
+                # [[0, 'blue'], [0.5, 'lightseagreen'], [1, 'gold']]
+                dimensions=list([
+                    dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
+                         #                 constraintrange = [4,8],
+                         label='LR', values=temp["PCT_LR_1ST"]),
+                    dict(range=[temp["PCT_MOS_1ST"].min() * 0.5, temp["PCT_MOS_1ST"].max() * 1.2],
+                         label='MOS', values=temp["PCT_MOS_1ST"]),
+                    dict(range=[temp["PCT_ST_1ST"].min(), temp["PCT_ST_1ST"].max()+0.5],
+                         label="ST", values=temp["PCT_ST_1ST"]),
+                    dict(range=[temp["PCT_MIX_1ST"].min() * 0.5, temp["PCT_MIX_1ST"].max() * 1.2],
+                         label='MIX', values=temp["PCT_MIX_1ST"])
+                ])
+            )
+            )
+        else:
+            temp = temp.loc[state, second_ins].reset_index()
+            temp["State_id"] = temp["S_STATE"].map(state_id)
+            temp["line_color"] = temp["State_id"].map(colorscales)
+            print(temp)
+            fig = go.Figure(data=go.Parcoords(
+                line=dict(color=(temp["State_id"]),
+                          colorscale=scaled_color),
+                # [[0, 'blue'], [0.5, 'lightseagreen'], [1, 'gold']]
+                dimensions=list([
+                    dict(range=[temp["PCT_LR_2ND"].min() * 0.5, temp["PCT_LR_2ND"].max() * 1.2],
+                         #                 constraintrange = [4,8],
+                         label='LR', values=temp["PCT_LR_2ND"]),
+                    dict(range=[temp["PCT_MOS_2ND"].min() * 0.5, temp["PCT_MOS_2ND"].max() * 1.2],
+                         label='MOS', values=temp["PCT_MOS_2ND"]),
+                    dict(range=[temp["PCT_ST_2ND"].min(), temp["PCT_ST_2ND"].max() + 0.5],
+                         label="ST", values=temp["PCT_ST_2ND"]),
+                    dict(range=[temp["PCT_MIX_2ND"].min() * 0.5, temp["PCT_MIX_2ND"].max() * 1.2],
+                         label='MIX', values=temp["PCT_MIX_2ND"]),
+                    dict(range=[temp["PCT_TOTV_2ND"].min() * 0.5, temp["PCT_TOTV_2ND"].max() * 1.2],
+                         label="TOTV", values=temp["PCT_TOTV_2ND"]),
+                    dict(range=[temp["PCT_BRR_2ND"].min() * 0.5, temp["PCT_BRR_2ND"].max() * 1.2],
+                         label="BRR", values=temp["PCT_BRR_2ND"]),
+                ])
+            )
+            )
 
-    # fig.update_layout(
-    #     plot_bgcolor='white',
-    #     paper_bgcolor='white'
-    # )
+        # temp = temp[temp["S_STATE"].isin(orig_state)]
+        data = temp.to_dict('records')
+        columns = [{'name': i, 'id': i} for i in temp.columns]
 
-    # fig.update_traces(mode="markers+lines")
-    return data, columns, fig
+        # return data, columns
+
+        # fig = go.Figure(data=
+        # go.Parcoords(
+        #     line=dict(color=temp["PCT_MOS_1ST"],
+        #               colorscale=[[0, 'purple'], [0.5, 'lightseagreen'], [1, 'gold']]),
+        #     dimensions=list([
+        #         dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
+        #              #                 constraintrange = [4,8],
+        #              label='LR', values=temp["PCT_LR_1ST"]),
+        #         dict(range=[temp["PCT_MOS_1ST"].min() * 0.5, temp["PCT_MOS_1ST"].max() * 1.2],
+        #              label='MOS', values=temp["PCT_MOS_1ST"]),
+        #         dict(range=[temp["PCT_ST_1ST"].min() * 0.5, temp["PCT_ST_1ST"].max() * 1.2],
+        #              label="ST", values=temp["PCT_ST_1ST"]),
+        #         dict(range=[temp["PCT_MIX_1ST"].min() * 0.5, temp["PCT_MIX_1ST"].max() * 1.2],
+        #              label='MIX', values=temp["PCT_MIX_1ST"])
+        #     ])
+        # )
+        # )
+
+        # fig.update_layout(
+        #     plot_bgcolor='white',
+        #     paper_bgcolor='white'
+        # )
+
+        # fig.update_traces(mode="markers+lines")
+        return data, columns, fig

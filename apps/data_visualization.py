@@ -43,19 +43,20 @@ data_visualization_layout = html.Div([
     html.H3("Data visualization"),
     html.Br(),
     dcc.Tabs(id="tabs-styled-with-inline", value='tab-1', children=[
-            dcc.Tab(label='State Comparison', value='tab-1', className='custom-tab',
+        dcc.Tab(label='State Comparison', value='tab-1', className='custom-tab',
                 selected_className='custom-tab--selected'),
-            dcc.Tab(label='Prevalent Disease', value='tab-2', className='custom-tab',
+        dcc.Tab(label='Prevalent Disease', value='tab-2', className='custom-tab',
                 selected_className='custom-tab--selected'),
-            dcc.Tab(label='Sensitive Variety', value='tab-3', className='custom-tab',
+        dcc.Tab(label='Sensitive Variety', value='tab-3', className='custom-tab',
                 selected_className='custom-tab--selected'),
-            dcc.Tab(label='Acre Rejection', value='tab-4', className='custom-tab',
+        dcc.Tab(label='Acre Rejection', value='tab-4', className='custom-tab',
                 selected_className='custom-tab--selected'),
-        ], parent_className='custom-tabs',
+    ], parent_className='custom-tabs',
         className='custom-tabs-container',),
-        html.Div(id='tabs-content-inline')
+    html.Div(id='tabs-content-inline')
 
 ])
+
 
 @app.callback(Output('tabs-content-inline', 'children'),
               Input('tabs-styled-with-inline', 'value'))
@@ -68,4 +69,3 @@ def render_content(tab):
         return variety.variety_layout
     elif tab == 'tab-4':
         return acres.acres_layout
-
