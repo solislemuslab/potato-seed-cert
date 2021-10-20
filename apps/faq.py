@@ -11,7 +11,6 @@ from scipy.stats import chi2_contingency
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 import dash_table
-from app import app
 import pathlib
 
 LINEBREAK_STYLE = {
