@@ -490,62 +490,64 @@ def callback_upload(app):
     ])
     def error_table(sort_by, data,  n_clicks):
         # if contents:
+        try:
+            df = pd.DataFrame(data)
+            if len(sort_by):
+                df = df.sort_values(
+                    sort_by[0]['column_id'],
+                    ascending=sort_by[0]['direction'] == 'asc',
+                    inplace=False
+                )
+            else:
+                # No sort is applied
+                df = df
 
-        df = pd.DataFrame(data)
-        if len(sort_by):
-            df = df.sort_values(
-                sort_by[0]['column_id'],
-                ascending=sort_by[0]['direction'] == 'asc',
-                inplace=False
-            )
-        else:
-            # No sort is applied
-            df = df
+            if n_clicks is None or n_clicks % 2 == 0:
+                pass
+            elif n_clicks % 2 == 1:
+                for i in range(0, len(combined_columns), 2):
+                    df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                        df[combined_columns[i + 1]])
+                    df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                        df[combined_columns[i + 1]])
 
-        if n_clicks is None or n_clicks % 2 == 0:
+                for i in range(1, len(combined_columns), 2):
+                    df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                        df[combined_columns[i - 1]])
+                    df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                        df[combined_columns[i - 1]])
+
+            errors = []
+            missing_values = []
+            rows = []
+            for i, column in enumerate(summer_columns):
+                missing = len(df[(df[summer_columns[i]].isnull())
+                                 | (df[winter_columns[i]].isnull())])
+                missing_values.append(missing)
+
+                error = len(df[df[summer_columns[i]] != df[winter_columns[i]]])
+                errors.append(error)
+
+                msg = " at row "
+                indices = df[df[summer_columns[i]] !=
+                             df[winter_columns[i]]].index.tolist()
+                for index in indices:
+                    msg = msg + str(index) + " "
+                rows.append(msg)
+
+            error_df = pd.DataFrame(
+                {'Column Name': summer_columns,
+                 'Number of errors': errors,
+                 'Number of missing values': missing_values,
+                 'Index of erros': rows,
+                 })
+
+            data = error_df.to_dict('rows')
+            columns = [{'name': i, 'id': i} for i in error_df.columns]
+
+            return data, columns
+        except:
             pass
-        elif n_clicks % 2 == 1:
-            for i in range(0, len(combined_columns), 2):
-                df[combined_columns[i]] = df[combined_columns[i]].fillna(
-                    df[combined_columns[i + 1]])
-                df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                    df[combined_columns[i + 1]])
-
-            for i in range(1, len(combined_columns), 2):
-                df[combined_columns[i]] = df[combined_columns[i]].fillna(
-                    df[combined_columns[i - 1]])
-                df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                    df[combined_columns[i - 1]])
-
-        errors = []
-        missing_values = []
-        rows = []
-        for i, column in enumerate(summer_columns):
-            missing = len(df[(df[summer_columns[i]].isnull())
-                             | (df[winter_columns[i]].isnull())])
-            missing_values.append(missing)
-
-            error = len(df[df[summer_columns[i]] != df[winter_columns[i]]])
-            errors.append(error)
-
-            msg = " at row "
-            indices = df[df[summer_columns[i]] !=
-                         df[winter_columns[i]]].index.tolist()
-            for index in indices:
-                msg = msg + str(index) + " "
-            rows.append(msg)
-
-        error_df = pd.DataFrame(
-            {'Column Name': summer_columns,
-             'Number of errors': errors,
-             'Number of missing values': missing_values,
-             'Index of erros': rows,
-             })
-
-        data = error_df.to_dict('rows')
-        columns = [{'name': i, 'id': i} for i in error_df.columns]
-
-        return data, columns
 
     # Table paging and sorting
 
@@ -592,34 +594,38 @@ def callback_upload(app):
         ]
     )
     def error_structure(data, n_clicks):
-        if data:
-            df = pd.DataFrame(data)
+        try:
+            if data:
+                df = pd.DataFrame(data)
 
-        if n_clicks is None or n_clicks % 2 == 0:
+            if n_clicks is None or n_clicks % 2 == 0:
+                pass
+            elif n_clicks % 2 == 1:
+                for i in range(0, len(combined_columns), 2):
+                    df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                        df[combined_columns[i + 1]])
+                    df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                        df[combined_columns[i + 1]])
+
+                for i in range(1, len(combined_columns), 2):
+                    df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                        df[combined_columns[i - 1]])
+                    df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                        df[combined_columns[i - 1]])
+
+            for i in range(len(summer_columns)):
+                df[error_columns[i]] = df[summer_columns[i]
+                                          ] != df[winter_columns[i]]
+
+            fig = px.imshow(df[error_columns].T, color_continuous_scale=px.colors.sequential.Greys,
+                            title="Errors Structure")
+            fig.update_layout(title_font={'size': 27}, xaxis=dict(
+                title="row index", titlefont_size=16,
+                tickfont_size=14,), title_x=0.5)
+
+            return fig
+        except:
             pass
-        elif n_clicks % 2 == 1:
-            for i in range(0, len(combined_columns), 2):
-                df[combined_columns[i]] = df[combined_columns[i]].fillna(
-                    df[combined_columns[i + 1]])
-                df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                    df[combined_columns[i + 1]])
-
-            for i in range(1, len(combined_columns), 2):
-                df[combined_columns[i]] = df[combined_columns[i]].fillna(
-                    df[combined_columns[i - 1]])
-                df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                    df[combined_columns[i - 1]])
-
-        for i in range(len(summer_columns)):
-            df[error_columns[i]] = df[summer_columns[i]] != df[winter_columns[i]]
-
-        fig = px.imshow(df[error_columns].T, color_continuous_scale=px.colors.sequential.Greys,
-                        title="Errors Structure")
-        fig.update_layout(title_font={'size': 27}, xaxis=dict(
-            title="row index", titlefont_size=16,
-            tickfont_size=14,), title_x=0.5)
-
-        return fig
 
     # Heatmap to examine the distribution of missing values
 
@@ -631,35 +637,38 @@ def callback_upload(app):
         ]
     )
     def missing_structure(data, n_clicks):
-        if data:
-            df = pd.DataFrame(data)
+        try:
+            if data:
+                df = pd.DataFrame(data)
 
-        if n_clicks is None or n_clicks % 2 == 0:
+            if n_clicks is None or n_clicks % 2 == 0:
+                pass
+            elif n_clicks % 2 == 1:
+                for i in range(0, len(combined_columns), 2):
+                    df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                        df[combined_columns[i + 1]])
+                    df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                        df[combined_columns[i + 1]])
+
+                for i in range(1, len(combined_columns), 2):
+                    df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                        df[combined_columns[i - 1]])
+                    df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                        df[combined_columns[i - 1]])
+
+            for i in range(len(summer_columns)):
+                df[error_columns[i]] = df[[summer_columns[i], winter_columns[i]]
+                                          ].isnull().apply(lambda x: any(x), axis=1)
+
+            fig = px.imshow(df[error_columns].T, color_continuous_scale=px.colors.sequential.Greys,
+                            title="Missing Structure")
+            fig.update_layout(title_font={'size': 27}, xaxis=dict(
+                title="row index", titlefont_size=16,
+                tickfont_size=14,), title_x=0.5)
+
+            return fig
+        except:
             pass
-        elif n_clicks % 2 == 1:
-            for i in range(0, len(combined_columns), 2):
-                df[combined_columns[i]] = df[combined_columns[i]].fillna(
-                    df[combined_columns[i + 1]])
-                df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                    df[combined_columns[i + 1]])
-
-            for i in range(1, len(combined_columns), 2):
-                df[combined_columns[i]] = df[combined_columns[i]].fillna(
-                    df[combined_columns[i - 1]])
-                df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                    df[combined_columns[i - 1]])
-
-        for i in range(len(summer_columns)):
-            df[error_columns[i]] = df[[summer_columns[i], winter_columns[i]]
-                                      ].isnull().apply(lambda x: any(x), axis=1)
-
-        fig = px.imshow(df[error_columns].T, color_continuous_scale=px.colors.sequential.Greys,
-                        title="Missing Structure")
-        fig.update_layout(title_font={'size': 27}, xaxis=dict(
-            title="row index", titlefont_size=16,
-            tickfont_size=14,), title_x=0.5)
-
-        return fig
 
     @app.callback([Output('fix-button', 'children'), ],
                   [
@@ -689,53 +698,14 @@ def callback_upload(app):
                    Input("store-uploaded-data", "data"),
                    ])
     def error_highlight_table(dropdown_value, data):
-        if data:
-            df = pd.DataFrame(data)
+        try:
+            if data:
+                df = pd.DataFrame(data)
 
-        a = dropdown_value
-        b = "winter_{a}".format(a=dropdown_value)
+            a = dropdown_value
+            b = "winter_{a}".format(a=dropdown_value)
 
-        # Fill missing value
-        for i in range(0, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(
-                df[combined_columns[i + 1]])
-            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                df[combined_columns[i + 1]])
-
-        for i in range(1, len(combined_columns), 2):
-            df[combined_columns[i]] = df[combined_columns[i]].fillna(
-                df[combined_columns[i - 1]])
-            df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
-                df[combined_columns[i - 1]])
-
-        # Check all unique mismatches
-        temp = df.loc[df[a] != df[b], [a, b]].drop_duplicates()
-        # Calculate similarity
-        temp["jaro_distance"] = temp.apply(
-            lambda x: jellyfish.jaro_distance(x[a], x[b]), axis=1)
-        # sort by similarity
-        temp = temp.sort_values(by="jaro_distance", ascending=False)
-
-        columns = [{'id': c, 'name': c, } for c in temp.columns]
-
-        return temp.to_dict('records'), columns
-
-    # Generate the table with highlighted errors
-
-    @app.callback([Output('problematic_table', 'data'),
-                   Output('problematic_table', 'columns'), ],
-                  [Input('target_column', 'value'),
-                   Input("store-uploaded-data", "data"),
-                   Input('problematic_table', 'sort_by'),
-                   Input("problematic_table", "derived_filter_query_structure"),
-                   Input("fix-button", "n_clicks")
-                   ])
-    def error_highlight_table(dropdown_value, data, sort_by, derived_query_structure, n_clicks):
-        if data:
-            df = pd.DataFrame(data)
-        if n_clicks is None or n_clicks % 2 == 0:
-            pass
-        elif n_clicks % 2 == 1:
+            # Fill missing value
             for i in range(0, len(combined_columns), 2):
                 df[combined_columns[i]] = df[combined_columns[i]].fillna(
                     df[combined_columns[i + 1]])
@@ -748,41 +718,86 @@ def callback_upload(app):
                 df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
                     df[combined_columns[i - 1]])
 
-        if dropdown_value in summer_columns:
-            target_indices = summer_columns.index(dropdown_value)
-            winter_dropdown = winter_columns[target_indices]
-            result_df = df[df[summer_columns[target_indices]]
-                           != df[winter_columns[target_indices]]]
-            result_cols = ["SummerID", "CY", "CERT_N",
-                           dropdown_value, winter_dropdown]
+            # Check all unique mismatches
+            temp = df.loc[df[a] != df[b], [a, b]].drop_duplicates()
+            # Calculate similarity
+            temp["jaro_distance"] = temp.apply(
+                lambda x: jellyfish.jaro_distance(x[a], x[b]), axis=1)
+            # sort by similarity
+            temp = temp.sort_values(by="jaro_distance", ascending=False)
 
-            # data = result_df.to_dict('records')
+            columns = [{'id': c, 'name': c, } for c in temp.columns]
 
-            columns = [{'id': c, 'name': c, 'editable': (
-                c != dropdown_value and c != winter_dropdown)} for c in result_cols]
-        elif dropdown_value in rejection_column:
-            result_df = df[df[dropdown_value] < 0]
-            # data = result_df.to_dict('records')
-            columns = [{'id': c, 'name': c, 'editable': (c != dropdown_value)} for c in
-                       result_df.columns]
+            return temp.to_dict('records'), columns
+        except:
+            pass
 
-        if len(sort_by):
-            dff = result_df.sort_values(
-                sort_by[0]['column_id'],
-                ascending=sort_by[0]['direction'] == 'asc',
-                inplace=False
-            )
-        else:
-            # No sort is applied
-            dff = result_df
+    # Generate the table with highlighted errors
 
-        (pd_query_string, df_filtered) = construct_filter(
-            derived_query_structure, dff)
+    @app.callback([Output('problematic_table', 'data'),
+                   Output('problematic_table', 'columns'), ],
+                  [Input('target_column', 'value'),
+                   Input("store-uploaded-data", "data"),
+                   Input('problematic_table', 'sort_by'),
+                   Input("problematic_table", "derived_filter_query_structure"),
+                   Input("fix-button", "n_clicks")
+                   ])
+    def error_highlight_table(dropdown_value, data, sort_by, derived_query_structure, n_clicks):
+        try:
+            if data:
+                df = pd.DataFrame(data)
+            if n_clicks is None or n_clicks % 2 == 0:
+                pass
+            elif n_clicks % 2 == 1:
+                for i in range(0, len(combined_columns), 2):
+                    df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                        df[combined_columns[i + 1]])
+                    df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                        df[combined_columns[i + 1]])
 
-        if pd_query_string != '':
-            df_filtered = df_filtered.query(pd_query_string)
+                for i in range(1, len(combined_columns), 2):
+                    df[combined_columns[i]] = df[combined_columns[i]].fillna(
+                        df[combined_columns[i - 1]])
+                    df[combined_columns[i]] = df[combined_columns[i]].mask(df[combined_columns[i]] == 0).fillna(
+                        df[combined_columns[i - 1]])
 
-        return df_filtered[result_cols].to_dict('records'), columns
+            if dropdown_value in summer_columns:
+                target_indices = summer_columns.index(dropdown_value)
+                winter_dropdown = winter_columns[target_indices]
+                result_df = df[df[summer_columns[target_indices]]
+                               != df[winter_columns[target_indices]]]
+                result_cols = ["SummerID", "CY", "CERT_N",
+                               dropdown_value, winter_dropdown]
+
+                # data = result_df.to_dict('records')
+
+                columns = [{'id': c, 'name': c, 'editable': (
+                    c != dropdown_value and c != winter_dropdown)} for c in result_cols]
+            elif dropdown_value in rejection_column:
+                result_df = df[df[dropdown_value] < 0]
+                # data = result_df.to_dict('records')
+                columns = [{'id': c, 'name': c, 'editable': (c != dropdown_value)} for c in
+                           result_df.columns]
+
+            if len(sort_by):
+                dff = result_df.sort_values(
+                    sort_by[0]['column_id'],
+                    ascending=sort_by[0]['direction'] == 'asc',
+                    inplace=False
+                )
+            else:
+                # No sort is applied
+                dff = result_df
+
+            (pd_query_string, df_filtered) = construct_filter(
+                derived_query_structure, dff)
+
+            if pd_query_string != '':
+                df_filtered = df_filtered.query(pd_query_string)
+
+            return df_filtered[result_cols].to_dict('records'), columns
+        except:
+            pass
 
     @app.callback(Output('suscipious-frequency', 'value'),
                   [Input('similar_columns', 'value'),
@@ -790,20 +805,23 @@ def callback_upload(app):
                    Input("store-uploaded-data", "data"),
                    ])
     def calculate_frequency(summer_column, input, data):
-        df = pd.DataFrame(data)
-        target_indices = summer_columns.index(summer_column)
-        winter_column = winter_columns[target_indices]
+        try:
+            df = pd.DataFrame(data)
+            target_indices = summer_columns.index(summer_column)
+            winter_column = winter_columns[target_indices]
 
-        target = input
+            target = input
 
-        if target not in df[summer_column].unique() and target not in df[winter_column].unique():
-            return 0
-        elif target not in df[summer_column].unique():
-            return df[winter_column].value_counts()[target]
-        elif target not in df[winter_column].unique():
-            return df[summer_column].value_counts()[target]
-        else:
-            return df[summer_column].value_counts()[target] + df[summer_column].value_counts()[target]
+            if target not in df[summer_column].unique() and target not in df[winter_column].unique():
+                return 0
+            elif target not in df[summer_column].unique():
+                return df[winter_column].value_counts()[target]
+            elif target not in df[winter_column].unique():
+                return df[summer_column].value_counts()[target]
+            else:
+                return df[summer_column].value_counts()[target] + df[summer_column].value_counts()[target]
+        except:
+            pass
 
     @app.server.route('/downloads/<path:path>')
     def serve_static(path):

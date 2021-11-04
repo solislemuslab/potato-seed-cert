@@ -159,15 +159,26 @@ def callback_variety(app):
         ],
     )
     def left_column_dropdown(data):
-        if data:
-            df = pd.DataFrame(data)
+        try:
+            if data:
+                df = pd.DataFrame(data)
 
-        options = [
-            {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
-        ]
-        value = df["VARIETY"].value_counts()[:10].index
+            options = [
+                {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+            ]
+            value = df["VARIETY"].value_counts()[:10].index
+            # print("variety")
+            # print(options)
+            # print("value")
+            # print(value)
 
-        return options, value
+            return options, value
+        except:
+            options = [{'label': '1975-11-15 00:00:00',
+                        'value': '1975-11-15 00:00:00'}]
+            value = ['Dark Red Norland', 'Atlantic', 'Goldrush', 'Snowden', 'Superior',
+                     'Red Norland', 'Russet Norkotah', 'Pike', 'MegaChip', 'Silverton']
+            return options, value
 
     @app.callback(
         Output("sensitivity-graph", "figure"),
@@ -180,61 +191,67 @@ def callback_variety(app):
         ],
     )
     def sensitivity_graph(season, disease, variety, year, data):
-        if data:
-            df = pd.DataFrame(data)
-        fig = go.Figure()
-        # print(frequent_varity)
-        frequent_variety = df["VARIETY"].value_counts()[:20].index
-        print(frequent_variety)
-        if "summer" in season:
-            if(year == "all"):
-                temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
-                    ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
-            else:
-                temp = df.loc[df["S_YR"] == int(year)][df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
-                    ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
+        try:
+            if data:
+                df = pd.DataFrame(data)
+            fig = go.Figure()
+            # print(frequent_varity)
+            frequent_variety = df["VARIETY"].value_counts()[:20].index
+            print(frequent_variety)
+            if "summer" in season:
+                if(year == "all"):
+                    temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+                        ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
+                else:
+                    temp = df.loc[df["S_YR"] == int(year)][df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+                        ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
 
-            for column in temp.columns[1:]:
-                new_column = column.replace("NO", "PCT")
-                temp[new_column] = temp[column] / temp.iloc[:, 0]
+                for column in temp.columns[1:]:
+                    new_column = column.replace("NO", "PCT")
+                    temp[new_column] = temp[column] / temp.iloc[:, 0]
 
-            disease_type = [x for x in temp.columns if x.find(disease) != -1]
+                disease_type = [
+                    x for x in temp.columns if x.find(disease) != -1]
 
-            fig.add_trace(go.Bar(x=temp.index, y=temp[disease_type[1]],
-                                 # mode='lines+markers',
-                                 name=disease_type[1] + " " + "summer"))
+                fig.add_trace(go.Bar(x=temp.index, y=temp[disease_type[1]],
+                                     # mode='lines+markers',
+                                     name=disease_type[1] + " " + "summer"))
 
-        if "winter" in season:
-            if(year == "all"):
-                temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
-                    ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
-            else:
-                temp = df.loc[df["S_YR"] == int(year)][df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
-                    ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
-            for column in temp.columns[1:]:
-                new_column = column.replace("N", "_PCT")
-                temp[new_column] = temp[column] / temp.iloc[:, 0]
+            if "winter" in season:
+                if(year == "all"):
+                    temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+                        ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
+                else:
+                    temp = df.loc[df["S_YR"] == int(year)][df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
+                        ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
+                for column in temp.columns[1:]:
+                    new_column = column.replace("N", "_PCT")
+                    temp[new_column] = temp[column] / temp.iloc[:, 0]
 
-            disease_type = [x for x in temp.columns if x.find(disease) != -1]
+                disease_type = [
+                    x for x in temp.columns if x.find(disease) != -1]
 
-            fig.add_trace(go.Bar(x=temp.index, y=temp[disease_type[1]],
-                                 # mode='lines+markers',
-                                 name=disease_type[1] + " " + "winter"))
-        fig.update_layout(showlegend=True)
-        fig.update_layout(
-            # title="Sensitive/tolerant variety",
-            xaxis_title="Potato Variety",
-            yaxis_title="Percentage of potato with {}".format(disease),
-        )
+                fig.add_trace(go.Bar(x=temp.index, y=temp[disease_type[1]],
+                                     # mode='lines+markers',
+                                     name=disease_type[1] + " " + "winter"))
+            fig.update_layout(showlegend=True)
+            fig.update_layout(
+                # title="Sensitive/tolerant variety",
+                xaxis_title="Potato Variety",
+                yaxis_title="Percentage of potato with {}".format(disease),
+            )
 
-        fig.update_layout(legend=dict(
-            yanchor="top",
-            y=-0.45,
-            xanchor="center",
-            x=0.5
-        ))
+            fig.update_layout(legend=dict(
+                yanchor="top",
+                y=-0.45,
+                xanchor="center",
+                x=0.5
+            ))
 
-        # fig.add_annotation(x=4, y=4,
-        #                    text="Text annotation without arrow",
+            # fig.add_annotation(x=4, y=4,
+            #                    text="Text annotation without arrow",
 
-        return fig
+            return fig
+        except:
+            fig = go.Figure()
+            return fig
