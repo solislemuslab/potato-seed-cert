@@ -153,18 +153,25 @@ def callback_predis(app):
         ]
     )
     def dropdown_option(data):
-        if data:
-            df = pd.DataFrame(data)
+        try:
+            if data:
+                df = pd.DataFrame(data)
 
-        state_options = [
-            {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
-        ]
-        variety_options = [
-            {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
-        ]
-        variety_value = df["VARIETY"].value_counts()[:3].index
-
-        return state_options, variety_options
+            state_options = [
+                {"label": col, "value": col} for col in sorted(df["S_STATE"].dropna().unique())
+            ]
+            # print(state_options)
+            variety_options = [
+                {"label": col, "value": col} for col in df["VARIETY"].dropna().unique()
+            ]
+            variety_value = df["VARIETY"].value_counts()[:3].index
+            # print(variety_options)
+            return state_options, variety_options
+        except Exception:
+            state_options = [{'label': '2016', 'value': '2016'}]
+            variety_options = [
+                {'label': '1975-11-15 00:00:00', 'value': '1975-11-15 00:00:00'}]
+            return state_options, variety_options
 
     @app.callback(
         Output("prevalence-graph", "figure"),
@@ -179,86 +186,91 @@ def callback_predis(app):
     def prevalent_disease(season, diseases, state, variety, data):
 
         fig = go.Figure()
-        if data:
-            df = pd.DataFrame(data)
+        try:
+            if data:
+                df = pd.DataFrame(data)
 
-        if "summer" in season:
-            temp = df[(df["S_STATE"] == state) & (df["VARIETY"] == variety)].groupby("CY").sum()[
-                ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
+            if "summer" in season:
+                temp = df[(df["S_STATE"] == state) & (df["VARIETY"] == variety)].groupby("CY").sum()[
+                    ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
 
-            print(temp)
+                print(temp)
 
-            for column in temp.columns[1:]:
-                new_column = column.replace("NO", "PCT")
-                temp[new_column] = temp[column] / temp.iloc[:, 0]
+                for column in temp.columns[1:]:
+                    new_column = column.replace("NO", "PCT")
+                    temp[new_column] = temp[column] / temp.iloc[:, 0]
 
-            disease_types = []
-            for disease in diseases:
-                for col in temp.columns:
-                    if col.find(disease) != -1 and col.find("PCT") != -1:
-                        print(col, disease)
-                        disease_types.append(col)
-            print(disease_types)
+                disease_types = []
+                for disease in diseases:
+                    for col in temp.columns:
+                        if col.find(disease) != -1 and col.find("PCT") != -1:
+                            print(col, disease)
+                            disease_types.append(col)
+                print(disease_types)
 
-            #     disease_type = [x for x in temp.columns if x.find(diseases) != -1]
-            #     print(disease_type)
-            for i, disease_type in enumerate(disease_types):
-                fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_types[i]],
-                                         mode='lines+markers',
-                                         name=disease_types[i] + " " + "summer"))
+                #     disease_type = [x for x in temp.columns if x.find(diseases) != -1]
+                #     print(disease_type)
+                for i, disease_type in enumerate(disease_types):
+                    fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_types[i]],
+                                             mode='lines+markers',
+                                             name=disease_types[i] + " " + "summer"))
 
-        if "winter" in season:
+            if "winter" in season:
 
-            temp = df[(df["S_STATE"] == state) & (df["VARIETY"] == variety)].groupby("S_YR").sum()[
-                ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
-            for column in temp.columns[1:]:
-                new_column = column.replace("N", "_PCT")
-                temp[new_column] = temp[column] / temp.iloc[:, 0]
+                temp = df[(df["S_STATE"] == state) & (df["VARIETY"] == variety)].groupby("S_YR").sum()[
+                    ["winter_PLANTCT", "winter_MOSN", "winter_LRN", "winter_MXDN"]]
+                for column in temp.columns[1:]:
+                    new_column = column.replace("N", "_PCT")
+                    temp[new_column] = temp[column] / temp.iloc[:, 0]
 
-            disease_types = []
-            for disease in diseases:
-                for col in temp.columns:
-                    if col.find(disease) != -1 and col.find("PCT") != -1:
-                        print(col, disease)
-                        disease_types.append(col)
+                disease_types = []
+                for disease in diseases:
+                    for col in temp.columns:
+                        if col.find(disease) != -1 and col.find("PCT") != -1:
+                            print(col, disease)
+                            disease_types.append(col)
 
-            #     disease_type = [x for x in temp.columns if x.find(disease) != -1]
+                #     disease_type = [x for x in temp.columns if x.find(disease) != -1]
 
-            for i, disease_type in enumerate(disease_types):
-                fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_types[i]],
-                                         mode='lines+markers',
-                                         name=disease_types[i] + " " + "winter"))
+                for i, disease_type in enumerate(disease_types):
+                    fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_types[i]],
+                                             mode='lines+markers',
+                                             name=disease_types[i] + " " + "winter"))
 
         # fig.add_trace(go.Scatter(x=temp.index, y=temp[disease_type[1]],
         #                          mode='lines+markers',
         #                          name='lines+markers'))
 
-        fig.update_layout(
-            # title="Prevalent Disease",
-            autosize=True,
-            height=480,
-            width=680,
-            xaxis_title="Year",
-            yaxis_title="Percentage of potato with {}".format(disease),
-            showlegend=True,
-            legend=dict(
-                yanchor="top",
-                y=-0.2,
-                xanchor="center",
-                x=0.5
-            ),
-            xaxis={
-                "autorange": True,
-                "showline": True,
-            },
-            yaxis={
-                "autorange": True,
-                "showgrid": True,
-                "showline": True,
-                "type": "linear",
-                # "zeroline": False,
-            },
+            fig.update_layout(
+                # title="Prevalent Disease",
+                autosize=True,
+                height=480,
+                width=680,
+                xaxis_title="Year",
+                yaxis_title="Percentage of potato with {}".format(disease),
+                showlegend=True,
+                legend=dict(
+                    yanchor="top",
+                    y=-0.2,
+                    xanchor="center",
+                    x=0.5
+                ),
+                xaxis={
+                    "autorange": True,
+                    "showline": True,
+                },
+                yaxis={
+                    "autorange": True,
+                    "showgrid": True,
+                    "showline": True,
+                    "type": "linear",
+                    # "zeroline": False,
+                },
 
-        )
+            )
 
-        return fig
+            return fig
+        except:
+            fig = go.Figure()
+            return fig
+            #print("go figure exception2")

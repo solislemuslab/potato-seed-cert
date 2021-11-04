@@ -381,23 +381,32 @@ def callback_stat(app):
         ],
     )
     def Observed_Contingency_Table(row, col, state, year, grower, data):
-        if data:
-            df = pd.DataFrame(data)
-        # temp = df[(df["S_STATE"].isin([state])) & (df["VARIETY"].isin([variety])) & (df["S_G"].isin([grower])) ]
-        temp = df.copy()
-        if state != "All":
-            temp = temp[(temp["S_STATE"].isin([state]))]
-        if year != "All":
-            temp = temp[(temp["S_YR"].isin([year]))]
-        if grower != "All":
-            temp = temp[(temp["S_G"].isin([grower]))]
-        # temp = temp[(temp["VARIETY"].isin([variety]))]
-        # temp = df[(df["S_STATE"].isin([state]))  & (df["S_G"].isin([grower]))]
-        temp = temp.groupby([row, col]).size(
-        ).unstack().fillna(0).reset_index()
-        data = temp.to_dict('records')
-        columns = [{"name": str(i), "id": str(i)} for i in temp.columns]
-        return data, columns
+        try:
+            if data:
+                df = pd.DataFrame(data)
+            # temp = df[(df["S_STATE"].isin([state])) & (df["VARIETY"].isin([variety])) & (df["S_G"].isin([grower])) ]
+            temp = df.copy()
+            if state != "All":
+                temp = temp[(temp["S_STATE"].isin([state]))]
+            if year != "All":
+                temp = temp[(temp["S_YR"].isin([year]))]
+            if grower != "All":
+                temp = temp[(temp["S_G"].isin([grower]))]
+            # temp = temp[(temp["VARIETY"].isin([variety]))]
+            # temp = df[(df["S_STATE"].isin([state]))  & (df["S_G"].isin([grower]))]
+            temp = temp.groupby([row, col]).size(
+            ).unstack().fillna(0).reset_index()
+            data = temp.to_dict('records')
+            columns = [{"name": str(i), "id": str(i)} for i in temp.columns]
+            print("stat test")
+            print(data)
+            print(columns)
+            return data, columns
+        except:
+            data = [{'LBLIGHT': '< 0.25%', 'Atwater': 0.0, 'B Kuczmarski': 0.0, 'Baginski': 0.0, 'Bjornstad': 0.0, 'Bula Potato': 0.0, 'Bushman': 0.0, 'Buyan': 0.0, 'CETS': 0.0, 'CSS': 0.0, 'Childstock': 0.0, 'Crown': 0.0, 'Diercks': 0.0, 'Droge': 0.0, 'Droge Farms': 0.0, 'Eagle River Se': 0.0, 'Ebbesson': 0.0, 'Enander': 0.0, 'Fleischman D': 0.0, 'Gallenberg D': 0.0, 'Gallenberg Fms': 0.0, 'Goldeneye': 0.0, 'Greenleaf Org': 0.0, 'Guenthner Po': 0.0, 'H Miller': 0.0, 'Haenni Farms': 0.0, 'Hafner': 0.0, 'Hanson': 0.0, 'Hartman': 0.0, 'Haskett': 0.0, 'J Gallenberg': 0.0, 'J Jorde': 0.0, 'J Nicholes': 0.0, 'John Miller': 0.0, 'Johnson': 0.0, 'Jonk Seed Farm': 0.0, 'Jorde Certi': 0.0, 'Jorde Certifie': 0.0, 'Jorde Mike': 0.0, 'Kakes': 0.0, 'Kent Farms': 0.0, 'Kimm Pot': 0.0, 'Kroeker Farms,': 0.0, 'LHIlls': 0.0, 'Larson Farms': 0.0, 'London': 0.0, 'London Hill': 0.0, 'MSU': 0.0, 'Maine Seed': 0.0, 'Mangels': 0.0, 'Manhattan': 0.0, 'Mark Kuehl': 0.0, 'Mark Stremick': 0.0, 'Martin': 0.0, 'Mattek': 0.0, 'McCain': 0.0, 'Miller Farms J': 0.0, 'Myrna Stremick': 0.0, 'Myrna stremick': 0.0, 'NDS': 0.0, 'Neu Ground Lab': 0.0, 'Nilson Farms': 0.0, 'PEI Produce': 0.0, 'Paquin': 0.0, 'Parkinson Seed': 0.0, 'Phytocu': 0.0, 'Rine Ridge': 0.0, 'Royce Atwater': 0.0, 'Salen': 0.0, 'San Luis': 0.0, 'Schroeder Bros': 0.0, 'Schroeder Farm': 0.0, 'Schutter': 0.0, 'Scidmore Farms': 0.0, 'Seed Pro': 0.0, 'Seidl': 0.0, 'Sklarczyk': 0.0, 'Skogman': 0.0, 'Sowinski': 0.0, 'Sping Creek': 0.0, 'State Farm': 3.0, 'Steinmann': 0.0, 'Summit Farms': 0.0, 'Summit Labs': 0.0, 'Sunny Valley': 0.0, 'Sunnydale': 0.0, 'Sunrain Variet': 0.0, 'T Spychalla': 0.0, 'Technico/Sham': 0.0, 'Tetonia': 0.0, 'Thompson': 0.0, 'UI/Teutonia': 0.0, 'UW Breeding': 0.0, 'Uihlein Fm': 0.0, 'Val TCulture': 0.0, 'Van Erkel': 0.0, 'Wild': 0.0, 'Wirz': 0.0, 'Worley': 0.0, 'Zeloski -ER': 0.0, 'Zeloski, Felix': 0.0}, {'LBLIGHT': 'None evident',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             'Atwater': 1.0, 'B Kuczmarski': 1.0, 'Baginski': 25.0, 'Bjornstad': 2.0, 'Bula Potato': 7.0, 'Bushman': 1.0, 'Buyan': 1.0, 'CETS': 102.0, 'CSS': 97.0, 'Childstock': 6.0, 'Crown': 3.0, 'Diercks': 3.0, 'Droge': 80.0, 'Droge Farms': 6.0, 'Eagle River Se': 11.0, 'Ebbesson': 1.0, 'Enander': 3.0, 'Fleischman D': 9.0, 'Gallenberg D': 2.0, 'Gallenberg Fms': 16.0, 'Goldeneye': 1.0, 'Greenleaf Org': 1.0, 'Guenthner Po': 3.0, 'H Miller': 15.0, 'Haenni Farms': 2.0, 'Hafner': 11.0, 'Hanson': 2.0, 'Hartman': 4.0, 'Haskett': 2.0, 'J Gallenberg': 15.0, 'J Jorde': 27.0, 'J Nicholes': 2.0, 'John Miller': 39.0, 'Johnson': 6.0, 'Jonk Seed Farm': 3.0, 'Jorde Certi': 5.0, 'Jorde Certifie': 1.0, 'Jorde Mike': 7.0, 'Kakes': 14.0, 'Kent Farms': 27.0, 'Kimm Pot': 1.0, 'Kroeker Farms,': 1.0, 'LHIlls': 2.0, 'Larson Farms': 1.0, 'London': 1.0, 'London Hill': 1.0, 'MSU': 1.0, 'Maine Seed': 2.0, 'Mangels': 4.0, 'Manhattan': 2.0, 'Mark Kuehl': 1.0, 'Mark Stremick': 4.0, 'Martin': 1.0, 'Mattek': 30.0, 'McCain': 1.0, 'Miller Farms J': 2.0, 'Myrna Stremick': 3.0, 'Myrna stremick': 2.0, 'NDS': 2.0, 'Neu Ground Lab': 2.0, 'Nilson Farms': 5.0, 'PEI Produce': 2.0, 'Paquin': 2.0, 'Parkinson Seed': 4.0, 'Phytocu': 25.0, 'Rine Ridge': 25.0, 'Royce Atwater': 1.0, 'Salen': 4.0, 'San Luis': 1.0, 'Schroeder Bros': 90.0, 'Schroeder Farm': 26.0, 'Schutter': 16.0, 'Scidmore Farms': 1.0, 'Seed Pro': 2.0, 'Seidl': 32.0, 'Sklarczyk': 103.0, 'Skogman': 7.0, 'Sowinski': 28.0, 'Sping Creek': 2.0, 'State Farm': 5160.0, 'Steinmann': 2.0, 'Summit Farms': 8.0, 'Summit Labs': 119.0, 'Sunny Valley': 13.0, 'Sunnydale': 8.0, 'Sunrain Variet': 6.0, 'T Spychalla': 4.0, 'Technico/Sham': 3.0, 'Tetonia': 6.0, 'Thompson': 16.0, 'UI/Teutonia': 11.0, 'UW Breeding': 511.0, 'Uihlein Fm': 225.0, 'Val TCulture': 133.0, 'Van Erkel': 1.0, 'Wild': 34.0, 'Wirz': 15.0, 'Worley': 2.0, 'Zeloski -ER': 207.0, 'Zeloski, Felix': 2.0}]
+            columns = [{'name': 'LBLIGHT', 'id': 'LBLIGHT'}]
+            return data, columns
 
     @app.callback(
         Output("chi-summary", "children"),
@@ -412,49 +421,53 @@ def callback_stat(app):
         ],
     )
     def chi_square_test(row, col, significance_level, state, year, grower, data):
-        if data:
-            df = pd.DataFrame(data)
-        temp = df.copy()
-        if state != "All":
-            temp = temp[(temp["S_STATE"].isin([state]))]
-        if year != "All":
-            temp = temp[(temp["S_YR"].isin([year]))]
-        if grower != "All":
-            temp = temp[(temp["S_G"].isin([grower]))]
-        temp = temp.groupby([row, col]).size().unstack().fillna(0)
-        chi, pval, dof, exp = chi2_contingency(temp)
-        chi_test_columns = [
-            "Null HYpothesis", "Alternative Hypothesis", "Chi-Square score", "df", "P-value"]
-        columns = [{"name": i, "id": i} for i in chi_test_columns]
-        data = ["independence", "Association",
-                np.round(chi, 4), dof, np.round(pval, 4)]
-        data = pd.DataFrame(data, index=chi_test_columns).T.to_dict("record")
+        try:
+            if data:
+                df = pd.DataFrame(data)
+            temp = df.copy()
+            if state != "All":
+                temp = temp[(temp["S_STATE"].isin([state]))]
+            if year != "All":
+                temp = temp[(temp["S_YR"].isin([year]))]
+            if grower != "All":
+                temp = temp[(temp["S_G"].isin([grower]))]
+            temp = temp.groupby([row, col]).size().unstack().fillna(0)
+            chi, pval, dof, exp = chi2_contingency(temp)
+            chi_test_columns = [
+                "Null HYpothesis", "Alternative Hypothesis", "Chi-Square score", "df", "P-value"]
+            columns = [{"name": i, "id": i} for i in chi_test_columns]
+            data = ["independence", "Association",
+                    np.round(chi, 4), dof, np.round(pval, 4)]
+            data = pd.DataFrame(
+                data, index=chi_test_columns).T.to_dict("record")
 
-        return dash_table.DataTable(
-            id='chi-summary-table',
-            data=data,
-            columns=columns,
-            style_data_conditional=[
-                {
-                    'if': {
-                        'column_id': 'Alternative Hypothesis',
-                        # since using .format, escape { with {{
-                        'filter_query': '{{P-value}} <= {}'.format(significance_level)
+            return dash_table.DataTable(
+                id='chi-summary-table',
+                data=data,
+                columns=columns,
+                style_data_conditional=[
+                    {
+                        'if': {
+                            'column_id': 'Alternative Hypothesis',
+                            # since using .format, escape { with {{
+                            'filter_query': '{{P-value}} <= {}'.format(significance_level)
+                        },
+                        'backgroundColor': '#85144b',
+                        'color': 'white'
                     },
-                    'backgroundColor': '#85144b',
-                    'color': 'white'
-                },
-                {
-                    'if': {
-                        'column_id': 'Null HYpothesis',
-                        # since using .format, escape { with {{
-                        'filter_query': '{{P-value}} > {}'.format(significance_level)
+                    {
+                        'if': {
+                            'column_id': 'Null HYpothesis',
+                            # since using .format, escape { with {{
+                            'filter_query': '{{P-value}} > {}'.format(significance_level)
+                        },
+                        'backgroundColor': '#85144b',
+                        'color': 'white'
                     },
-                    'backgroundColor': '#85144b',
-                    'color': 'white'
-                },
-            ]
-        )
+                ]
+            )
+        except:
+            pass
 
     @app.callback(
         Output("anova-summary", "children"),
@@ -469,42 +482,46 @@ def callback_stat(app):
         ],
     )
     def anova_test(row, col, significance_level, state, year, grower, data):
-        if data:
-            df = pd.DataFrame(data)
-        temp = df.copy()
-        if state != "All":
-            temp = temp[(temp["S_STATE"].isin([state]))]
-        if year != "All":
-            temp = temp[(temp["S_YR"].isin([year]))]
-        if grower != "All":
-            temp = temp[(temp["S_G"].isin([grower]))]
-        model = ols("{} ~ {}".format(row, col), data=temp[[row, col]]).fit()
-        columns = [{"name": i, "id": i} for i in anova_columns]
-        data = ["independence", "Association", np.round(
-            model.fvalue, 4), model.df_model, np.round(model.f_pvalue, 4)]
-        data = pd.DataFrame(data, index=anova_columns).T.to_dict("record")
-        print(data)
+        try:
+            if data:
+                df = pd.DataFrame(data)
+            temp = df.copy()
+            if state != "All":
+                temp = temp[(temp["S_STATE"].isin([state]))]
+            if year != "All":
+                temp = temp[(temp["S_YR"].isin([year]))]
+            if grower != "All":
+                temp = temp[(temp["S_G"].isin([grower]))]
+            model = ols("{} ~ {}".format(row, col),
+                        data=temp[[row, col]]).fit()
+            columns = [{"name": i, "id": i} for i in anova_columns]
+            data = ["independence", "Association", np.round(
+                model.fvalue, 4), model.df_model, np.round(model.f_pvalue, 4)]
+            data = pd.DataFrame(data, index=anova_columns).T.to_dict("record")
+            print(data)
 
-        return dash_table.DataTable(
-            id='anova-summary-table',
-            data=data,
-            columns=columns,
-            style_data_conditional=[
-                {
-                    'if': {
-                        'column_id': 'Alternative Hypothesis',
-                        'filter_query': '{{P-value}} <= {}'.format(significance_level)
+            return dash_table.DataTable(
+                id='anova-summary-table',
+                data=data,
+                columns=columns,
+                style_data_conditional=[
+                    {
+                        'if': {
+                            'column_id': 'Alternative Hypothesis',
+                            'filter_query': '{{P-value}} <= {}'.format(significance_level)
+                        },
+                        'backgroundColor': '#85144b',
+                        'color': 'white'
                     },
-                    'backgroundColor': '#85144b',
-                    'color': 'white'
-                },
-                {
-                    'if': {
-                        'column_id': 'Null HYpothesis',
-                        'filter_query': '{{P-value}} > {}'.format(significance_level)
+                    {
+                        'if': {
+                            'column_id': 'Null HYpothesis',
+                            'filter_query': '{{P-value}} > {}'.format(significance_level)
+                        },
+                        'backgroundColor': '#85144b',
+                        'color': 'white'
                     },
-                    'backgroundColor': '#85144b',
-                    'color': 'white'
-                },
-            ]
-        )
+                ]
+            )
+        except:
+            pass
