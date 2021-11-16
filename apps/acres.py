@@ -223,18 +223,19 @@ def acres_callback(app):
                 df = df.sort_values(by=['AC_REJ'], ascending=False)
             temp = df.groupby("VARIETY").sum()[
                 ["ACRES", "AC_REJ", "winter_ACRES", "winter_AC_REJ"]]
-            print(temp)
+            # print(temp)
             temp["rej_pct"] = temp["AC_REJ"] / temp["ACRES"]
             temp["winter_rej_pct"] = temp["winter_AC_REJ"] / \
                 temp["winter_ACRES"]
             temp = temp[temp.index.isin(lots)]
-            print(temp)
-            print(temp.index)
-            for i in temp["rej_pct"]:
-                if i != 0:
-                    print(i)
-            print(type(temp['ACRES']))
-            print(temp["ACRES"])
+            # print(temp)
+            # print(temp.index)
+            # for i in temp["rej_pct"]:
+            #    if i != 0:
+            #        print("hello")
+            #        print(i)
+            # print(type(temp['ACRES']))
+            # print(temp["ACRES"])
             fig = go.Figure()
             fig.add_trace(go.Bar(
                 x=temp.index,

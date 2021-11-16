@@ -194,7 +194,7 @@ def callback_predis(app):
                 temp = df[(df["S_STATE"] == state) & (df["VARIETY"] == variety)].groupby("CY").sum()[
                     ["PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND"]]
 
-                print(temp)
+                # print(temp)
 
                 for column in temp.columns[1:]:
                     new_column = column.replace("NO", "PCT")
@@ -204,9 +204,9 @@ def callback_predis(app):
                 for disease in diseases:
                     for col in temp.columns:
                         if col.find(disease) != -1 and col.find("PCT") != -1:
-                            print(col, disease)
+                            #print(col, disease)
                             disease_types.append(col)
-                print(disease_types)
+                # print(disease_types)
 
                 #     disease_type = [x for x in temp.columns if x.find(diseases) != -1]
                 #     print(disease_type)
@@ -227,7 +227,7 @@ def callback_predis(app):
                 for disease in diseases:
                     for col in temp.columns:
                         if col.find(disease) != -1 and col.find("PCT") != -1:
-                            print(col, disease)
+                            #print(col, disease)
                             disease_types.append(col)
 
                 #     disease_type = [x for x in temp.columns if x.find(disease) != -1]
