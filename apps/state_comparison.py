@@ -228,7 +228,7 @@ def callback_statecomparison(app):
             state_id = {state: np.linspace(0, 1, len(colors))[
                 i] for i, state in enumerate(unique_states)}
 
-            print(state_id)
+            # print(state_id)
 
             temp = temp.groupby("S_STATE").sum()[number_column]
 
@@ -254,11 +254,11 @@ def callback_statecomparison(app):
             # print(scaled_color)
 
             if inspection == "1ST":
-                print(temp)
+               # print(temp)
                 temp = temp.loc[state, first_ins].reset_index()
                 temp["State_id"] = temp["S_STATE"].map(state_id)
                 temp["line_color"] = temp["State_id"].map(colorscales)
-                print(temp)
+                # print(temp)
                 fig = go.Figure(data=go.Parcoords(
                     line=dict(color=(temp["State_id"]),
                               colorscale=scaled_color),
@@ -280,7 +280,7 @@ def callback_statecomparison(app):
                 temp = temp.loc[state, second_ins].reset_index()
                 temp["State_id"] = temp["S_STATE"].map(state_id)
                 temp["line_color"] = temp["State_id"].map(colorscales)
-                print(temp)
+                # print(temp)
                 fig = go.Figure(data=go.Parcoords(
                     line=dict(color=(temp["State_id"]),
                               colorscale=scaled_color),

@@ -398,9 +398,9 @@ def callback_stat(app):
             ).unstack().fillna(0).reset_index()
             data = temp.to_dict('records')
             columns = [{"name": str(i), "id": str(i)} for i in temp.columns]
-            print("stat test")
-            print(data)
-            print(columns)
+            #print("stat test")
+            # print(data)
+            # print(columns)
             return data, columns
         except:
             data = [{'LBLIGHT': '< 0.25%', 'Atwater': 0.0, 'B Kuczmarski': 0.0, 'Baginski': 0.0, 'Bjornstad': 0.0, 'Bula Potato': 0.0, 'Bushman': 0.0, 'Buyan': 0.0, 'CETS': 0.0, 'CSS': 0.0, 'Childstock': 0.0, 'Crown': 0.0, 'Diercks': 0.0, 'Droge': 0.0, 'Droge Farms': 0.0, 'Eagle River Se': 0.0, 'Ebbesson': 0.0, 'Enander': 0.0, 'Fleischman D': 0.0, 'Gallenberg D': 0.0, 'Gallenberg Fms': 0.0, 'Goldeneye': 0.0, 'Greenleaf Org': 0.0, 'Guenthner Po': 0.0, 'H Miller': 0.0, 'Haenni Farms': 0.0, 'Hafner': 0.0, 'Hanson': 0.0, 'Hartman': 0.0, 'Haskett': 0.0, 'J Gallenberg': 0.0, 'J Jorde': 0.0, 'J Nicholes': 0.0, 'John Miller': 0.0, 'Johnson': 0.0, 'Jonk Seed Farm': 0.0, 'Jorde Certi': 0.0, 'Jorde Certifie': 0.0, 'Jorde Mike': 0.0, 'Kakes': 0.0, 'Kent Farms': 0.0, 'Kimm Pot': 0.0, 'Kroeker Farms,': 0.0, 'LHIlls': 0.0, 'Larson Farms': 0.0, 'London': 0.0, 'London Hill': 0.0, 'MSU': 0.0, 'Maine Seed': 0.0, 'Mangels': 0.0, 'Manhattan': 0.0, 'Mark Kuehl': 0.0, 'Mark Stremick': 0.0, 'Martin': 0.0, 'Mattek': 0.0, 'McCain': 0.0, 'Miller Farms J': 0.0, 'Myrna Stremick': 0.0, 'Myrna stremick': 0.0, 'NDS': 0.0, 'Neu Ground Lab': 0.0, 'Nilson Farms': 0.0, 'PEI Produce': 0.0, 'Paquin': 0.0, 'Parkinson Seed': 0.0, 'Phytocu': 0.0, 'Rine Ridge': 0.0, 'Royce Atwater': 0.0, 'Salen': 0.0, 'San Luis': 0.0, 'Schroeder Bros': 0.0, 'Schroeder Farm': 0.0, 'Schutter': 0.0, 'Scidmore Farms': 0.0, 'Seed Pro': 0.0, 'Seidl': 0.0, 'Sklarczyk': 0.0, 'Skogman': 0.0, 'Sowinski': 0.0, 'Sping Creek': 0.0, 'State Farm': 3.0, 'Steinmann': 0.0, 'Summit Farms': 0.0, 'Summit Labs': 0.0, 'Sunny Valley': 0.0, 'Sunnydale': 0.0, 'Sunrain Variet': 0.0, 'T Spychalla': 0.0, 'Technico/Sham': 0.0, 'Tetonia': 0.0, 'Thompson': 0.0, 'UI/Teutonia': 0.0, 'UW Breeding': 0.0, 'Uihlein Fm': 0.0, 'Val TCulture': 0.0, 'Van Erkel': 0.0, 'Wild': 0.0, 'Wirz': 0.0, 'Worley': 0.0, 'Zeloski -ER': 0.0, 'Zeloski, Felix': 0.0}, {'LBLIGHT': 'None evident',
@@ -498,7 +498,7 @@ def callback_stat(app):
             data = ["independence", "Association", np.round(
                 model.fvalue, 4), model.df_model, np.round(model.f_pvalue, 4)]
             data = pd.DataFrame(data, index=anova_columns).T.to_dict("record")
-            print(data)
+            # print(data)
 
             return dash_table.DataTable(
                 id='anova-summary-table',

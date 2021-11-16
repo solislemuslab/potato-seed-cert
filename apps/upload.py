@@ -135,7 +135,7 @@ def parse_data(contents, filename):
             df = pd.read_csv(
                 io.StringIO(decoded.decode('utf-8')), delimiter=r'\s+')
     except Exception as e:
-        print(e)
+        # print(e)
         return html.Div([
             'There was an error processing this file.'
         ])

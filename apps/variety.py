@@ -197,7 +197,7 @@ def callback_variety(app):
             fig = go.Figure()
             # print(frequent_varity)
             frequent_variety = df["VARIETY"].value_counts()[:20].index
-            print(frequent_variety)
+            # print(frequent_variety)
             if "summer" in season:
                 if(year == "all"):
                     temp = df[df["VARIETY"].isin(variety)].groupby("VARIETY").sum()[
