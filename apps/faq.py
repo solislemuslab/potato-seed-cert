@@ -30,7 +30,7 @@ homepage = dbc.Jumbotron(
         # ),
         html.P(
             ["A: You can check out the ",
-             html.A(children="document",
+             html.A(children="documentation",
                     href="https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md"),
              "."
              ]),
