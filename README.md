@@ -4,7 +4,7 @@ This is an online dashboard for the data analysis and data visualization of the 
 
 # Usage
 
-`Potato-Seed-Dashboard` is browser-based (preferably Google Chrome), and thus, no installation is needed. Users simply need to click on the following link: xxxxx.
+`Potato-Seed-Dashboard` is browser-based (preferably Google Chrome), and thus, no installation is needed. Users simply need to click on the following link: https://potato-seed-dashboard.wid.wisc.edu/.
 
 More details are available in the documentation: [DOCS.md](https://github.com/solislemuslab/potato-seed-cert/blob/master/DOCS.md).
 
