@@ -220,6 +220,7 @@ def callback_statecomparison(app):
 
             # Encode each state to a number for coloring purpose
             unique_states = temp["S_STATE"].unique()
+
             # Remove errors in state, such as 2016
             unique_states = [
                 state for state in unique_states if isinstance(state, str)]
@@ -227,8 +228,6 @@ def callback_statecomparison(app):
             # Construct a dictionary to assign an unique id to each state
             state_id = {state: np.linspace(0, 1, len(colors))[
                 i] for i, state in enumerate(unique_states)}
-
-            # print(state_id)
 
             temp = temp.groupby("S_STATE").sum()[number_column]
 
@@ -246,32 +245,44 @@ def callback_statecomparison(app):
                           "PCT_MIX_2ND", "PCT_TOTV_2ND", "PCT_BRR_2ND"]
 
             # Add the state with minimum and maximum ID to fix the max id and min id value (Not dynamic)
-            state = list(set(state + ["CO", "MB"]))
+            state = list(set(state))
+            #+ ["CO", "MB"]
 
             scaled_color = [[np.linspace(0, 1, num=len(colors))[i], color]
                             for i, color in enumerate(colors)]
 
             # print(scaled_color)
-
+            # maxval=[]
+            # for st in unique_states:
+            #    temp = temp.loc[st, first_ins].reset_index()
+            #    temp["State_id"] = temp["S_STATE"].map(state_id)
             if inspection == "1ST":
-               # print(temp)
                 temp = temp.loc[state, first_ins].reset_index()
                 temp["State_id"] = temp["S_STATE"].map(state_id)
                 temp["line_color"] = temp["State_id"].map(colorscales)
+                maxval = max(temp["PCT_LR_1ST"].max(), temp["PCT_MOS_1ST"].max(),
+                             temp["PCT_ST_1ST"].max(), temp["PCT_MIX_1ST"].max())
+                minval = min(temp["PCT_LR_1ST"].min(), temp["PCT_MOS_1ST"].min(),
+                             temp["PCT_ST_1ST"].min(), temp["PCT_MIX_1ST"].min())
+
                 # print(temp)
                 fig = go.Figure(data=go.Parcoords(
                     line=dict(color=(temp["State_id"]),
                               colorscale=scaled_color),
                     # [[0, 'blue'], [0.5, 'lightseagreen'], [1, 'gold']]
                     dimensions=list([
-                        dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
-                             #                 constraintrange = [4,8],
+                        # dict(range=[temp["PCT_LR_1ST"].min() * 0.5, temp["PCT_LR_1ST"].max() * 1.2],
+                        #                 constraintrange = [4,8],
+                        dict(range=[minval, maxval],
                              label='LR', values=temp["PCT_LR_1ST"]),
-                        dict(range=[temp["PCT_MOS_1ST"].min() * 0.5, temp["PCT_MOS_1ST"].max() * 1.2],
+                        # dict(range=[temp["PCT_MOS_1ST"].min() * 0.5, temp["PCT_MOS_1ST"].max() * 1.2],
+                        dict(range=[minval, maxval],
                              label='MOS', values=temp["PCT_MOS_1ST"]),
-                        dict(range=[temp["PCT_ST_1ST"].min(), temp["PCT_ST_1ST"].max()+0.5],
+                        # dict(range=[temp["PCT_ST_1ST"].min(), temp["PCT_ST_1ST"].max()+0.5],
+                        dict(range=[minval, maxval],
                              label="ST", values=temp["PCT_ST_1ST"]),
-                        dict(range=[temp["PCT_MIX_1ST"].min() * 0.5, temp["PCT_MIX_1ST"].max() * 1.2],
+                        # dict(range=[temp["PCT_MIX_1ST"].min() * 0.5, temp["PCT_MIX_1ST"].max() * 1.2],
+                        dict(range=[minval, maxval],
                              label='MIX', values=temp["PCT_MIX_1ST"])
                     ])
                 )
@@ -280,24 +291,38 @@ def callback_statecomparison(app):
                 temp = temp.loc[state, second_ins].reset_index()
                 temp["State_id"] = temp["S_STATE"].map(state_id)
                 temp["line_color"] = temp["State_id"].map(colorscales)
+                print(temp["PCT_MOS_2ND"].min(), temp["PCT_MOS_2ND"].max())
                 # print(temp)
+                maxval = max(temp["PCT_LR_2ND"].max(), temp["PCT_MOS_2ND"].max(),
+                             temp["PCT_ST_2ND"].max(), temp["PCT_MIX_2ND"].max(), temp["PCT_TOTV_2ND"].max(), temp["PCT_BRR_2ND"].max())
+                minval = min(temp["PCT_LR_2ND"].min(), temp["PCT_MOS_2ND"].min(),
+                             temp["PCT_ST_2ND"].min(), temp["PCT_MIX_2ND"].min(), temp["PCT_TOTV_2ND"].min(), temp["PCT_BRR_2ND"].min())
+
                 fig = go.Figure(data=go.Parcoords(
                     line=dict(color=(temp["State_id"]),
                               colorscale=scaled_color),
                     # [[0, 'blue'], [0.5, 'lightseagreen'], [1, 'gold']]
                     dimensions=list([
-                        dict(range=[temp["PCT_LR_2ND"].min() * 0.5, temp["PCT_LR_2ND"].max() * 1.2],
+                        # dict(range=[temp["PCT_LR_2ND"].min() * 0.5, temp["PCT_LR_2ND"].max() * 1.2],
+                        #                 constraintrange = [4,8],
+                        #     label='LR', values=temp["PCT_LR_2ND"]),
+                        dict(range=[minval, maxval],
                              #                 constraintrange = [4,8],
                              label='LR', values=temp["PCT_LR_2ND"]),
-                        dict(range=[temp["PCT_MOS_2ND"].min() * 0.5, temp["PCT_MOS_2ND"].max() * 1.2],
+                        # dict(range=[temp["PCT_MOS_2ND"].min() * 0.5, temp["PCT_MOS_2ND"].max() * 1.2],
+                        dict(range=[minval, maxval],
                              label='MOS', values=temp["PCT_MOS_2ND"]),
-                        dict(range=[temp["PCT_ST_2ND"].min(), temp["PCT_ST_2ND"].max() + 0.5],
+                        # dict(range=[temp["PCT_ST_2ND"].min(), temp["PCT_ST_2ND"].max() + 0.5],
+                        dict(range=[minval, maxval],
                              label="ST", values=temp["PCT_ST_2ND"]),
-                        dict(range=[temp["PCT_MIX_2ND"].min() * 0.5, temp["PCT_MIX_2ND"].max() * 1.2],
+                        # dict(range=[temp["PCT_MIX_2ND"].min() * 0.5, temp["PCT_MIX_2ND"].max() * 1.2],
+                        dict(range=[minval, maxval],
                              label='MIX', values=temp["PCT_MIX_2ND"]),
-                        dict(range=[temp["PCT_TOTV_2ND"].min() * 0.5, temp["PCT_TOTV_2ND"].max() * 1.2],
+                        # dict(range=[temp["PCT_TOTV_2ND"].min() * 0.5, temp["PCT_TOTV_2ND"].max() * 1.2],
+                        dict(range=[minval, maxval],
                              label="TOTV", values=temp["PCT_TOTV_2ND"]),
-                        dict(range=[temp["PCT_BRR_2ND"].min() * 0.5, temp["PCT_BRR_2ND"].max() * 1.2],
+                        # dict(range=[temp["PCT_BRR_2ND"].min() * 0.5, temp["PCT_BRR_2ND"].max()],
+                        dict(range=[minval, maxval],
                              label="BRR", values=temp["PCT_BRR_2ND"]),
                     ])
                 )
