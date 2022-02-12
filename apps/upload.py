@@ -141,6 +141,7 @@ def parse_data(contents, filename):
         # print(e)
         return html.Div([
             'There was an error processing this file.'
+
         ])
     return df
 
@@ -163,9 +164,12 @@ def callback_upload(app):
                 if((lst == expected_csv_cols) is False):
                     return html.Div([
                         html.P(
-                            "Column name does not match the expected. Please check your file format and reupload it.",
-                            className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
-                        ),
+                            ["There was an error processing this file, please check the ",
+                             html.A(children="data-format.md",
+                                    href="https://github.com/solislemuslab/potato-seed-cert/blob/master/Data-Format.md"),
+                                " and verify the colum names in your file."
+                             ], className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
+                        )
                     ]), df.to_dict('records')
 
                 return html.Div([
@@ -207,9 +211,12 @@ def callback_upload(app):
                 if((lst == expected_csv_cols) is False):
                     return html.Div([
                         html.P(
-                            "Column name does not match the expected. Please check your file format and reupload it.",
-                            className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
-                        ),
+                            ["There was an error processing this file, please check the ",
+                             html.A(children="data-format.md",
+                                    href="https://github.com/solislemuslab/potato-seed-cert/blob/master/Data-Format.md"),
+                                " and verify the colum names in your file."
+                             ], className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
+                        )
                     ]), df.to_dict('records')
                 return html.Div([
                     html.P(
@@ -246,8 +253,11 @@ def callback_upload(app):
                 if((lst == expected_csv_cols) is False):
                     return html.Div([
                         html.P(
-                            "Column name does not match the expected. Please check your file format and reupload it.",
-                            className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
+                            ["There was an error processing this file, please check the ",
+                             html.A(children="data-format.md",
+                                    href="https://github.com/solislemuslab/potato-seed-cert/blob/master/Data-Format.md"),
+                                " and verify the colum names in your file."
+                             ], className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
                         ),
                     ]), df.to_dict('records')
                 return html.Div([
@@ -283,8 +293,11 @@ def callback_upload(app):
                 if((lst == expected_csv_cols) is False):
                     return html.Div([
                         html.P(
-                            "Column name does not match the expected. Please check your file format and reupload it.",
-                            className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
+                            ["There was an error processing this file, please check the ",
+                             html.A(children="data-format.md",
+                                    href="https://github.com/solislemuslab/potato-seed-cert/blob/master/Data-Format.md"),
+                                " and verify the colum names in your file."
+                             ], className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
                         ),
                     ]), df.to_dict('records')
                 return html.Div([
