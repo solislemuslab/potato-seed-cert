@@ -2,7 +2,7 @@
 
 Currently, the dashboard is tailored to the certification data. For this reason, the uploaded .csv/xlsx/txt file needs to contain the following columns:
 
-- ''
+- '': first column does not have a column name and simply contains row numbers
 - 'SummerID'
 - 'CY'
 - 'CERT_N' 
