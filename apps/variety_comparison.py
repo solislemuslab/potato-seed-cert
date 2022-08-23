@@ -43,12 +43,12 @@ LEFT_COLUMN = dbc.Jumbotron(
         html.Hr(className="my-2"),
         dbc.FormGroup(
             [
-                dbc.Label("S_GRW"),
+                dbc.Label("VARIETY"),
                 dcc.Dropdown(
-                    id='multi_state',
+                    id='potato_variety_v',
                     # options=[{'label': i, 'value': i}
                     #          for i in sorted(df["S_STATE"].dropna().unique())],
-                    value=['State Farm', 'Kamps Seed Farm'],
+                    value=['Dark Red Norland', 'Atlantic'],
                     multi=True,
                     style={'width': '90%', 'margin-left': '5px'},
                     placeholder="Select states", ),
@@ -57,7 +57,7 @@ LEFT_COLUMN = dbc.Jumbotron(
             [
                 dbc.Label("Inspection"),
                 dcc.Dropdown(
-                    id='parallel_inspection',
+                    id='parallel_inspection_v',
                     options=[{'label': i, 'value': i}
                              for i in ["1ST", "2ND", "Winter"]],
                     value=['1ST'],
@@ -68,12 +68,12 @@ LEFT_COLUMN = dbc.Jumbotron(
             [
                 dbc.Label("Year Type"),
                 dcc.Dropdown(
-                    id='year_type',
+                    id='year_type_v',
                     # options=[{'label': i, 'value': i}
                     #          for i in sorted(df["S_STATE"].dropna().unique())],
                     options=[{'label': i, 'value': i}
                              for i in ["S_YR", "winter_CY"]],
-                    value=['S_Year'],
+                    value=['S_YR'],
                     style={'width': '90%', 'margin-left': '5px'},
                     placeholder="Select states", ),
             ]),
@@ -81,7 +81,7 @@ LEFT_COLUMN = dbc.Jumbotron(
             [
                 dbc.Label("Year"),
                 dcc.Dropdown(
-                    id="parallel_year",
+                    id="parallel_year_v",
                     # options=[
                     #    {"label": col, "value": col} for col in year_list
                     # ],
@@ -133,7 +133,7 @@ RIGHT_PLOT = [
                         style={"display": "none"},
                     ),
 
-                    dcc.Graph(id="parallel-graph"),
+                    dcc.Graph(id="parallel-graph_v"),
                 ],
                 type="default",
             )
@@ -142,7 +142,7 @@ RIGHT_PLOT = [
     ),
 ]
 
-state_comparison_layout = html.Div(
+variety_comparison_layout = html.Div(
     [
         dbc.Row([
             dbc.Col(LEFT_COLUMN, align="center", md=4),
@@ -153,7 +153,7 @@ state_comparison_layout = html.Div(
         dbc.Row([
             dbc.Col(html.Div(
                 dash_table.DataTable(
-                    id="parallel-graph-table",
+                    id="parallel-graph-table_v",
 
                     style_header={
                         'backgroundColor': '#25597f', 'color': 'white'},
@@ -177,9 +177,9 @@ state_comparison_layout = html.Div(
 )
 
 
-def callback_statecomparison(app):
+def callback_varietycomparison(app):
     @app.callback(
-        Output("multi_state", "options"),
+        Output("potato_variety_v", "options"),
         #Output("parallel_year", "options")
         # ],
         [
@@ -196,10 +196,10 @@ def callback_statecomparison(app):
             #df["S_GRW"] = df["S_GRW"].values.astype('string')
             #print("we have data2")
             options = [{'label': i, 'value': i}
-                       for i in df["S_GRW"].dropna().unique()]
+                       for i in df["VARIETY"].dropna().unique()]
             #temp = df.loc[df["S_YR"] == int(year)].copy()
-            options2 = [{'label': i, 'value': i}
-                        for i in list(np.sort(df["S_YR"].unique()))]
+            # options2 = [{'label': i, 'value': i}
+            #            for i in list(np.sort(df["S_YR"].unique()))]
             #year_list = list(np.sort(df["S_YR"].unique()))
             # print("dropdown_option")
             #print("we have data3")
@@ -210,21 +210,24 @@ def callback_statecomparison(app):
         except:
             #print("we don't have data")
             options = [{'label': '0', 'value': '0'}]
-            options2 = [{'label': '0', 'value': '0'}]
+            #options2 = [{'label': '0', 'value': '0'}]
             return options
 
     @app.callback(
-        Output("parallel_year", "options"),
+        Output("parallel_year_v", "options"),
         [
             Input("store-uploaded-data", "data"),
-            Input("multi_state", "value"),
-            Input("year_type", "value")
+            Input("potato_variety_v", "value"),
+            Input("year_type_v", "value")
         ]
     )
     def dropdown_option2(data, state, type):
         try:
             if data:
                 df = pd.DataFrame(data)
+               # print("succeed")
+            #print("now we print of column names in variety")
+            # print(df.columns)
             #print("we have data1")
             # print(len(df.columns[11]))
             # print(df["S_GRW"].values)
@@ -232,23 +235,30 @@ def callback_statecomparison(app):
             #print("we have data2")
             #print("now we have data")
             # print(state)
-            temp = df.loc[df["S_GRW"] == state[0]].copy()
+            #print("state 0 is")
+            # print(state[0])
+            temp = df.loc[df["VARIETY"] == state[0]].copy()
 
             #print("now we have temp")
-            # rint(temp)
+            # print(temp)
             if type == "S_YR":
+                print("now we comes to S_YR")
                 options2 = [{'label': i, 'value': i}
                             for i in list(np.sort(temp["S_YR"].unique()))]
+                print("now we start to print options2 in variety")
+                print(options2)
                 for s in state:
-                    temp_s = df.loc[df["S_GRW"] == s].copy()
+                    temp_s = df.loc[df["VARIETY"] == s].copy()
                     temp_s_Y = list(np.sort(temp_s["S_YR"].unique()))
+                    print("now we have temp_s_Y")
+                    print(temp_s_Y)
                     for y in temp_s_Y:
 
                         if {'label': y, 'value': y} not in options2:
                             options2.append({'label': y, 'value': y})
-                print(
-                    "now we start to print final version of options2 in state comparison")
+                print("now we start to print final version of options2")
                 print(options2)
+                return options2
             else:
                 options2 = [{'label': i, 'value': i}
                             for i in list(np.sort(temp["winter_CY"].unique()))]
@@ -256,8 +266,6 @@ def callback_statecomparison(app):
                     temp_s = df.loc[df["S_GRW"] == s].copy()
                     temp_s_Y = list(np.sort(temp_s["winter_CY"].unique()))
                     for y in temp_s_Y:
-                        #print("y is: ")
-                        # print(y)
                         if {'label': y, 'value': y} not in options2:
                             options2.append({'label': y, 'value': y})
             #print("now we have option2")
@@ -276,13 +284,13 @@ def callback_statecomparison(app):
             return options2
 
     @app.callback(
-        [Output("parallel-graph-table", "data"),
-         Output("parallel-graph-table", "columns"),
-         Output("parallel-graph", "figure")],
-        [Input("multi_state", "value"),
-         Input("parallel_inspection", "value"),
-         Input("year_type", "value"),
-         Input("parallel_year", "value"),
+        [Output("parallel-graph-table_v", "data"),
+         Output("parallel-graph-table_v", "columns"),
+         Output("parallel-graph_v", "figure")],
+        [Input("potato_variety_v", "value"),
+         Input("parallel_inspection_v", "value"),
+         Input("year_type_v", "value"),
+         Input("parallel_year_v", "value"),
          Input("store-uploaded-data", "data")
          ]
     )
@@ -329,7 +337,7 @@ def callback_statecomparison(app):
                 else:
                     temp = df.loc[df["winter_CY"] == int(year)].copy()
             # Encode each state to a number for coloring purpose
-            unique_states = temp["S_GRW"].unique()
+            unique_states = temp["VARIETY"].unique()
             #print("type is: ")
             # print(type(unique_states[0]))
 
@@ -346,11 +354,8 @@ def callback_statecomparison(app):
             # Construct a dictionary to assign an unique id to each state
             state_id = {state: np.linspace(0, 1, len(colors))[
                 i] for i, state in enumerate(unique_states)}
-            #print("State_id is: ")
-            # print(state_id)
-            temp = temp.groupby("S_GRW").sum()[number_column]
-           # print("temp is: ")
-            # print(temp)
+
+            temp = temp.groupby("VARITEY").sum()[number_column]
 
             for column in temp.columns:
                 if "1ST" in column:
@@ -381,7 +386,7 @@ def callback_statecomparison(app):
             #    temp["State_id"] = temp["S_STATE"].map(state_id)
             if inspection == "1ST":
                 temp = temp.loc[state, first_ins].reset_index()
-                temp["State_id"] = temp["S_GRW"].map(state_id)
+                temp["State_id"] = temp["VARIETY"].map(state_id)
                 temp["line_color"] = temp["State_id"].map(colorscales)
                 maxval = max(temp["PCT_LR_1ST"].max(), temp["PCT_MOS_1ST"].max(),
                              temp["PCT_ST_1ST"].max(
@@ -416,7 +421,7 @@ def callback_statecomparison(app):
                 )
             elif inspection == "2ND":
                 temp = temp.loc[state, second_ins].reset_index()
-                temp["State_id"] = temp["S_GRW"].map(state_id)
+                temp["State_id"] = temp["VARIETY"].map(state_id)
                 temp["line_color"] = temp["State_id"].map(colorscales)
                 #print(temp["PCT_MOS_2ND"].min(), temp["PCT_MOS_2ND"].max())
                 # print(temp)
@@ -456,7 +461,7 @@ def callback_statecomparison(app):
                 )
             else:
                 temp = temp.loc[state, first_ins].reset_index()
-                temp["State_id"] = temp["S_GRW"].map(state_id)
+                temp["State_id"] = temp["VARIETY"].map(state_id)
                 temp["line_color"] = temp["State_id"].map(colorscales)
                 maxval = max(temp["winter_LR"].max(), temp["winter_MOS"].max(),
                              temp["winter_MIX"].max(), temp["winter_PSTV"].max())
