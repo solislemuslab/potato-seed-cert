@@ -133,7 +133,7 @@ Visualization = [
                         href="/disease-prevalence/1", className='text-light', active="exact"),
             # dbc.NavLink("Disease-Prevalence-2",
             #             href="/disease-prevalence/2", className='text-light'),
-            dbc.NavLink("State Comparison",
+            dbc.NavLink("Source Comparison",
                         href="/state-comparison/1", className='text-light', active="exact"),
             # dbc.NavLink("State-Comparison-2",
             #             href="/state-comparison/2", className='text-light'),

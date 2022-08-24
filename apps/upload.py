@@ -202,7 +202,13 @@ def callback_upload(app):
                     # ),
                     # dbc.Button(children="fix me",  color="primary",
                     #           outline=True, id="fix-button", className="mr-1", block=True),''',
-                    html.Br()
+                    html.Br(),
+                    html.Br(),
+                    html.P(
+                        "Data Summary --- total columns: {} and total rows: {}".format(
+                            len(df.columns), len(df.index)),
+                        className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
+                    ),
                 ]), df.to_dict('records')
             elif tab == 'tab-2':
                 lst = []
@@ -240,11 +246,26 @@ def callback_upload(app):
                     ),
                     html.P(
                         "Please click the button below if you want to fill all missing entries",
-                        className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
+                        className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'},
+
                     ),
                     dbc.Button(children="fix me",  color="primary",
                                outline=True, id="fix-button", className="mr-1", block=True),
-
+                    dbc.Button("Help", color="primary",
+                               id="Pchi_square-open", className="mr-auto"),
+                    dbc.Modal(
+                        [
+                            dbc.ModalHeader(
+                                "Fill in missing value function"),
+                            dbc.ModalBody(
+                                "The user click this [Fill in Missing Value] button to fill in the missing part in the table from given raw data file."),
+                            dbc.ModalFooter(
+                                dbc.Button("Close", id="Pchi_square-close",
+                                           className="ml-auto")
+                            ),
+                        ],
+                        id="Pchi_square-message",
+                    )
                 ]), df.to_dict('records')
             elif tab == 'tab-3':
                 lst = []
@@ -284,7 +305,25 @@ def callback_upload(app):
                     ),
                     dbc.Button(children="fix me",  color="primary",
                                outline=True, id="fix-button", className="mr-1", block=True),
-
+                    dbc.Col(
+                        [
+                            dbc.Button("Help", color="primary",
+                                       id="Pchi_square-open", className="mr-auto"),
+                            dbc.Modal(
+                                [
+                                    dbc.ModalHeader(
+                                        "Fill in Missing Value Button"),
+                                    dbc.ModalBody(
+                                        "The user fills all missing value in the table by clicking the FILL IN MISSING VALUES button"),
+                                    dbc.ModalFooter(
+                                        dbc.Button("Close", id="Pchi_square-close",
+                                                   className="mr-1")
+                                    ),
+                                ],
+                                id="Pchi_square-message",
+                            )],
+                        width={"size": 2, "offset": 6}
+                    )
                 ]), df.to_dict('records')
             elif tab == 'tab-4':
                 lst = []
@@ -734,7 +773,7 @@ def callback_upload(app):
     ])
     def error_table(nclicks):
         if nclicks == None or nclicks % 2 == 0:
-            return ["FIX ERRORS"]
+            return ["FILL IN MISSING VALUES"]
         else:
             return ["Undo"]
 
@@ -745,7 +784,7 @@ def callback_upload(app):
     ])
     def error_table2(nclicks):
         if nclicks == None or nclicks % 2 == 0:
-            return ["FIX ERRORS"]
+            return ["FILL IN MISSING VALUES"]
         else:
             return ["Undo"]
 
