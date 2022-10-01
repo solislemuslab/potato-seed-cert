@@ -2,6 +2,7 @@ __pycache__/*
 apps/__pycache__/*
 virtual-env/*
 notes-meetings.md
+data/*
 
 # Compiled source #
 ###################
