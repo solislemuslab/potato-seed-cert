@@ -258,7 +258,7 @@ def callback_upload(app):
                             dbc.ModalHeader(
                                 "Fill in missing value function"),
                             dbc.ModalBody(
-                                "The user click this [Fill in Missing Value] button to fill in the missing part in the table from given raw data file."),
+                                "Click this [Fill in Missing Value] button to fill in the missing entries in the table from information in other columns."),
                             dbc.ModalFooter(
                                 dbc.Button("Close", id="Pchi_square-close",
                                            className="ml-auto")
@@ -314,7 +314,7 @@ def callback_upload(app):
                                     dbc.ModalHeader(
                                         "Fill in Missing Value Button"),
                                     dbc.ModalBody(
-                                        "The user fills all missing value in the table by clicking the FILL IN MISSING VALUES button"),
+                                        "The user fills all missing entries in the table by clicking the FILL IN MISSING VALUES button"),
                                     dbc.ModalFooter(
                                         dbc.Button("Close", id="Pchi_square-close",
                                                    className="mr-1")
