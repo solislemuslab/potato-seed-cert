@@ -89,7 +89,7 @@ xlrd==2.0.1
 
 4. Run the website with
 ```
-python3 Index.py
+python3 app.py
 ```
 
 # Contributions
