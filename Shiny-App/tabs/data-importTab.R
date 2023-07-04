@@ -32,7 +32,12 @@ data_import_tab <-
           tabsetPanel(
             tabPanel(
               "Data Table",
-              dataTableOutput("subtab_data")
+              dataTableOutput("subtab_data"),
+              # numericInput(
+              #   inputId = "page",
+              #   label = "Go to page",
+              #   value = NA
+              # )
             ),
             
             tabPanel(
