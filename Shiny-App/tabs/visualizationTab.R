@@ -1,4 +1,6 @@
 # Visualization
+
+## Disease Prevalence
 disease_prevalence_subtab <- 
   tabPanel(
     "Disease Prevalence",
@@ -19,14 +21,13 @@ disease_prevalence_subtab <-
           choices = c("MOS", "LR", "MIX", "ST", "BRR"),
           multiple = T,
           selected = c("LR", "ST"),
-          options = list(`action-box` = T)
+          options = list(`actions-box` = T)
         ),
         pickerInput(
           inputId = "dis_pre_state",
           label = "State",
           choices = c("WI"),
           multiple = F,
-          selected = "WI",
           options = list(`live-search` = T)
         ),
         pickerInput(
@@ -34,7 +35,7 @@ disease_prevalence_subtab <-
           label = "Variety",
           choices = c("Atlantic"),
           multiple = F,
-          selected = "Atlantic",
+          selected = "",
           options = list(`live-search` = T)
         )
       ),
@@ -44,6 +45,7 @@ disease_prevalence_subtab <-
     )
   )
 
+# State comparison
 state_comparison_subtab <-
   tabPanel(
     "State Comparison",
@@ -80,6 +82,7 @@ state_comparison_subtab <-
     )
   )
 
+## ACRE Rejection
 acre_rejection_subtab <- 
   tabPanel(
     "Acre Rejection",
@@ -110,6 +113,7 @@ acre_rejection_subtab <-
     )
   )
 
+## Variety
 variety_subtab <- 
   tabPanel(
     "Variety",
@@ -153,7 +157,7 @@ variety_subtab <-
     )
   )
 
-
+## Aggregation
 visualization_tab <- 
   tabPanel(
     "Visualization",

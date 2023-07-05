@@ -1,4 +1,35 @@
 # Data Import
+
+## Data Table
+data_table_subtab <- 
+  tabPanel(
+    "Data Table",
+    dataTableOutput("subtab_data"),
+    # numericInput(
+    #   inputId = "page",
+    #   label = "Go to page",
+    #   value = NA
+    # )
+  )
+
+## Error Summary 
+error_sum_subtab <- 
+  tabPanel(
+    "Errors Summary"
+  )
+
+## Error Structure
+error_struc_subtab <- 
+  tabPanel(
+    "Errors Structure"
+  )
+
+## Error Analysis
+error_analysis_subtab <- 
+  tabPanel(
+    "Errors Analysis"
+  )
+
 data_import_tab <- 
   tabPanel(
     "Data Import",
@@ -30,27 +61,10 @@ data_import_tab <-
       mainPanel(
         fluidRow(
           tabsetPanel(
-            tabPanel(
-              "Data Table",
-              dataTableOutput("subtab_data"),
-              # numericInput(
-              #   inputId = "page",
-              #   label = "Go to page",
-              #   value = NA
-              # )
-            ),
-            
-            tabPanel(
-              "Errors Summary"
-            ),
-            
-            tabPanel(
-              "Errors Structure"
-            ),
-            
-            tabPanel(
-              "Errors Analysis"
-            )
+            data_table_subtab,
+            error_sum_subtab,
+            error_struc_subtab,
+            error_analysis_subtab
           )
         )
       )

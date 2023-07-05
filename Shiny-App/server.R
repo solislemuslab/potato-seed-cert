@@ -1,22 +1,21 @@
 # SERVER
-
 server <- function(input, output, session){
-  ##### Data Import Tab #####
-  
-  # Data Table subTab
   myData <- reactive({
     inFile <- input$df
     if (is.null(inFile)) return(NULL)
     if (grepl("csv", inFile$datapath)){
-      df <- read.csv(inFile$datapath, header = T)
+      mydf <- read.csv(inFile$datapath, header = T)
     }
     if (grepl("xlsx", inFile$datapath)){
-      df <- read_xlsx(inFile$datapath)
+      mydf <- read_xlsx(inFile$datapath)
     }
-    # df <- read.csv(inFile$datapath, header = TRUE)
-    df
+    
+    mydf
   })
   
+  ##### Data Import Tab #####
+  
+  # Data Table subTab
   output$subtab_data <- renderDataTable(
     datatable(
       myData(),
@@ -41,4 +40,32 @@ server <- function(input, output, session){
   
   ##### Visualization Tab #####
   
+  observe({
+    mydf <- myData()
+    
+    updatePickerInput(
+      session,
+      "dis_pre_state",
+      choices = sort(unique(mydf$S_STATE)),
+      selected = "WI"
+    )
+    
+    updatePickerInput(
+      session,
+      "dis_pre_variety",
+      choices = unique(mydf$VARIETY),
+      selected = "Atlantic"
+    )
+  })
+  
+  ## Disease Prevalence Plot
+  output$plot_dis_pre <- renderPlotly({
+    plot_disease_prevalence(myData(), input$dis_pre_ins, input$dis_pre_dis,
+                            input$dis_pre_state, input$dis_pre_variety)
+  })
+  # Disease Prevalence subTab
 }
+
+
+
+
