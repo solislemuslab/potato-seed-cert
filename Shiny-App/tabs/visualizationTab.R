@@ -45,7 +45,7 @@ disease_prevalence_subtab <-
     )
   )
 
-# State comparison
+## State comparison
 state_comparison_subtab <-
   tabPanel(
     "State Comparison",
@@ -63,13 +63,13 @@ state_comparison_subtab <-
         pickerInput(
           inputId = "state_comp_ins",
           label = "Inspection",
-          choices = c("1st", "2nd"),
+          choices = c("1st", "2nd", "Winter"),
           multiple = F
         ),
         pickerInput(
           inputId = "state_comp_year",
           label = "Year",
-          choices = c(2000:2016, "All"),
+          choices = c(2000:2016, "All"), # TBD
           multiple = F,
           options = list(`action-box` = T,
                          `live-search` = T)

@@ -4,12 +4,7 @@
 data_table_subtab <- 
   tabPanel(
     "Data Table",
-    dataTableOutput("subtab_data"),
-    # numericInput(
-    #   inputId = "page",
-    #   label = "Go to page",
-    #   value = NA
-    # )
+    dataTableOutput("subtab_data")
   )
 
 ## Error Summary 
