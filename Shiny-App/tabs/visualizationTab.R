@@ -57,13 +57,13 @@ state_comparison_subtab <-
           label = "State",
           choices = c("WI"),
           multiple = T,
-          options = list(`action-box` = T,
+          options = list(`actions-box` = T,
                          `live-search` = T)
         ),
         pickerInput(
           inputId = "state_comp_ins",
           label = "Inspection",
-          choices = c("1st", "2nd", "Winter"),
+          choices = c("1st", "2nd"), # Winter?
           multiple = F
         ),
         pickerInput(
@@ -71,7 +71,7 @@ state_comparison_subtab <-
           label = "Year",
           choices = c(2000:2016, "All"), # TBD
           multiple = F,
-          options = list(`action-box` = T,
+          options = list(`actions-box` = T,
                          `live-search` = T)
         )
       ),
@@ -146,7 +146,7 @@ variety_subtab <-
         pickerInput(
           inputId = "variety_year",
           label = "Year",
-          choices = c(2000:2016, "All"),
+          choices = c(format(Sys.Date(), "%Y"), "All"),
           multiple = F,
           options = list(`live-search` = T)
         )

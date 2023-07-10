@@ -21,7 +21,7 @@ server <- function(input, output, session){
       myData(),
       filter = "top",
       rownames = F,
-      options = list(scrollY = 600,
+      options = list(scrollY = 500,
                      scrollX = 500,
                      deferRender = TRUE,
                      pageLength = 10,
@@ -81,6 +81,25 @@ server <- function(input, output, session){
                             input$dis_pre_state, input$dis_pre_variety)
   })
   
+  output$plot_state_comp <- renderPlotly({
+    plot_state_comparison(myData(), input$state_comp_ins,
+                          input$state_comp_state, input$state_comp_year)
+  })
+  
+  output$dt_state_comp <- renderDataTable({
+    datatable(
+      generate_temp_sc(myData(), input$state_comp_ins,
+                       input$state_comp_state, input$state_comp_year),
+      filter = "top",
+      rownames = F,
+      options = list(scrollY = 150,
+                     scrollX = 500,
+                     deferRender = TRUE,
+                     pageLength = 10,
+                     autoWidth = T
+      )
+    )
+  })
 }
 
 
