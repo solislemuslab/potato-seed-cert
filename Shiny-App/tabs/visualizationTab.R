@@ -94,7 +94,7 @@ acre_rejection_subtab <-
           label = "Lot Name",
           choices = c(""),
           multiple = T,
-          options = list(`action-box` = T,
+          options = list(`actions-box` = T,
                          `live-search` = T)
         ),
         pickerInput(
@@ -102,13 +102,13 @@ acre_rejection_subtab <-
           label = "Potato Variety",
           choices = c(""),
           multiple = T,
-          options = list(`action-box` = T,
+          options = list(`actions-box` = T,
                          `live-search` = T)
         )
       ),
       mainPanel(
-        plotlyOutput("plot_acre_lot"),
-        plotlyOutput("plot_acre_variety")
+        plotlyOutput("plot_acre_lot", height = "350px"),
+        plotlyOutput("plot_acre_variety", height = "350px")
       )
     )
   )
