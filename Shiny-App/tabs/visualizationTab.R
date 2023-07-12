@@ -40,7 +40,7 @@ disease_prevalence_subtab <-
         )
       ),
       mainPanel(
-        plotlyOutput("plot_dis_pre")
+        plotlyOutput("plot_dis_pre", height = "700px")
       )
     )
   )
@@ -136,12 +136,12 @@ variety_subtab <-
           selected = c("LR")
         ),
         pickerInput(
-          inputId = "variety_vatiety",
+          inputId = "variety_variety",
           label = "Variety",
           choices = c(""),
           multiple = T,
           options = list(`live-search` = T,
-                         `action-box` = T)
+                         `actions-box` = T)
         ),
         pickerInput(
           inputId = "variety_year",
@@ -152,7 +152,7 @@ variety_subtab <-
         )
       ),
       mainPanel(
-        plotlyOutput("plot_variety")
+        plotlyOutput("plot_var", height = "700px")
       )
     )
   )
