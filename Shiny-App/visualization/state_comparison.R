@@ -19,7 +19,8 @@ plot_state_comparison <-
         p_sc <- ggplot(mydf, aes(x = c(0,1), y = c(0,1))) + 
           annotate("text",x=0.5,y=0.5,label="Please select at least two states") + 
           labs(x = "", y = "") + 
-          theme(plot.caption = element_text(size = 10))
+          theme(plot.caption = element_text(size = 10)) +
+          ggtitle("Comparison between States")
         ggplotly(p_sc)
       }
       
@@ -36,7 +37,9 @@ plot_state_comparison <-
             p_sc = ggparcoord(temp,
                               columns = 3:dim(temp)[2],
                               scale = "center",
-                              groupColumn = "S_STATE")
+                              groupColumn = "S_STATE") +
+              labs(x = "Disease", y = "Percentage of Potato") +
+              ggtitle("Comparison between States")
             # p_sc = with(temp, plot_ly(type = "parcoords",
             #                           line = list(color = ~PCT_colvar,
             #                                       colorscale = color_scale),
@@ -56,13 +59,15 @@ plot_state_comparison <-
           if (dim(temp)[1] < 2){
             p_sc = ggplot() +
               labs(x = "Disease", 
-                   y = "Percentage of potato")
+                   y = "Percentage of Potato")
             p_sc = ggplotly(p_sc)
           }else{
             p_sc = ggparcoord(temp,
                               columns = 3:dim(temp)[2],
                               scale = "center",
-                              groupColumn = "S_STATE")
+                              groupColumn = "S_STATE") +
+              labs(x = "Disease", y = "Percentage of Potato") +
+              ggtitle("Comparison between States")
             # p_sc = with(temp, plot_ly(type = "parcoords",
             #                           line = list(color = ~PCT_colvar,
             #                                       colorscale = color_scale),

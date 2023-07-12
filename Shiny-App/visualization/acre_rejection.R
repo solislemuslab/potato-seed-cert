@@ -8,10 +8,7 @@ plot_acre_rejection <-
         labs(x = "", y = "") + 
         theme(plot.caption = element_text(size = 10))
       
-      p_ar_var = ggplot(mydf, aes(x = c(0,1), y = c(0,1))) + 
-        annotate("text",x=0.5,y=0.5,label="Please upload data") + 
-        labs(x = "", y = "") + 
-        theme(plot.caption = element_text(size = 10))
+      p_ar_var = ggplot()
     }
     else{
       mydf[is.na(mydf)] = 0 # TBD
@@ -30,7 +27,8 @@ plot_acre_rejection <-
         ggplot(aes(x = LNAME, y = Rej_pct)) + 
         geom_col(aes(fill = season), position = "dodge") + 
         labs(x = "Potato Lot Name", 
-             y = "Rejection Percentage")
+             y = "Rejection Percentage") +
+        ggtitle("Acre Rejection Percentage by Lot")
       
       
       temp_var = mydf %>% 
@@ -48,7 +46,8 @@ plot_acre_rejection <-
         geom_col(aes(fill = season), position = "dodge") + 
         labs(x = "Potato Variety Name",
              y = "Rejection Percentage") + 
-        theme(axis.text.x = element_text(angle = 45))
+        theme(axis.text.x = element_text(angle = 45)) +
+        ggtitle("Acre Rejection Percentage by Variety")
     }
     return(list("lot" = ggplotly(p_ar_lots),
                 "var" = ggplotly(p_ar_var)))

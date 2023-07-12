@@ -48,7 +48,8 @@ plot_disease_prevalence <-
         if (dim(temp_1)[1] == 0){
           p_dp = p_dp +
             labs(x = "Year", 
-                 y = paste0("Percentage of potato with ", dis_lab))
+                 y = paste0("Percentage of potato with ", dis_lab)) +
+            ggtitle("Disease Prevalenve")
         }else{
           p_dp =  p_dp +
             geom_line(data = temp_1, 
@@ -57,7 +58,8 @@ plot_disease_prevalence <-
                        aes(x = CY, y = value, col = Disease),
                        shape = 19) +
             labs(x = "Year", 
-                 y = paste0("Percentage of potato with ", dis_lab))
+                 y = paste0("Percentage of potato with ", dis_lab)) +
+            ggtitle("Disease Prevalenve")
         }
       }
       
@@ -87,7 +89,8 @@ plot_disease_prevalence <-
         if (dim(temp_2)[1] == 0){
           p_dp = p_dp +
             labs(x = "Year", 
-                 y = paste0("Percentage of potato with ", dis_lab))
+                 y = paste0("Percentage of potato with ", dis_lab)) +
+            ggtitle("Disease Prevalenve")
         }else{
           p_dp =  p_dp +
             geom_line(data = temp_2, 
@@ -96,7 +99,8 @@ plot_disease_prevalence <-
                        aes(x = S_YR, y = value, col = Disease),
                        shape = 19) +
             labs(x = "Year", 
-                 y = paste0("Percentage of potato with ", dis_lab))
+                 y = paste0("Percentage of potato with ", dis_lab)) +
+            ggtitle("Disease Prevalenve")
         }
       }
       

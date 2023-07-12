@@ -12,3 +12,5 @@ source("./visualization/disease_prevalence.R")
 source("./visualization/state_comparison.R")
 source("./visualization/acre_rejection.R")
 source("./visualization/variety.R")
+
+theme_set(theme_minimal())

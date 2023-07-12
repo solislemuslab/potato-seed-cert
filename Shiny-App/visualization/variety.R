@@ -51,17 +51,6 @@ plot_variety <-
           select(-PLTCT_2)
         
         temp = rbind(temp, temp_1)
-        # if (dim(temp_1)[1] == 0){
-        #   p_v = p_v +
-        #     labs(x = "Potato Variety", 
-        #          y = paste0("Percentage of potato with ", disease))
-        # }else{
-          # p_v = p_v +
-          #   geom_col(data = temp_1, 
-          #            aes(x = VARIETY, y = value, fill = Disease)) + 
-          #   labs(x = "Potato Variety", 
-          #        y = paste0("Percentage of potato with ", disease))
-        # }
       }
       # Winter
       if ("Winter" %in% inspections){
@@ -100,18 +89,6 @@ plot_variety <-
           select(-winter_PLANTCT)
         
         temp = rbind(temp, temp_2)
-        # if (dim(temp_2)[1] == 0){
-        #   p_v = p_v +
-        #     labs(x = "Potato Variety", 
-        #          y = paste0("Percentage of potato with ", disease))
-        # }else{
-          # p_v =  p_v +
-          #   geom_col(data = temp_2, 
-          #            aes(x = VARIETY, y = value, fill = Disease),
-          #            alpha = 0.5) + 
-          #   labs(x = "Potato Variety", 
-          #        y = paste0("Percentage of potato with ", disease))
-        # }
       }
       
       
@@ -119,14 +96,16 @@ plot_variety <-
       if (dim(temp)[1] == 0){
         p_v = ggplot() + 
           labs(x = "Potato Variety", 
-               y = paste0("Percentage of potato with ", disease))
+               y = paste0("Percentage of potato with ", disease)) +
+          ggtitle("Comparison between Varieties")
       }else{
         p_v = ggplot(temp) + 
           geom_col(aes(x = VARIETY, y = value, fill = Disease),
                    position = "dodge") + 
           labs(x = "Potato Variety", 
                y = paste0("Percentage of potato with ", disease)) + 
-          theme(axis.text.x = element_text(angle = 45))
+          theme(axis.text.x = element_text(angle = 45)) +
+          ggtitle("Comparison between Varieties")
       }
       ggplotly(p_v)
     }
