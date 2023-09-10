@@ -63,7 +63,7 @@ state_comparison_subtab <-
         pickerInput(
           inputId = "state_comp_ins",
           label = "Inspection",
-          choices = c("1st", "2nd"), # Winter?
+          choices = c("Summer_1st", "Summer_2nd", "Winter"), # Winter?
           multiple = F
         ),
         pickerInput(
@@ -143,12 +143,12 @@ variety_subtab <-
           options = list(`live-search` = T,
                          `actions-box` = T)
         ),
-        pickerInput(
+        sliderInput(
           inputId = "variety_year",
           label = "Year",
-          choices = c(format(Sys.Date(), "%Y"), "All"),
-          multiple = F,
-          options = list(`live-search` = T)
+          min = 0,
+          max = as.numeric(format(Sys.Date(), "%Y")),
+          value = c(0, as.numeric(format(Sys.Date(), "%Y")))
         )
       ),
       mainPanel(

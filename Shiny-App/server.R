@@ -93,11 +93,13 @@ server <- function(input, output, session){
       choices = sort(unique(upload_df$VARIETY))
     )
     
-    updatePickerInput(
+    updateSliderInput(
       session,
       "variety_year",
-      choices = c(sort(unique(upload_df$S_YR)), "All"),
-      selected = "All"
+      min = min(upload_df$S_YR),
+      max = max(upload_df$S_YR),
+      step = 1,
+      value = c(min(upload_df$S_YR), max(upload_df$S_YR))
     )
   })
 
@@ -147,7 +149,8 @@ server <- function(input, output, session){
   # Update Variety Content
   output$plot_var <- renderPlotly(
     plot_variety(myData(), input$variety_ins, input$variety_dis,
-                 input$variety_variety, input$variety_year)
+                 input$variety_variety, input$variety_year[1],
+                 input$variety_year[2])
   )
 }
 

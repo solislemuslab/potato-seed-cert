@@ -1,6 +1,6 @@
 ##### Variety Comparison #####
 plot_variety <- 
-  function(mydf, inspections, disease, varieties, year){
+  function(mydf, inspections, disease, varieties, year_min, year_max){
     # When data is not uploaded
     if(is.null(mydf)){
       p_v <- ggplot(mydf, aes(x = c(0,1), y = c(0,1))) + 
@@ -20,25 +20,16 @@ plot_variety <-
     
       # Summer
       if ("Summer" %in% inspections){
-        # Specific year
-        if (year != "All"){
-          temp_1 <- mydf %>% 
-            filter(VARIETY %in% varieties,
-                   S_YR == year) %>% 
-            select(c("VARIETY", "PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", 
-                     "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND")) %>% 
-            group_by(VARIETY) %>% 
-            summarize_all(sum) %>% 
-            mutate(across(matches("NO"), function(x) x/PLTCT_2))
-        }else{ # All years
-          temp_1 <- mydf %>% 
-            filter(VARIETY %in% varieties) %>% 
-            select(c("VARIETY", "PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", 
-                     "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND")) %>% 
-            group_by(VARIETY) %>% 
-            summarize_all(sum) %>% 
-            mutate(across(matches("NO"), function(x) x/PLTCT_2))
-        }
+        temp_1 <- mydf %>% 
+          filter(VARIETY %in% varieties,
+                 S_YR <= year_max,
+                 S_YR >= year_min) %>% 
+          select(c("VARIETY", "PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", 
+                   "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND")) %>% 
+          group_by(VARIETY) %>% 
+          summarize_all(sum) %>% 
+          mutate(across(matches("NO"), function(x) x/PLTCT_2))
+
         
         colnames(temp_1)[-1:-2] <- 
           paste0("PCT_", gsub("^NO_|2ND", "", 
@@ -54,28 +45,16 @@ plot_variety <-
       }
       # Winter
       if ("Winter" %in% inspections){
-        # Specific year
-        if (year != "All"){
-          temp_2 <- mydf %>%
-            filter(S_YR == year,
-                   VARIETY %in% varieties) %>%
-            select(c("VARIETY", "winter_PLANTCT", "winter_MOSN",
-                     "winter_LRN", "winter_MXDN")) %>%
-            group_by(VARIETY) %>%
-            summarize_all(sum) %>%
-            mutate(across(matches("N$"), function(x) x/winter_PLANTCT))
-        }
-        
-        # All years
-        else{
-          temp_2 <- mydf %>%
-            filter(VARIETY %in% varieties) %>%
-            select(c("VARIETY", "winter_PLANTCT", "winter_MOSN",
-                     "winter_LRN", "winter_MXDN")) %>%
-            group_by(VARIETY) %>%
-            summarize_all(sum) %>%
-            mutate(across(matches("N$"), function(x) x/winter_PLANTCT))
-        }
+        temp_2 <- mydf %>%
+          filter(VARIETY %in% varieties,
+                 S_YR <= year_max,
+                 S_YR >= year_min) %>%
+          select(c("VARIETY", "winter_PLANTCT", "winter_MOSN",
+                   "winter_LRN", "winter_MXDN")) %>%
+          group_by(VARIETY) %>%
+          summarize_all(sum) %>%
+          mutate(across(matches("N$"), function(x) x/winter_PLANTCT))
+      
         
         colnames(temp_2)[-1:-2] <- 
           paste0("PCT_", gsub("^winter_|N$", "", 
@@ -90,9 +69,7 @@ plot_variety <-
         
         temp = rbind(temp, temp_2)
       }
-      
-      
-      
+
       if (dim(temp)[1] == 0){
         p_v = ggplot() + 
           labs(x = "Potato Variety", 
