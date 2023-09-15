@@ -66,13 +66,12 @@ state_comparison_subtab <-
           choices = c("Summer_1st", "Summer_2nd", "Winter"), # Winter?
           multiple = F
         ),
-        pickerInput(
+        sliderInput(
           inputId = "state_comp_year",
           label = "Year",
-          choices = c(2000:2016, "All"), # TBD
-          multiple = F,
-          options = list(`actions-box` = T,
-                         `live-search` = T)
+          min = 0,
+          max = as.numeric(format(Sys.Date(), "%Y")),
+          value = c(0, as.numeric(format(Sys.Date(), "%Y")))
         )
       ),
       mainPanel(

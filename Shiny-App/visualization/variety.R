@@ -54,20 +54,25 @@ plot_variety <-
           group_by(VARIETY) %>%
           summarize_all(sum) %>%
           mutate(across(matches("N$"), function(x) x/winter_PLANTCT))
-      
+        
+        colnames(temp_2)[5] <- "winter_MIXN"
+        
         
         colnames(temp_2)[-1:-2] <- 
           paste0("PCT_", gsub("^winter_|N$", "", 
                               colnames(temp_2)[-1:-2]), "_Winter")
         
+        
         disease_type_2 = colnames(temp_2)[which(grepl(disease, colnames(temp_2)))]
         
-        temp_2 = temp_2 %>%
-          pivot_longer(-c(VARIETY, winter_PLANTCT), names_to = "Disease") %>% 
-          filter(Disease == disease_type_2) %>% 
-          select(-winter_PLANTCT)
-        
-        temp = rbind(temp, temp_2)
+        if (disease != "ST" & disease != "BRR"){
+          temp_2 = temp_2 %>%
+            pivot_longer(-c(VARIETY, winter_PLANTCT), names_to = "Disease") %>% 
+            filter(Disease == disease_type_2) %>% 
+            select(-winter_PLANTCT)
+          
+          temp = rbind(temp, temp_2)
+        }
       }
 
       if (dim(temp)[1] == 0){
@@ -89,15 +94,16 @@ plot_variety <-
   }
 
 
-
-
-# temp_1 <- dff %>% 
-#   filter(VARIETY %in% c("Atlantic"),
-#          S_YR == 2010) %>% 
-#   select(c("VARIETY", "PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", 
-#            "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND")) %>% 
-#   group_by(VARIETY) %>% 
-#   summarize_all(sum) %>% 
+# # 
+# dff = read.csv("/Users/fhawk/Downloads/data/data_ex.csv")
+# dff[is.na(dff)] = 0
+# temp_1 <- dff %>%
+#   filter(S_YR >= 2010,
+#          S_YR <= 2016) %>%
+#   select(c("VARIETY", "PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND",
+#            "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND")) %>%
+#   group_by(VARIETY) %>%
+#   summarize_all(sum) %>%
 #   mutate(across(matches("NO"), function(x) x/PLTCT_2))
 # 
 # colnames(temp_1)[-1:-2] <- paste0("PCT_", gsub("^NO_|2ND", "", colnames(temp_1)[-1:-2]), "Summer")
@@ -105,22 +111,22 @@ plot_variety <-
 # 
 # disease_type = colnames(temp_1)[which(grepl("MOS", colnames(temp_1)))]
 # 
-# temp_1 = temp_1  %>% 
-#   pivot_longer(-c(VARIETY, PLTCT_2), names_to = "Disease")%>% 
+# temp_1 = temp_1  %>%
+#   pivot_longer(-c(VARIETY, PLTCT_2), names_to = "Disease")%>%
 #   filter(Disease == disease_type)
 # p_v = ggplot()
 # if (dim(temp_1)[1] == 0){
 #   p_v = p_v +
-#     labs(x = "Year", 
+#     labs(x = "Year",
 #          y = paste0("Percentage of potato with ", "MOS"))
 # }else{
 #   p_v =  p_v +
-#     geom_col(data = temp_1, 
-#              aes(x = VARIETY, y = value, fill = Disease)) + 
-#     labs(x = "Potato Variety", 
+#     geom_col(data = temp_1,
+#              aes(x = VARIETY, y = value, fill = Disease)) +
+#     labs(x = "Potato Variety",
 #          y = paste0("Percentage of potato with ", "MOS"))
 # }
 # 
-# 
-# 
-# 
+# # 
+# # 
+# # 

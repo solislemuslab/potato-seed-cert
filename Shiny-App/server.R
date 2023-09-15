@@ -39,7 +39,7 @@ server <- function(input, output, session){
   
   
   ##### Visualization Tab #####
-  # Update Choices
+  # Update Choices after uploadind data
   observe({
     upload_df <- myData()
     
@@ -66,11 +66,13 @@ server <- function(input, output, session){
       selected = "WI"
     )
     
-    updatePickerInput(
+    updateSliderInput(
       session,
       "state_comp_year",
-      choices = c(sort(unique(upload_df$S_YR)), "All"),
-      selected = "All"
+      min = min(upload_df$S_YR),
+      max = max(upload_df$S_YR),
+      step = 1,
+      value = c(min(upload_df$S_YR), max(upload_df$S_YR))
     )
     
     ## Acre Rejection subTab
@@ -103,6 +105,20 @@ server <- function(input, output, session){
     )
   })
 
+  # Update choices of acre rejection tab
+  ## Right now we update variety when lot is selected.
+  ## Q: Is it appropriate to do so? Or should we inverse that?
+  observeEvent(input$acre_lot, {
+    req(input$acre_lot)
+    x = input$acre_lot
+    
+    updatePickerInput(session, "acre_variety",
+                      choices = unique(myData() %>%
+                                         filter(LNAME %in% x) %>% 
+                                         select(VARIETY))
+    )
+  })
+  
   # Update Disease Prevalence Content
   output$plot_dis_pre <- renderPlotly({
     plot_disease_prevalence(myData(), input$dis_pre_ins, input$dis_pre_dis,
@@ -112,7 +128,8 @@ server <- function(input, output, session){
   # Update State Comparison Content
   output$plot_state_comp <- renderPlotly({
     plot_state_comparison(myData(), input$state_comp_ins,
-                          input$state_comp_state, input$state_comp_year)
+                          input$state_comp_state, input$state_comp_year[1],
+                          input$state_comp_year[2])
   })
   
   output$dt_state_comp <- renderDataTable({
@@ -122,7 +139,8 @@ server <- function(input, output, session){
     else{
       datatable(
         generate_temp_sc(myData(), input$state_comp_ins,
-                         input$state_comp_state, input$state_comp_year),
+                         input$state_comp_state, input$state_comp_year[1],
+                         input$state_comp_year[2]),
         filter = "top",
         rownames = F,
         options = list(scrollY = 150,
