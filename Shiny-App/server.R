@@ -66,14 +66,16 @@ server <- function(input, output, session){
       selected = "WI"
     )
     
-    updateSliderInput(
-      session,
-      "state_comp_year",
-      min = min(upload_df$S_YR),
-      max = max(upload_df$S_YR),
-      step = 1,
-      value = c(min(upload_df$S_YR), max(upload_df$S_YR))
-    )
+    if (!is.null(upload_df)){
+      updateSliderInput(
+        session,
+        "state_comp_year",
+        min = min(upload_df$S_YR),
+        max = max(upload_df$S_YR),
+        step = 1,
+        value = c(min(upload_df$S_YR), max(upload_df$S_YR))
+      )
+    }
     
     ## Acre Rejection subTab
     updatePickerInput(
@@ -95,14 +97,16 @@ server <- function(input, output, session){
       choices = sort(unique(upload_df$VARIETY))
     )
     
-    updateSliderInput(
-      session,
-      "variety_year",
-      min = min(upload_df$S_YR),
-      max = max(upload_df$S_YR),
-      step = 1,
-      value = c(min(upload_df$S_YR), max(upload_df$S_YR))
-    )
+    if (!is.null(upload_df)){
+      updateSliderInput(
+        session,
+        "variety_year",
+        min = min(upload_df$S_YR),
+        max = max(upload_df$S_YR),
+        step = 1,
+        value = c(min(upload_df$S_YR), max(upload_df$S_YR))
+      )
+    }
   })
 
   # Update choices of acre rejection tab
@@ -130,27 +134,6 @@ server <- function(input, output, session){
     plot_state_comparison(myData(), input$state_comp_ins,
                           input$state_comp_state, input$state_comp_year[1],
                           input$state_comp_year[2])
-  })
-  
-  output$dt_state_comp <- renderDataTable({
-    if (is.null(myData())){
-      NULL
-    }
-    else{
-      datatable(
-        generate_temp_sc(myData(), input$state_comp_ins,
-                         input$state_comp_state, input$state_comp_year[1],
-                         input$state_comp_year[2]),
-        filter = "top",
-        rownames = F,
-        options = list(scrollY = 150,
-                       scrollX = 500,
-                       deferRender = TRUE,
-                       pageLength = 10,
-                       autoWidth = T
-        )
-      )
-    }
   })
   
   # Update Acre Rejection Content

@@ -75,8 +75,8 @@ state_comparison_subtab <-
         )
       ),
       mainPanel(
-        plotlyOutput("plot_state_comp"),
-        dataTableOutput("dt_state_comp")
+        plotlyOutput("plot_state_comp", height = "700px"),
+        # dataTableOutput("dt_state_comp")
       )
     )
   )
