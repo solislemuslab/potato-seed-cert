@@ -156,7 +156,7 @@ variety_subtab <-
     )
   )
 
-## Aggregation
+## Combination
 visualization_tab <- 
   tabPanel(
     "Visualization",

@@ -11,7 +11,7 @@ plot_acre_rejection <-
       p_ar_var = ggplot()
     }
     else{
-      mydf[is.na(mydf)] = 0 # TBD
+      # mydf[is.na(mydf)] = 0 # TBD
       
       temp_lots = mydf %>% 
         filter(LNAME %in% lots) %>% 

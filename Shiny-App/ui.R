@@ -1,8 +1,8 @@
 # UI
 source("./styles/custom-styles.R")
-source("./tabs/data-importTab.R")
+source("./tabs/dataTab.R")
 source("./tabs/visualizationTab.R")
-source("./tabs/statistical-testTab.R")
+source("./tabs/testTab.R")
 ui <- fluidPage(
   shinythemes::themeSelector(),
   custom_styles_text,
@@ -11,9 +11,9 @@ ui <- fluidPage(
     "Wisconsin Seed Potato Certification Program",
     # theme = shinytheme("lumen"),
     
-    data_import_tab,
+    data_tab,
     visualization_tab,
-    stat_test_tab
+    test_tab
   )
 )
 

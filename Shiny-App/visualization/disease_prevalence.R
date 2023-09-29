@@ -14,7 +14,7 @@ plot_disease_prevalence <-
     
     # When data is uploaded
     else{
-      mydf[is.na(mydf)] <- 0 # TBD
+      # mydf[is.na(mydf)] <- 0 # TBD
       
       p_dp = ggplot()
       

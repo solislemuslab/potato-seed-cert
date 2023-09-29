@@ -12,7 +12,7 @@ plot_variety <-
     
     # When data is uploaded
     else{
-      mydf[is.na(mydf)] = 0 # TBD
+      # mydf[is.na(mydf)] = 0 # TBD
       
       temp = data.frame(matrix(ncol = 3, nrow = 0))
       colnames(temp) = c("VARIETY", "Disease", "value")

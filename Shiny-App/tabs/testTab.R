@@ -1,4 +1,4 @@
-# Statistical Test
+# Test Tab
 
 chi2_subtab <- 
   tabPanel(
@@ -15,9 +15,9 @@ anova_subtab <-
 
 ## Aggregation
 
-stat_test_tab <- 
+test_tab <- 
   tabPanel(
-    "Statistical Test",
+    "Test",
     sidebarLayout(
       sidebarPanel(
         h3("Data Selection"),
