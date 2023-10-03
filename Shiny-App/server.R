@@ -1,7 +1,7 @@
 # SERVER
 server <- function(input, output, session){
   myData <- reactiveValues(dt = NULL, history = list(NULL))
-  
+  # `dt` stores the newest data table, `history` stores old data tables
   # After uploading data
   observeEvent(input$df, {
     #### Read data ####
@@ -16,8 +16,15 @@ server <- function(input, output, session){
     myData$dt = mydf
     
     #### Store missing rows of Summer-Winter paired vars ####
-    df_check = mydf %>% select(summer_cols, winter_cols)
-    miss_rows = which(!complete.cases(df_check))
+    df_check = reactive({
+      myData$dt %>% select(summer_cols, winter_cols)
+    })
+      
+    # miss_rows = which(!complete.cases(df_check))
+    miss_rows <- reactive({
+      get_miss_rows(df_check())
+    })
+    # print(miss_rows())
     
     #### Data Tab ####
     ##### Data Table #####
@@ -39,15 +46,14 @@ server <- function(input, output, session){
     # Summary Table
     output$subtab_miss1_summ = renderDataTable(
       datatable(
-        miss1_dts(myData$dt)$df_error
+        miss1_dts(myData$dt, df_check(), miss_rows())$df_error
       )
     )
     
-    # Data Table with only missing rows, 
-    # which can be designed as editable, TBD
+    # Data Table with only missing rows
     output$subtab_miss1_dt = renderDataTable(
       datatable(
-        miss1_dts(myData$dt)$miss,
+        miss1_dts(myData$dt, df_check(), miss_rows())$miss,
         filter = "top",
         rownames = F,
         options = list(scrollY = 500,
@@ -55,13 +61,25 @@ server <- function(input, output, session){
                        deferRender = TRUE,
                        pageLength = 10,
                        autoWidth = T
-        )
+        ),
+        editable = T
       )
     )
     
+    observeEvent(input$subtab_miss1_dt_cell_edit, {
+      info <- input$subtab_miss1_dt_cell_edit
+      df_check_edit = df_check()
+      df_check_edit[miss_rows()[info$row], 
+                    info$col+1] <- info$value # IDK why I need "+1", but it works
+      myData$history[[length(myData$history)+1]] = df_check_edit[miss_rows(),] 
+      myData$dt[miss_rows(),
+                colnames(df_check_edit)] = df_check_edit[miss_rows(),]
+      # print(df_check_edit[miss_rows(),])
+    })
+    
     # Fill missing value button
     observeEvent(input$fill_miss1, {
-      new_dt <- miss1_fix(myData$dt)
+      new_dt <- miss1_fix(myData$dt, df_check(), miss_rows())
       myData$history[[length(myData$history)+1]] = new_dt 
       myData$dt <- new_dt
     })
@@ -189,7 +207,6 @@ server <- function(input, output, session){
   # )
 
 }
-
 
 
 
