@@ -2,9 +2,10 @@
 server <- function(input, output, session){
   myData <- reactiveValues(dt = NULL, history = list(NULL))
   # `dt` stores the newest data table, `history` stores old data tables
-  # After uploading data
+  
+  #### After uploading data ####
   observeEvent(input$df, {
-    #### Read data ####
+    #### Read data and check basics ####
     if (is.null(input$df)) myData$dt = NULL
     if (grepl("csv", input$df$datapath)){
       mydf <- read.csv(input$df$datapath, header = T)
@@ -37,23 +38,48 @@ server <- function(input, output, session){
       myData$dt = mydf
     }
     
-    # When data is proper
+    #### When data is proper ####
     if (!is.null(myData$dt)){
-      #### Store missing rows of Summer-Winter paired vars ####
-      df_check = reactive({
+      #### Store reactive values ####
+      df_check_paired = reactive({
         myData$dt %>% select(Index, summer_cols, winter_cols)
       })
       
-      miss_rows <- reactive({
-        get_miss_info(df_check())$miss_rows
+      miss_rows_paired <- reactive({
+        get_miss_info(df_check_paired())$miss_rows
       })
-      # print(miss_rows())
-      
+
       mm_rows = reactive({
-        get_mm_info(df_check())$mm_rows[[input$paired_mismatch]]
+        get_mm_info(df_check_paired())$mm_rows[[input$paired_mismatch]]
+      })
+      
+      df_check_other = reactive({
+        myData$dt %>% select(Index, vars_need)
+      })
+      
+      miss_rows_other <- reactive({
+        get_miss_info(df_check_other())$miss_rows
       })
       
       #### Data Tab ####
+      ##### Undo button #####
+      observeEvent(input$undo, {
+        if(length(myData$history) > 2) {
+          myData$history <- myData$history[-length(myData$history)]
+          myData$dt <- tail(myData$history, 1)[[1]]
+        }
+      })
+      
+      ##### Download button #####
+      output$downloadData <- downloadHandler(
+        filename = function() {
+          paste("data-", Sys.Date(), ".csv", sep="")
+        },
+        content = function(file) {
+          write.csv(myData$dt[,-1], file, row.names = F)
+        }
+      )
+      
       ##### Data Table #####
       output$subtab_data <- renderDataTable(
         datatable(
@@ -70,18 +96,18 @@ server <- function(input, output, session){
       )
       
       ##### Paired Vars #####
-      # Summary Table
+      ###### Summary Table ######
       output$paired_error_summ = renderDataTable(
         datatable(
-          paired_error_dt(df_check())
+          paired_error_dt(df_check_paired())
         )
       )
       
-      # Missing
+      ###### Missing Part ######
       ## Data Table with only missing rows
       output$paired_miss_dt = renderDataTable(
         datatable(
-          paired_miss_dt(df_check(), miss_rows()),
+          paired_miss_dt(df_check_paired(), miss_rows_paired()),
           filter = "top",
           rownames = F,
           options = list(scrollY = 500,
@@ -94,69 +120,77 @@ server <- function(input, output, session){
         )
       )
       
-
-      
-      # Mismatch
+      ###### Mismatch Part ######
       ## Update selections
       updateSelectInput(
         session,
         "paired_mismatch",
-        choices = get_mm_info(df_check())$mm_cols,
-        selected = get_mm_info(df_check())$mm_cols[1]
+        choices = get_mm_info(df_check_paired())$mm_cols,
+        selected = get_mm_info(df_check_paired())$mm_cols[1]
       )
       
       ## Update Data Table with only mismatch rows
-      output$paired_mm_dt = renderDataTable(
-        datatable(
-          paired_mm_dt(df_check(), input$paired_mismatch),
-          filter = "top",
-          rownames = F,
-          options = list(scrollY = 500,
-                         scrollX = 500,
-                         deferRender = TRUE,
-                         pageLength = 10,
-                         autoWidth = T
-          ),
-          editable = T
+      # If there are mismatches
+      if (length(get_mm_info(df_check_paired())$mm_cols) != 0){
+        output$paired_mm_dt = renderDataTable(
+          datatable(
+            paired_mm_dt(df_check_paired(), input$paired_mismatch),
+            filter = "top",
+            rownames = F,
+            options = list(scrollY = 500,
+                           scrollX = 500,
+                           deferRender = TRUE,
+                           pageLength = 10,
+                           autoWidth = T
+            ),
+            editable = T
+          )
         )
-      )
-      
-      # Fix
+      }else{
+        output$paired_mm_dt = renderDataTable({
+          empty_df <- data.frame(matrix(ncol = ncol(df_check_paired()), nrow = 0))
+          colnames(empty_df) <- colnames(df_check_paired())
+          datatable(
+            empty_df,
+            filter = "top",
+            rownames = F,
+            options = list(scrollY = 500,
+                           scrollX = 500,
+                           deferRender = TRUE,
+                           pageLength = 10,
+                           autoWidth = T
+            )
+          )
+        })
+      }
+
+      ###### Fix Part ######
       ## Missing
       ### Edit DT function
       observeEvent(input$paired_miss_dt_cell_edit, {
         info <- input$paired_miss_dt_cell_edit
-        df_check_edit = df_check()
-        df_check_edit[miss_rows()[info$row],
+        df_check_edit = df_check_paired()
+        df_check_edit[miss_rows_paired()[info$row],
                       info$col+1] <- info$value # IDK why I need "+1", but it works
         
-        myData$dt[miss_rows(),
-                  colnames(df_check_edit)] = df_check_edit[miss_rows(),]
+        myData$dt[miss_rows_paired(),
+                  colnames(df_check_edit)] = df_check_edit[miss_rows_paired(),]
         myData$history[[length(myData$history)+1]] = myData$dt
       })
-      
       
       ### Fill missing value button
       observeEvent(input$fill_pair_miss, {
         # print("Click Fill")
-        new_dt <- miss1_fix(myData$dt, df_check())
+        new_dt <- miss1_fix(myData$dt, df_check_paired())
         myData$history[[length(myData$history)+1]] = new_dt
         myData$dt <- new_dt
-      })
-
-      ### Undo button
-      observeEvent(input$undo_pair, {
-        if(length(myData$history) > 2) {
-          myData$history <- myData$history[-length(myData$history)]
-          myData$dt <- tail(myData$history, 1)[[1]]
-        }
       })
       
       ## MisMatch
       ### Edit DT function
       observeEvent(input$paired_mm_dt_cell_edit, {
         info_mm <- input$paired_mm_dt_cell_edit
-        df_mm_edit = df_check()[colnames(paired_mm_dt(df_check(), input$paired_mismatch))]
+        df_mm_edit = df_check_paired()[colnames(paired_mm_dt(df_check_paired(), input$paired_mismatch))]
         df_mm_edit[mm_rows()[info_mm$row],
                       info_mm$col+1] <- info_mm$value # IDK why I need "+1", but it works
         # myData$history[[length(myData$history)+1]] = df_mm_edit[mm_rows(),]
@@ -165,21 +199,52 @@ server <- function(input, output, session){
         myData$history[[length(myData$history)+1]] = myData$dt
       })
       
+      ### Fix mismatch button
       observeEvent(input$fix_pair_mm, {
-        new_dt <- mm_fix(myData$dt, df_check())
+        new_dt <- mm_fix(myData$dt, df_check_paired())
         myData$history[[length(myData$history)+1]] = new_dt
         myData$dt <- new_dt
       })
       
-      #### Download data set
-      output$downloadData <- downloadHandler(
-        filename = function() {
-          paste("data-", Sys.Date(), ".csv", sep="")
-        },
-        content = function(file) {
-          write.csv(myData$dt[,-1], file, row.names = F)
-        }
+      
+      ##### Outliers #####
+      
+      
+      ##### Other missing #####
+      ## Summary
+      output$other_miss_summ = renderPlot(
+        other_miss_summ(df_check_other())
       )
+      ## Data table
+      output$other_miss_dt = renderDataTable(
+        datatable(
+          other_miss_dt(df_check_other(), miss_rows_other()),
+          filter = "top",
+          rownames = F,
+          options = list(scrollY = 500,
+                         scrollX = 500,
+                         deferRender = TRUE,
+                         pageLength = 10,
+                         autoWidth = T
+          ),
+          editable = T
+        )%>% 
+          formatStyle(columns = which(get_miss_info(df_check_other())$miss_cols != 0) + 1,
+                      backgroundColor = "royalblue")
+      )
+      
+      ## Edit function
+      observeEvent(input$other_miss_dt_cell_edit, {
+        info <- input$other_miss_dt_cell_edit
+        print(info)
+        df_check_edit = df_check_other()
+        df_check_edit[miss_rows_other()[info$row],
+                      info$col+1] <- info$value # IDK why I need "+1", but it works
+        
+        myData$dt[miss_rows_other(),
+                  colnames(df_check_edit)] = df_check_edit[miss_rows_other(),]
+        myData$history[[length(myData$history)+1]] = myData$dt
+      })
     }
   })
 

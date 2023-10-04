@@ -27,7 +27,6 @@ data_table_subtab <-
             placeholder = "No file selected",
             width = "100%"
           )
-         
           
         )
       ),
@@ -58,8 +57,7 @@ paired_subtab <-
         
         selectInput("paired_mismatch", "Select Mismatch Variable",
                     choices = c()),
-        actionButton("undo_pair", "Undo"),
-        downloadButton("downloadData", "Download CSV")
+        
       ),
       mainPanel(
         fluidRow(
@@ -79,23 +77,62 @@ paired_subtab <-
 ## Outliers
 outliers_subtab <- 
   tabPanel(
-    "Outliers"
+    "Outliers",
+    sidebarLayout(
+      sidebarPanel(
+        width = 4,
+        h3("Instruction:"),
+        # helpText("Please choose a csv/xlsx/txt file from your device."),
+        # helpText("The four tabs on the right will show a summary of the database and potential errors to address prior to data analysis and visualization."), 
+        # helpText("Note that clicking on a given tab might take a couple of seconds to load."),
+        
+        selectInput("outliers_var", "Select Variable",
+                    choices = c()),
+      ),
+      mainPanel(
+        fluidRow(
+          "Outliers Plot",
+          plotlyOutput("outliers_plot")
+        )
+      )
+    )
   )
 
 ## Missing Value in other Vars
 error_analysis_subtab <- 
   tabPanel(
-    "Missing Values"
+    "Missing Values",
+    sidebarLayout(
+      sidebarPanel(
+        width = 4,
+        h3("Instruction:"),
+        # helpText("Please choose a csv/xlsx/txt file from your device."),
+        # helpText("The four tabs on the right will show a summary of the database and potential errors to address prior to data analysis and visualization."), 
+        # helpText("Note that clicking on a given tab might take a couple of seconds to load."),
+
+      ),
+      mainPanel(
+        fluidRow(
+          "Missing Summary",
+          plotOutput("other_miss_summ")
+        )
+      )
+    ),
+    "Missing Data Table",
+    dataTableOutput("other_miss_dt")
   )
 
 ## Combination
-data_tab <- 
+data_tab <-
   tabPanel(
     "Data",
+    downloadButton("downloadData", "Download CSV"),
+    actionButton("undo", "Undo"),
     tabsetPanel(
       data_table_subtab,
       paired_subtab,
       outliers_subtab,
       error_analysis_subtab
-    )
+    ),
   )
+

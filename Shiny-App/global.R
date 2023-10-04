@@ -1,6 +1,6 @@
 library(tidyverse)
 library(DT)
-library(DMwR2)
+# library(DMwR2)
 library(GGally)
 library(shiny)
 library(shinythemes)
@@ -9,12 +9,15 @@ library(plotly)
 library(readxl)
 # library(patchwork)
 library(shinyalert)
+library(mice)
 source("./visualization/disease_prevalence.R")
 source("./visualization/state_comparison.R")
 source("./visualization/acre_rejection.R")
 source("./visualization/variety.R")
 source("./dataimport/data_table.R")
 source("./dataimport/paired.R")
+
+source("./dataimport/other_miss.R")
 theme_set(theme_minimal())
 
 

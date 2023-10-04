@@ -120,7 +120,7 @@ get_miss_info = function(mydf){
                           nchar(as.character(.)) == 0 |
                           grepl("^[ \t]+$", as.character(.)), 1, 0)) %>% 
     colSums()
-  
+  # miss_col[-1] %>% print()
   return(list("miss_rows" = miss_r,
               "miss_cols" = miss_col[-1]))
 }
