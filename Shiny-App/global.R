@@ -7,27 +7,14 @@ library(shinythemes)
 library(shinyWidgets)
 library(plotly)
 library(readxl)
-library(patchwork)
+# library(patchwork)
+library(shinyalert)
 source("./visualization/disease_prevalence.R")
 source("./visualization/state_comparison.R")
 source("./visualization/acre_rejection.R")
 source("./visualization/variety.R")
-source("./dataimport/miss1.R")
+source("./dataimport/data_table.R")
+source("./dataimport/paired.R")
 theme_set(theme_minimal())
 
-get_miss_rows = function(mydf, margin = 1){
-  miss_r = which(!complete.cases(mydf) |
-                   apply(
-                     apply(mydf, 
-                           MARGIN = c(1,2), 
-                           FUN = function(x) grepl("^[ \t]+$", x)), 
-                     MARGIN = margin, 
-                     any) |
-                   apply(
-                     apply(mydf, 
-                           MARGIN = c(1,2), 
-                           FUN = function(x) nchar(x)==0), 
-                     MARGIN = margin, 
-                     any))
-  return(miss_r)
-}
+

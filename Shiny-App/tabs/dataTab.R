@@ -27,6 +27,8 @@ data_table_subtab <-
             placeholder = "No file selected",
             width = "100%"
           )
+         
+          
         )
       ),
       mainPanel(
@@ -39,10 +41,10 @@ data_table_subtab <-
     
   )
 
-#### Missing Value 1 #### 
-miss1_subtab <- 
+#### Errors in Paired Vars #### 
+paired_subtab <- 
   tabPanel(
-    "Missing Value1",
+    "Paired Errors",
     sidebarLayout(
       sidebarPanel(
         width = 4,
@@ -50,30 +52,40 @@ miss1_subtab <-
         # helpText("Please choose a csv/xlsx/txt file from your device."),
         # helpText("The four tabs on the right will show a summary of the database and potential errors to address prior to data analysis and visualization."), 
         # helpText("Note that clicking on a given tab might take a couple of seconds to load."),
-        wellPanel(
-          actionButton("fill_miss1", "Fill Missing Values"),
-          actionButton("undo_miss1", "Undo")
-        )
+
+        actionButton("fill_pair_miss", "Fill Missing Values"),
+        actionButton("fix_pair_mm", "Fix Mismatches"),
+        
+        selectInput("paired_mismatch", "Select Mismatch Variable",
+                    choices = c()),
+        actionButton("undo_pair", "Undo"),
+        downloadButton("downloadData", "Download CSV")
       ),
       mainPanel(
         fluidRow(
-          dataTableOutput("subtab_miss1_summ")
+          "Paired Error Summary",
+          dataTableOutput("paired_error_summ")
         )
       )
     ),
-    dataTableOutput("subtab_miss1_dt")
+    column(6,
+           "Paired Missing Values",
+           dataTableOutput("paired_miss_dt")),
+    column(6,
+           "Paired Mismatch",
+           dataTableOutput("paired_mm_dt"))
   )
 
-## Missing Value
-error_struc_subtab <- 
+## Outliers
+outliers_subtab <- 
   tabPanel(
-    "Missing Value"
+    "Outliers"
   )
 
-## Inconsistency
+## Missing Value in other Vars
 error_analysis_subtab <- 
   tabPanel(
-    "Inconsistency"
+    "Missing Values"
   )
 
 ## Combination
@@ -82,8 +94,8 @@ data_tab <-
     "Data",
     tabsetPanel(
       data_table_subtab,
-      miss1_subtab,
-      error_struc_subtab,
+      paired_subtab,
+      outliers_subtab,
       error_analysis_subtab
     )
   )

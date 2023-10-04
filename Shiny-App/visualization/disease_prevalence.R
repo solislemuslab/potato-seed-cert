@@ -2,7 +2,6 @@
 
 plot_disease_prevalence <- 
   function(mydf, inspections, diseases, state, variety){
-    
     # When data is not uploaded
     if(is.null(mydf)){
       p_dp <- ggplot(mydf, aes(x = c(0,1), y = c(0,1))) + 
@@ -14,8 +13,6 @@ plot_disease_prevalence <-
     
     # When data is uploaded
     else{
-      # mydf[is.na(mydf)] <- 0 # TBD
-      
       p_dp = ggplot()
       
       dis_lab = ""
@@ -29,7 +26,7 @@ plot_disease_prevalence <-
         temp_1 <- mydf %>% 
           filter(S_STATE == state,
                  VARIETY == variety) %>% 
-          select(c("CY", "PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", 
+          select(c("S_Y", "PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", 
                    "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND")) %>% 
           group_by(CY) %>% 
           summarize_all(sum) %>% 

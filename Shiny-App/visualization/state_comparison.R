@@ -12,8 +12,6 @@ plot_state_comparison <-
     
     # When data is uploaded
     else{
-      # mydf[is.na(mydf)] <- 0 # TBD
-      
       # When selected less than 2 states
       if (length(states) < 2){
         p_sc <- ggplot(mydf, aes(x = c(0,1), y = c(0,1))) + 
