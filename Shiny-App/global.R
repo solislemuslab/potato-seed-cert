@@ -1,6 +1,6 @@
 library(tidyverse)
 library(DT)
-# library(DMwR2)
+library(DMwR2)
 library(GGally)
 library(shiny)
 library(shinythemes)

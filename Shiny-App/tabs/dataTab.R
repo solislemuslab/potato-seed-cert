@@ -109,12 +109,16 @@ error_analysis_subtab <-
         # helpText("Please choose a csv/xlsx/txt file from your device."),
         # helpText("The four tabs on the right will show a summary of the database and potential errors to address prior to data analysis and visualization."), 
         # helpText("Note that clicking on a given tab might take a couple of seconds to load."),
-
+        
+        actionButton("fill_other_miss", "Fill Missing Values"),
       ),
       mainPanel(
         fluidRow(
-          "Missing Summary",
-          plotOutput("other_miss_summ")
+          column(4,
+                 "Missing Summary",
+                 dataTableOutput("other_miss_summ_dt")),
+          column(8,
+                 plotOutput("other_miss_summ"))
         )
       )
     ),

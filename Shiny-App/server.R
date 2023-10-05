@@ -110,7 +110,7 @@ server <- function(input, output, session){
           paired_miss_dt(df_check_paired(), miss_rows_paired()),
           filter = "top",
           rownames = F,
-          options = list(scrollY = 500,
+          options = list(scrollY = 300,
                          scrollX = 500,
                          deferRender = TRUE,
                          pageLength = 10,
@@ -137,7 +137,7 @@ server <- function(input, output, session){
             paired_mm_dt(df_check_paired(), input$paired_mismatch),
             filter = "top",
             rownames = F,
-            options = list(scrollY = 500,
+            options = list(scrollY = 300,
                            scrollX = 500,
                            deferRender = TRUE,
                            pageLength = 10,
@@ -154,7 +154,7 @@ server <- function(input, output, session){
             empty_df,
             filter = "top",
             rownames = F,
-            options = list(scrollY = 500,
+            options = list(scrollY = 300,
                            scrollX = 500,
                            deferRender = TRUE,
                            pageLength = 10,
@@ -212,6 +212,16 @@ server <- function(input, output, session){
       
       ##### Other missing #####
       ## Summary
+      output$other_miss_summ_dt = renderDataTable(
+        datatable(
+          other_miss_summ_dt(df_check_other()),
+          rownames = F,
+          filter = "top",
+          options = list(pageLength = 5)
+        )
+        
+      )
+      
       output$other_miss_summ = renderPlot(
         other_miss_summ(df_check_other())
       )
@@ -221,7 +231,7 @@ server <- function(input, output, session){
           other_miss_dt(df_check_other(), miss_rows_other()),
           filter = "top",
           rownames = F,
-          options = list(scrollY = 500,
+          options = list(scrollY = 300,
                          scrollX = 500,
                          deferRender = TRUE,
                          pageLength = 10,
@@ -230,7 +240,8 @@ server <- function(input, output, session){
           editable = T
         )%>% 
           formatStyle(columns = which(get_miss_info(df_check_other())$miss_cols != 0) + 1,
-                      backgroundColor = "royalblue")
+                      backgroundColor = "darkred",
+                      color = "white")
       )
       
       ## Edit function
@@ -245,6 +256,14 @@ server <- function(input, output, session){
                   colnames(df_check_edit)] = df_check_edit[miss_rows_other(),]
         myData$history[[length(myData$history)+1]] = myData$dt
       })
+      
+      ## Fill button
+      observeEvent(input$fill_other_miss, {
+        new_dt <- miss2_fix(myData$dt, df_check_other())
+        myData$history[[length(myData$history)+1]] = new_dt
+        myData$dt <- new_dt
+      })
+      
     }
   })
 
