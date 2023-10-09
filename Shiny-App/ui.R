@@ -5,7 +5,7 @@ source("./tabs/visualizationTab.R")
 source("./tabs/testTab.R")
 ui <- fluidPage(
   # useShinyalert(),
-  shinythemes::themeSelector(),
+  theme = shinytheme("cerulean"),
   custom_styles_text,
   custom_styles,
   navbarPage(

@@ -26,9 +26,9 @@ plot_disease_prevalence <-
         temp_1 <- mydf %>% 
           filter(S_STATE == state,
                  VARIETY == variety) %>% 
-          select(c("S_Y", "PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", 
+          select(c("S_YR", "PLTCT_2", "NO_MOS_2ND", "NO_LR_2ND", 
                    "NO_MIX_2ND", "NO_ST_2ND", "NO_BRR_2ND")) %>% 
-          group_by(CY) %>% 
+          group_by(S_YR) %>% 
           summarize_all(sum) %>% 
           mutate(across(matches("NO"), function(x) x/PLTCT_2))
         
@@ -40,7 +40,7 @@ plot_disease_prevalence <-
                              colnames(temp_1)[which(grepl(disease, colnames(temp_1)))])
         }
         temp_1 = temp_1  %>% 
-          pivot_longer(-c(CY, PLTCT_2), names_to = "Disease")%>% 
+          pivot_longer(-c(S_YR, PLTCT_2), names_to = "Disease")%>% 
           filter(Disease %in% disease_types)
         if (dim(temp_1)[1] == 0){
           p_dp = p_dp +
@@ -50,9 +50,9 @@ plot_disease_prevalence <-
         }else{
           p_dp =  p_dp +
             geom_line(data = temp_1, 
-                      aes(x = CY, y = value, col = Disease)) + 
+                      aes(x = S_YR, y = value, col = Disease)) + 
             geom_point(data = temp_1,
-                       aes(x = CY, y = value, col = Disease),
+                       aes(x = S_YR, y = value, col = Disease),
                        shape = 19) +
             labs(x = "Year", 
                  y = paste0("Percentage of potato with ", dis_lab)) +

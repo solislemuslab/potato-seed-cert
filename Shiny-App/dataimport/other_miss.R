@@ -36,8 +36,9 @@ miss2_fix = function(mydf, df_check){
   # df_check = mydf %>% select(summer_cols, winter_cols)
   # df_error = other_miss_summ_dt(df_check)
   
-  imp = mice(df_check, method="norm.nob",m=1,maxit=1,seed=1)
+  imp = mice(df_check, method="norm.predict",m=1,maxit=1,seed=1)
   imputed_data = complete(imp)
+  imputed_data[imputed_data < 0] = 0
   problem = imp$loggedEvents
   # print(problem)
   if (!is.null(problem)){
