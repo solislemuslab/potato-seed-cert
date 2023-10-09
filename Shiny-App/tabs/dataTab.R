@@ -11,6 +11,9 @@ data_table_subtab <-
         helpText("Please choose a csv/xlsx/txt file from your device."),
         helpText("The four tabs on the right will show a summary of the database and potential errors to address prior to data analysis and visualization."), 
         helpText("Note that clicking on a given tab might take a couple of seconds to load."),
+        helpText("Moreover, after making changes to the data, it can be downloaded by clicking `Download csv` button on the top."),
+        helpText("And by clicking the `Undo` button, the most recent change made on the data set within the dashboard will be cancelled."),
+        helpText("The dashboard needs to be refreshed every time a data set is uploaded."),
         wellPanel(
           fileInput(
             inputId = "df",
@@ -32,6 +35,7 @@ data_table_subtab <-
       ),
       mainPanel(
         fluidRow(
+          h3("Latest Data"),
           dataTableOutput("subtab_data")
         )
       )
@@ -48,29 +52,27 @@ paired_subtab <-
       sidebarPanel(
         width = 4,
         h3("Instruction:"),
-        # helpText("Please choose a csv/xlsx/txt file from your device."),
-        # helpText("The four tabs on the right will show a summary of the database and potential errors to address prior to data analysis and visualization."), 
-        # helpText("Note that clicking on a given tab might take a couple of seconds to load."),
-
-        actionButton("fill_pair_miss", "Fill Missing Values"),
-        actionButton("fix_pair_mm", "Fix Mismatches"),
-        
+        helpText("This tab will give error summary for the variables that are supposed to be the same in Summer and Winter."),
+        helpText("By clicking `Fill Missing Values` button, the missing values will be imputed automatically."),
+        helpText("By clicking `Fix Mismatches` button, the mismatch error in each variable will be fixed."),
+        helpText("By double clicking elements in data tables below, changes can be done. Make sure to change with cautious."),
         selectInput("paired_mismatch", "Select Mismatch Variable",
                     choices = c()),
-        
+        actionButton("fill_pair_miss", "Fill Missing Values"),
+        actionButton("fix_pair_mm", "Fix Mismatches"),
       ),
       mainPanel(
         fluidRow(
-          "Paired Error Summary",
+          h3("Paired Error Summary"),
           dataTableOutput("paired_error_summ")
         )
       )
     ),
     column(6,
-           "Paired Missing Values",
+           h4("Paired Missing Values"),
            dataTableOutput("paired_miss_dt")),
     column(6,
-           "Paired Mismatch",
+           h4("Paired Mismatch"),
            dataTableOutput("paired_mm_dt"))
   )
 
@@ -82,20 +84,28 @@ outliers_subtab <-
       sidebarPanel(
         width = 4,
         h3("Instruction:"),
-        # helpText("Please choose a csv/xlsx/txt file from your device."),
-        # helpText("The four tabs on the right will show a summary of the database and potential errors to address prior to data analysis and visualization."), 
-        # helpText("Note that clicking on a given tab might take a couple of seconds to load."),
-        
-        selectInput("outliers_var", "Select Variable",
-                    choices = c()),
+        helpText("This tab will give information about possible outliers in some important variables."),
+        helpText("After selecting variables in the below box, the boxplot and data table will be updated."),
+        helpText("By double clicking the elements of the data table, changes can be made. Still, change with cautious."),
+
+        pickerInput("outliers_var", "Select Variable",
+                    choices = c(),
+                    multiple = T,
+                    options = list(
+                      `actions-box` = T,
+                      `live-search` = T
+                    )),
       ),
       mainPanel(
         fluidRow(
-          "Outliers Plot",
-          plotlyOutput("outliers_plot")
+          h3("Outliers Box-Plot"),
+          plotlyOutput("outliers_plot"),
+          # dataTableOutput("outliers_summ")
         )
       )
-    )
+    ),
+    h3("Detailed Data Table"),
+    dataTableOutput("outliers_dt")
   )
 
 ## Missing Value in other Vars
@@ -106,23 +116,24 @@ error_analysis_subtab <-
       sidebarPanel(
         width = 4,
         h3("Instruction:"),
-        # helpText("Please choose a csv/xlsx/txt file from your device."),
-        # helpText("The four tabs on the right will show a summary of the database and potential errors to address prior to data analysis and visualization."), 
-        # helpText("Note that clicking on a given tab might take a couple of seconds to load."),
-        
+        helpText("This tab will detect missing values within the important variables. Note that it is recommened to first go through the `Paired Errors` tab before this one."),
+        helpText("Detailed information about missing values is displayed on the right, both in data table and plot."),
+        helpText("In the data table below, columns with red background have missing values."),
+        helpText("By clicking `Fill Missing Values` button, all the missing values will be imputed automatically."),
+        helpText("By double clicking the elements of the data table, changes can be made. Still, change with cautious."),
         actionButton("fill_other_miss", "Fill Missing Values"),
       ),
       mainPanel(
         fluidRow(
           column(4,
-                 "Missing Summary",
+                 h3("Missing Summary"),
                  dataTableOutput("other_miss_summ_dt")),
           column(8,
                  plotOutput("other_miss_summ"))
         )
       )
     ),
-    "Missing Data Table",
+    h3("Missing Data Table"),
     dataTableOutput("other_miss_dt")
   )
 

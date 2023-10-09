@@ -208,7 +208,47 @@ server <- function(input, output, session){
       
       
       ##### Outliers #####
+      updatePickerInput(
+        session,
+        "outliers_var",
+        choices = colnames(df_check_other())[-c(1,
+                                             which(colnames(df_check_other()) %in% c("VARIETY", "S_STATE")))],
+        selected = colnames(df_check_other())[2]
+      )
       
+      
+      ## Box plot
+      output$outliers_plot = renderPlotly({
+        plot_outliers(df_check_other()[,-1], input$outliers_var)
+      })
+      
+      ## Data Table
+      output$outliers_dt = renderDataTable(
+        datatable(
+          outliers_dt(df_check_other(), input$outliers_var)$dt,
+          rownames = F,
+          filter = "top",
+          options = list(scrollY = 300,
+                         scrollX = 500,
+                         deferRender = TRUE,
+                         pageLength = 10,
+                         autoWidth = F),
+          editable = T
+        )
+      )
+      
+      ## Edit function
+      observeEvent(input$outliers_dt_cell_edit, {
+        info <- input$outliers_dt_cell_edit
+        # print(info)
+        df_check_edit = outliers_dt(df_check_other(), input$outliers_var)$dt
+        df_check_edit[info$row,
+                      info$col+1] <- info$value # IDK why I need "+1", but it works
+        
+        myData$dt[outliers_dt(df_check_other(), input$outliers_var)$out_row,
+                  colnames(df_check_edit)] = df_check_edit
+        myData$history[[length(myData$history)+1]] = myData$dt
+      })
       
       ##### Other missing #####
       ## Summary

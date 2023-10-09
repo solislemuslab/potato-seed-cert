@@ -1,13 +1,3 @@
-#### Variables that should be paired ####
-summer_cols = c("CERT_N",
-                "VARIETY",
-                # "S_G",
-                "S_YR",
-                "S_STATE",
-                "LNAME")
-n_vars = length(summer_cols)
-winter_cols = paste0("winter_", summer_cols)
-
 #### Return Summary Table and Data Table with only missing rows ####
 # Error Table
 paired_error_dt <- function(mydf){
