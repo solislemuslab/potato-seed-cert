@@ -63,7 +63,7 @@ state_comparison_subtab <-
         pickerInput(
           inputId = "state_comp_ins",
           label = "Inspection",
-          choices = c("Summer_1st", "Summer_2nd", "Winter"), # Winter?
+          choices = c("Summer_1st", "Summer_2nd", "Winter"),
           multiple = F
         ),
         sliderInput(
@@ -72,11 +72,18 @@ state_comparison_subtab <-
           min = 0,
           max = as.numeric(format(Sys.Date(), "%Y")),
           value = c(0, as.numeric(format(Sys.Date(), "%Y")))
+        ),
+        
+        pickerInput(
+          "state_comp_dis",
+          "Disease",
+          choices = c(),
+          multiple = F
         )
       ),
       mainPanel(
-        plotlyOutput("plot_state_comp", height = "700px"),
-        # dataTableOutput("dt_state_comp")
+        plotlyOutput("plot_state_comp"),
+        plotlyOutput("map_plot_state_comp")
       )
     )
   )

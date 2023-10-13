@@ -333,7 +333,36 @@ server <- function(input, output, session){
       choices = sort(unique(upload_df$S_STATE)),
       selected = "WI"
     )
-  
+    
+
+    
+    observeEvent(input$state_comp_ins, {
+      req(input$state_comp_ins)
+      x = input$state_comp_ins
+      if (x == "Winter"){
+        updatePickerInput(
+          session,
+          "state_comp_dis",
+          choices = c("MOS", "LR", "MIX")
+        )
+      }else if (x == "Summer_2nd"){
+        updatePickerInput(
+          session,
+          "state_comp_dis",
+          choices =  gsub("^NO_|_2ND$", "", 
+                          colnames(upload_df)[grepl("^NO.*_2ND$", colnames(upload_df))])
+        )
+      }else{
+        updatePickerInput(
+          session,
+          "state_comp_dis",
+          choices =  gsub("^NO_|_1ST$", "", 
+                          colnames(upload_df)[grepl("^NO.*_1ST$", colnames(upload_df))])
+        )
+      }
+    })      
+
+    
     ## Acre Rejection subTab
     updatePickerInput(
       session,
@@ -401,6 +430,12 @@ server <- function(input, output, session){
                           input$state_comp_year[2])
   })
   
+  output$map_plot_state_comp <- renderPlotly({
+    map_plot_sc(myData$dt, input$state_comp_ins,
+                input$state_comp_state, input$state_comp_year[1],
+                input$state_comp_year[2],
+                input$state_comp_dis)
+  })
   # Update Acre Rejection Content
   output$plot_acre_lot <- renderPlotly({
     plot_acre_rejection(myData$dt, input$acre_lot,

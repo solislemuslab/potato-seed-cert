@@ -22,7 +22,7 @@ plot_acre_rejection <-
         pivot_longer(-LNAME, names_to = "season", values_to = "Rej_pct")
       
       p_ar_lots = temp_lots %>% 
-        ggplot(aes(x = LNAME, y = Rej_pct)) + 
+        ggplot(aes(x = factor(LNAME), y = Rej_pct)) + 
         geom_col(aes(fill = season), position = "dodge") + 
         labs(x = "Potato Lot Name", 
              y = "Rejection Percentage") +

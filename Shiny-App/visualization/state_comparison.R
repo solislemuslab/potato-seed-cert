@@ -46,7 +46,6 @@ plot_state_comparison <-
 
 generate_temp_sc <- 
   function(mydf, inspection, states, year_min, year_max){
-    # mydf[is.na(mydf)] <- 0 # TBD
     # Summer 1st
     if ("Summer_1st" %in% inspection){
       temp <- mydf %>% 
@@ -101,42 +100,62 @@ generate_color_scale <- function(mydf){
   }
 }
 
-# temp_1 <- dff %>% 
-#   filter(S_STATE %in% c("CO", "WI"),
-#          S_YR == 2005) %>% 
-#   select(c("PLTCT_1", "S_STATE",
-#            colnames(dff)[grepl("^NO.*_1ST$", colnames(dff))])) %>% 
-#   group_by(S_STATE) %>% 
-#   summarize_all(sum) %>% 
-#   mutate(across(matches("NO"), function(x) x/PLTCT_1))
-# 
-# colnames(temp_1)[-1:-2] <- paste0("PCT_", gsub("^NO_", "", colnames(temp_1)[-1:-2]))
-# 
-# if (dim(temp_1)[1] == 0){
-#   p_sc = ggplot() +
-#     labs(x = "Disease", 
-#          y = "Percentage of potato")
-#   p_sc = ggplotly(p_sc)
-# }else{
-#   p_sc = with(temp_1, plot_ly(type = "parcoords",
-#                             line = list(color = ~S_STATE,
-#                                         colorscale = list(c(0,'red'),c(0.5,'green'),c(1,'blue'))),
-#                             dimensions = list(
-#                               list(range = c(min(PCT_LR_1ST), max(PCT_LR_1ST)),
-#                                    label = "LR", values = ~PCT_LR_1ST),
-#                               list(range = c(min(PCT_MOS_1ST), max(PCT_MOS_1ST)),
-#                                    label = "MOS", values = ~PCT_MOS_1ST),
-#                               list(range = c(min(PCT_ST_1ST), max(PCT_ST_1ST)),
-#                                    label = "ST", values = ~PCT_ST_1ST),
-#                               list(range = c(min(PCT_MIX_1ST), max(PCT_MIX_1ST)),
-#                                    label = "MIX", values = ~PCT_MIX_1ST)
-#                             )))
-# }
-#   
+
+map_plot_sc <- function(mydf, inspection, states, year_min, year_max, disease){
+  # When data is not uploaded
+  if(is.null(mydf)){
+    p_sc <- ggplot(mydf, aes(x = c(0,1), y = c(0,1))) + 
+      annotate("text",x=0.5,y=0.5,label="Please upload data") + 
+      labs(x = "", y = "") + 
+      theme(plot.caption = element_text(size = 10))
+    ggplotly(p_sc)
+  }
   
-
-
-
-
-
-
+  # When data is uploaded
+  else{
+    # When selected less than 2 states
+    if (length(states) < 2){
+      p_sc <- ggplot(mydf, aes(x = c(0,1), y = c(0,1))) + 
+        annotate("text",x=0.5,y=0.5,label="Please select at least two states") + 
+        labs(x = "", y = "") + 
+        theme(plot.caption = element_text(size = 10)) +
+        ggtitle("Comparison between States")
+      ggplotly(p_sc)
+    }
+    
+    # When states are selected properly
+    else{
+      temp = generate_temp_sc(mydf, inspection, states, year_min, year_max)
+      us_map = map_data("state")
+      colnames(us_map)[5] = "S_STATE"
+      
+      state_mapping = data.frame(
+        abb = state.abb,
+        S_STATE = tolower(state.name)
+      )
+      
+      target_col = grep(paste0("_",disease,"_"), colnames(temp), value = TRUE)
+      
+      temp_full = temp %>% 
+        left_join(state_mapping, by = c("S_STATE" = "abb")) %>% 
+        mutate(S_STATE_org = S_STATE,
+               S_STATE = S_STATE.y)
+      temp_full$value = temp_full[[target_col]]
+      temp_full = temp_full %>% 
+        select(S_STATE, value)
+      merged_data = left_join(us_map, temp_full, by = "S_STATE")
+      # print(merged_data)
+      
+      p = ggplot(data = merged_data, aes(x = long, y = lat, fill = value, group = group)) +
+        geom_polygon(color = "grey") +
+        scale_fill_gradient(na.value = "white") +
+        # coord_fixed(1.3) +
+        labs(title = "Comparison between States in map", fill = "Acre Rejection Rate")
+      ggplotly(p)
+    }
+  }
+  
+  
+  
+  
+}
