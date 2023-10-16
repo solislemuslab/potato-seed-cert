@@ -314,8 +314,8 @@ server <- function(input, output, session){
     }
   })
   
+  #### Visualization Tab ####
   observe({
-    #### Visualization Tab ####
     upload_df <- myData$dt
     # Update Choices after uploading data
     ## Disease Prevalence subTab
@@ -462,5 +462,58 @@ server <- function(input, output, session){
   
   
 
+  
+  #### Test Tab ####
+  observe({
+    upload_df = myData$dt
+    # Update Choices
+    updatePickerInput(
+      session,
+      "test_state",
+      choices = sort(unique(upload_df$S_STATE)),
+      selected = "WI"
+    )
+    
+    if (!is.null(upload_df)){
+      updateSliderInput(
+        session,
+        "test_year",
+        min = min(upload_df$S_YR),
+        max = max(upload_df$S_YR),
+        step = 1,
+        value = c(min(upload_df$S_YR), max(upload_df$S_YR))
+      )
+    }
+    
+    # Update Chi-Square subtab
+    output$observe_dt = renderDataTable(
+      datatable(
+        chi_square_test(upload_df, input$test_state,
+                        input$test_year[1], input$test_year[2],
+                        input$test_disease_disc,
+                        input$test_var,
+                        input$test_alpha)$Table,
+        rownames = F,
+        options = list(scrollX = 500,
+                       deferRender = TRUE,
+                       pageLength = 10
+        )
+      )
+    )
+    
+    output$chi2_dt = renderDataTable(
+      datatable(
+        chi_square_test(upload_df, input$test_state,
+                        input$test_year[1], input$test_year[2],
+                        input$test_disease_disc,
+                        input$test_var,
+                        input$test_alpha)$Result,
+        rownames = F,
+        options = list(searching = FALSE, 
+                       paging = FALSE
+        )
+      )
+    )
+  })
 }
 

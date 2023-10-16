@@ -19,6 +19,7 @@ source("./dataimport/data_table.R")
 source("./dataimport/paired.R")
 source("./dataimport/outliers.R")
 source("./dataimport/other_miss.R")
+source("./test/chi_sqr.R")
 theme_set(theme_minimal())
 
 

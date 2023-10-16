@@ -3,7 +3,11 @@
 chi2_subtab <- 
   tabPanel(
     "Chi-square Test",
-    dataTableOutput("chi2_dt", height = "700px")
+    h3("Observation Table"),
+    dataTableOutput("observe_dt"),
+    h3("Chi-Square Test Result"),
+    dataTableOutput("chi2_dt")
+    
   )
 
 anova_subtab <- 
