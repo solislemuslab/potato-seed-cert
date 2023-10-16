@@ -90,15 +90,15 @@ generate_temp_sc <-
   }
   
 
-generate_color_scale <- function(mydf){
-  colors = c("blue", "green", "red", "cyan", "magenta", "yellow", "black", "orange",
-             "darkviolet", "royalblue", "pink", "purple", "maroon", "silver", "lime")
-  color_scale = list()
-  num_state = length(unique(mydf$S_STATE))
-  for (i in 1:num_state){
-    color_scale[[i]] = c(i/num_state, colors[i])
-  }
-}
+# generate_color_scale <- function(mydf){
+#   colors = c("blue", "green", "red", "cyan", "magenta", "yellow", "black", "orange",
+#              "darkviolet", "royalblue", "pink", "purple", "maroon", "silver", "lime")
+#   color_scale = list()
+#   num_state = length(unique(mydf$S_STATE))
+#   for (i in 1:num_state){
+#     color_scale[[i]] = c(i/num_state, colors[i])
+#   }
+# }
 
 
 map_plot_sc <- function(mydf, inspection, states, year_min, year_max, disease){
@@ -150,7 +150,7 @@ map_plot_sc <- function(mydf, inspection, states, year_min, year_max, disease){
         geom_polygon(color = "grey") +
         scale_fill_gradient(na.value = "white") +
         # coord_fixed(1.3) +
-        labs(title = "Comparison between States in map", fill = "Acre Rejection Rate")
+        labs(title = "Comparison between States in map", fill = "Acre Rejection Rate(%)")
       ggplotly(p)
     }
   }

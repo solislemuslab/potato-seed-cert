@@ -14,6 +14,7 @@ data_table_subtab <-
         helpText("Moreover, after making changes to the data, it can be downloaded by clicking `Download csv` button on the top."),
         helpText("And by clicking the `Undo` button, the most recent change made on the data set within the dashboard will be cancelled."),
         helpText("The dashboard needs to be refreshed every time a data set is uploaded."),
+        helpText("It is recommended to go through all the subtabs under Data Tab before moving forward."),
         wellPanel(
           fileInput(
             inputId = "df",
@@ -85,7 +86,9 @@ outliers_subtab <-
         width = 4,
         h3("Instruction:"),
         helpText("This tab will give information about possible outliers in some important variables."),
-        helpText("After selecting variables in the below box, the boxplot and data table will be updated."),
+        helpText("After selecting variables in the below box, the boxplot and data table will be updated.\
+                 Note that all elements in these variables should not be negative. Elements with red background are \
+                 those that are negative. Please double check that and make proper changes."),
         helpText("By double clicking the elements of the data table, changes can be made. Still, change with cautious."),
 
         pickerInput("outliers_var", "Select Variable",

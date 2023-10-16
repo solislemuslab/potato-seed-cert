@@ -30,14 +30,14 @@ test_tab <-
                          `live-search` = T)
         ),
         
-        pickerInput(
-          inputId = "test_grower",
-          label = "Grower",
-          choices = c(0),
-          multiple = T,
-          options = list(`actions-box` = T,
-                         `live-search` = T)
-        ),
+        # pickerInput(
+        #   inputId = "test_grower",
+        #   label = "Grower",
+        #   choices = c(0),
+        #   multiple = T,
+        #   options = list(`actions-box` = T,
+        #                  `live-search` = T)
+        # ),
         
         sliderInput(
           inputId = "test_year",

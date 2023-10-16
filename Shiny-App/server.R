@@ -234,7 +234,13 @@ server <- function(input, output, session){
                          pageLength = 10,
                          autoWidth = F),
           editable = T
-        )
+        ) %>% 
+          formatStyle(columns = 1:ncol(outliers_dt(df_check_other(), input$outliers_var)$dt),
+                      backgroundColor = styleInterval(cuts = -1e-100, 
+                                                      values = c("red", "white")),
+                      color = styleInterval(cuts = -1e-100, 
+                                            values = c("grey", "black"))
+                      )
       )
       
       ## Edit function
@@ -278,10 +284,10 @@ server <- function(input, output, session){
                          autoWidth = T
           ),
           editable = T
-        )%>% 
+        ) %>% 
           formatStyle(columns = which(get_miss_info(df_check_other())$miss_cols != 0) + 1,
-                      backgroundColor = "darkred",
-                      color = "white")
+                      backgroundColor = "red",
+                      color = "grey")
       )
       
       ## Edit function
@@ -304,13 +310,14 @@ server <- function(input, output, session){
         myData$dt <- new_dt
       })
       
+
     }
   })
   
-  #### Visualization Tab ####
-  # Update Choices after uploading data
   observe({
+    #### Visualization Tab ####
     upload_df <- myData$dt
+    # Update Choices after uploading data
     ## Disease Prevalence subTab
     updatePickerInput(
       session,
@@ -318,14 +325,14 @@ server <- function(input, output, session){
       choices = sort(unique(upload_df$S_STATE)),
       selected = "WI"
     )
-  
+    
     updatePickerInput(
       session,
       "dis_pre_variety",
       choices = unique(upload_df$VARIETY),
       selected = "Atlantic"
     )
-  
+    
     ## State Comparison subTab
     updatePickerInput(
       session,
@@ -334,8 +341,7 @@ server <- function(input, output, session){
       selected = "WI"
     )
     
-
-    
+    # Update disease choices
     observeEvent(input$state_comp_ins, {
       req(input$state_comp_ins)
       x = input$state_comp_ins
@@ -343,7 +349,7 @@ server <- function(input, output, session){
         updatePickerInput(
           session,
           "state_comp_dis",
-          choices = c("MOS", "LR", "MIX")
+          choices = c("MOS", "LR", "MXD")
         )
       }else if (x == "Summer_2nd"){
         updatePickerInput(
@@ -361,7 +367,7 @@ server <- function(input, output, session){
         )
       }
     })      
-
+    
     
     ## Acre Rejection subTab
     updatePickerInput(
@@ -369,20 +375,20 @@ server <- function(input, output, session){
       "acre_lot",
       choices = sort(unique(upload_df$LNAME))
     )
-  
+    
     updatePickerInput(
       session,
       "acre_variety",
       choices = sort(unique(upload_df$VARIETY))
     )
-  
+    
     ## Variety
     updatePickerInput(
       session,
       "variety_variety",
       choices = sort(unique(upload_df$VARIETY))
     )
-  
+    
     if (!is.null(upload_df)){
       updateSliderInput(
         session,
@@ -392,7 +398,7 @@ server <- function(input, output, session){
         step = 1,
         value = c(min(upload_df$S_YR), max(upload_df$S_YR))
       )
-  
+      
       updateSliderInput(
         session,
         "variety_year",
@@ -401,58 +407,60 @@ server <- function(input, output, session){
         step = 1,
         value = c(min(upload_df$S_YR), max(upload_df$S_YR))
       )
-  
-  
+      
+      
     }
-  })
-  
-  # Update choices of acre rejection tab
-  observeEvent(input$acre_lot, {
-    req(input$acre_lot)
-    x = input$acre_lot
-    updatePickerInput(session, "acre_variety",
-                      choices = unique(myData$dt %>%
-                                         filter(LNAME %in% x) %>%
-                                         select(VARIETY))
+    
+    # Update choices of acre rejection tab
+    observeEvent(input$acre_lot, {
+      req(input$acre_lot)
+      x = input$acre_lot
+      updatePickerInput(session, "acre_variety",
+                        choices = unique(myData$dt %>%
+                                           filter(LNAME %in% x) %>%
+                                           select(VARIETY))
+      )
+    })
+    
+    # Update Disease Prevalence Content
+    output$plot_dis_pre <- renderPlotly({
+      plot_disease_prevalence(myData$dt, input$dis_pre_ins, input$dis_pre_dis,
+                              input$dis_pre_state, input$dis_pre_variety)
+    })
+    
+    # Update State Comparison Content
+    output$plot_state_comp <- renderPlotly({
+      plot_state_comparison(myData$dt, input$state_comp_ins,
+                            input$state_comp_state, input$state_comp_year[1],
+                            input$state_comp_year[2])
+    })
+    
+    output$map_plot_state_comp <- renderPlotly({
+      map_plot_sc(myData$dt, input$state_comp_ins,
+                  input$state_comp_state, input$state_comp_year[1],
+                  input$state_comp_year[2],
+                  input$state_comp_dis)
+    })
+    # Update Acre Rejection Content
+    output$plot_acre_lot <- renderPlotly({
+      plot_acre_rejection(myData$dt, input$acre_lot,
+                          input$acre_variety)$lot
+    })
+    
+    output$plot_acre_variety <- renderPlotly({
+      plot_acre_rejection(myData$dt, input$acre_lot,
+                          input$acre_variety)$var
+    })
+    
+    # Update Variety Content
+    output$plot_var <- renderPlotly(
+      plot_variety(myData$dt, input$variety_ins, input$variety_dis,
+                   input$variety_variety, input$variety_year[1],
+                   input$variety_year[2])
     )
   })
   
-  # Update Disease Prevalence Content
-  output$plot_dis_pre <- renderPlotly({
-    plot_disease_prevalence(myData$dt, input$dis_pre_ins, input$dis_pre_dis,
-                            input$dis_pre_state, input$dis_pre_variety)
-  })
   
-  # Update State Comparison Content
-  output$plot_state_comp <- renderPlotly({
-    plot_state_comparison(myData$dt, input$state_comp_ins,
-                          input$state_comp_state, input$state_comp_year[1],
-                          input$state_comp_year[2])
-  })
-  
-  output$map_plot_state_comp <- renderPlotly({
-    map_plot_sc(myData$dt, input$state_comp_ins,
-                input$state_comp_state, input$state_comp_year[1],
-                input$state_comp_year[2],
-                input$state_comp_dis)
-  })
-  # Update Acre Rejection Content
-  output$plot_acre_lot <- renderPlotly({
-    plot_acre_rejection(myData$dt, input$acre_lot,
-                        input$acre_variety)$lot
-  })
-  
-  output$plot_acre_variety <- renderPlotly({
-    plot_acre_rejection(myData$dt, input$acre_lot,
-                        input$acre_variety)$var
-  })
-  
-  # Update Variety Content
-  output$plot_var <- renderPlotly(
-    plot_variety(myData$dt, input$variety_ins, input$variety_dis,
-                 input$variety_variety, input$variety_year[1],
-                 input$variety_year[2])
-  )
 
 }
 
