@@ -26,19 +26,11 @@ other_miss_dt = function(mydf, miss_rows){
 }
 
 
-
-miss2_fix = function(){
-  
-}
-
-
 miss2_fix = function(mydf, df_check){
-  # df_check = mydf %>% select(summer_cols, winter_cols)
-  # df_error = other_miss_summ_dt(df_check)
-  
   imp = mice(df_check, method="norm.predict",m=1,maxit=1,seed=1)
   imputed_data = complete(imp)
-  imputed_data[imputed_data < 0] = 0
+  # imputed_data[imputed_data < 0] = 0
+  imputed_data = imputed_data[-which(imputed_data < 0)] # TBD
   problem = imp$loggedEvents
   # print(problem)
   if (!is.null(problem)){
@@ -53,5 +45,24 @@ miss2_fix = function(mydf, df_check){
   }
   
   mydf[,colnames(imputed_data)] = imputed_data
+  
+  var_mapping = list(
+    "SR1_MOS" = c("NO_MOS_1ST", "PLTCT_1"),
+    "SR2_MOS" = c("NO_MOS_2ND", "PLTCT_2"),
+    "SR1_ST"  = c("NO_ST_1ST", "PLTCT_1"),
+    "SR2_ST"  = c("NO_ST_2ND", "PLTCT_2"),
+    "SR1_LR"  = c("NO_LR_1ST", "PLTCT_1"),
+    "SR2_LR"  = c("NO_LR_2ND", "PLTCT_2"),
+    "SR1_MIX" = c("NO_MIX_1ST", "PLTCT_1"),
+    "SR2_MIX" = c("NO_MIX_2ND", "PLTCT_2"),
+    "SR2_BRR" = c("NO_BRR_2ND", "PLTCT_2")
+  )
+  
+  for (var in names(var_mapping)) {
+    var2 <- var_mapping[[var]][1]
+    var3 <- var_mapping[[var]][2]
+    mydf[[var]] = mydf[[var2]] / mydf[[var3]] * 100
+  }
   return(mydf)
 }
+

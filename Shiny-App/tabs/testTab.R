@@ -13,7 +13,10 @@ chi2_subtab <-
 anova_subtab <- 
   tabPanel(
     "ANOVA",
-    dataTableOutput("anova_dt", height = "700px")
+    h3("Data Table"),
+    dataTableOutput("anova_dt"),
+    h3("ANOVA Test Result"),
+    dataTableOutput("anova_res_dt")
   )
 
 
@@ -69,7 +72,11 @@ test_tab <-
             pickerInput(
               inputId = "test_disease_cont",
               label = "Disease (Continuous)",
-              choices = c("SR1_MOS", "SR2_MOS", "SR1_LR"),
+              choices = c("SR1_MOS", "SR2_MOS", 
+                          "SR1_ST", "SR2_ST",
+                          "SR1_LR", "SR2_LR",
+                          "SR1_MIX", "SR2_MIX",
+                          "SR2_BRR"),
               multiple = F,
               options = list(`live-search` = T)
             )
@@ -83,11 +90,7 @@ test_tab <-
           choices = c("SNAME",
                       "GCODE",
                       "VARIETY",
-                      "S_GRW",
-                      "S_G",
-                      "S_YR",
-                      "S_GCODE",
-                      "S_STATE"),
+                      "S_G"),
           multiple = F,
           options = list(`live-search` = T)
         ),

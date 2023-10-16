@@ -16,8 +16,7 @@ chi_square_test =
     }else{
       temp = mydf %>% 
         filter(S_STATE %in% state,
-               S_YR <= year_max,
-               S_YR >= year_min)
+               S_YR %in% year_min:year_max)
       if (dim(temp)[1] == 0){
         error = data.frame(
           Info = "Not enough data. Please try other combinations."
@@ -25,6 +24,7 @@ chi_square_test =
         return(list(Table = error,
                     Result = error))
       }else{
+        significance = as.double(significance)
         temp_table = table(temp[[disease]], temp[[var_comp]]) %>% 
           as.data.frame.matrix()
         
@@ -32,7 +32,7 @@ chi_square_test =
           # print(temp_table)
           chi2_result = chisq.test(temp_table)
           chi_data = data.frame(
-            "Null_Hypothesis" = "Independt",
+            "Null_Hypothesis" = "Independent",
             "Alternative_Hypothesis" = "Associated",
             "Chi-Square-score" = round(chi2_result$statistic, 4),
             "df" = chi2_result$parameter,

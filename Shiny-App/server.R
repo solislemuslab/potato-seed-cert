@@ -512,7 +512,45 @@ server <- function(input, output, session){
         options = list(searching = FALSE, 
                        paging = FALSE
         )
+      ) %>% 
+        formatStyle(columns = 6,
+                    backgroundColor = "royalblue",
+                    color = "white")
+    )
+    
+    # Update ANOVA subtab
+    output$anova_dt = renderDataTable(
+      datatable(
+        anova_test(upload_df, input$test_state,
+                   input$test_year[1], input$test_year[2],
+                   input$test_disease_cont,
+                   input$test_var,
+                   input$test_alpha)$Table,
+        rownames = F,
+        options = list(scrollX = 500,
+                       # scrollY = 300,
+                       deferRender = TRUE,
+                       pageLength = 5
+        )
       )
+    )
+    
+    
+    output$anova_res_dt = renderDataTable(
+      datatable(
+        anova_test(upload_df, input$test_state,
+                   input$test_year[1], input$test_year[2],
+                   input$test_disease_cont,
+                   input$test_var,
+                   input$test_alpha)$Result,
+        rownames = F,
+        options = list(searching = FALSE, 
+                       paging = FALSE
+        )
+      ) %>% 
+        formatStyle(columns = 6,
+                    backgroundColor = "royalblue",
+                    color = "white")
     )
   })
 }
