@@ -3,6 +3,9 @@ source("./styles/custom-styles.R")
 source("./tabs/dataTab.R")
 source("./tabs/visualizationTab.R")
 source("./tabs/testTab.R")
+source("./tabs/predictionTab.R")
+source("./tabs/helpTab.R")
+
 ui <- fluidPage(
   # useShinyalert(),
   theme = shinytheme("cerulean"),
@@ -14,7 +17,9 @@ ui <- fluidPage(
     
     data_tab,
     visualization_tab,
-    test_tab
+    test_tab,
+    predict_tab,
+    help_tab
   )
 )
 

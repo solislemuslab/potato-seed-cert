@@ -11,6 +11,8 @@ library(readxl)
 library(shinyalert)
 library(mice)
 library(maps)
+library(forecast)
+
 source("./visualization/disease_prevalence.R")
 source("./visualization/state_comparison.R")
 source("./visualization/acre_rejection.R")
@@ -21,6 +23,8 @@ source("./dataimport/outliers.R")
 source("./dataimport/other_miss.R")
 source("./test/chi_sqr.R")
 source("./test/anova.R")
+source("./predict/predict.R")
+
 theme_set(theme_minimal())
 
 

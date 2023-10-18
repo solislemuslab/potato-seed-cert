@@ -553,5 +553,34 @@ server <- function(input, output, session){
                     color = "white")
     )
   })
+  
+  #### Prediction Tab ####
+  observe({
+    upload_df <- myData$dt
+    # Update Choices after uploading data
+    updatePickerInput(
+      session,
+      "pred_state",
+      choices = sort(unique(upload_df$S_STATE)),
+      selected = "WI"
+    )
+    
+    updatePickerInput(
+      session,
+      "pred_variety",
+      choices = unique(upload_df$VARIETY),
+      selected = "Atlantic"
+    )
+    
+    # Update Content
+    output$pred_plot = renderPlotly({
+      predict_prevalance(upload_df, input$pred_state,
+                         input$pred_disease,
+                         input$pred_variety,
+                         input$pred_ins)
+    })
+    
+  })
+  
 }
 
