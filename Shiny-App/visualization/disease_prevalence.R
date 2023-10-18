@@ -71,6 +71,7 @@ plot_disease_prevalence <-
           summarize_all(sum) %>%
           mutate(across(matches("N$"), function(x) x/winter_PLANTCT))
         
+        colnames(temp_2)[5] = "winter_MIXN"
         colnames(temp_2)[-1:-2] <- paste0("PCT_", gsub("^winter_|N$", "", colnames(temp_2)[-1:-2]), "_Winter")
         
         disease_types = c()
