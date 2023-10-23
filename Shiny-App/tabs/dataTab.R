@@ -8,25 +8,28 @@ data_table_subtab <-
       sidebarPanel(
         width = 4,
         h3("Instruction:"),
-        helpText("Please choose a csv/xlsx/txt file from your device."),
-        helpText("The four tabs on the right will show a summary of the database and potential errors to address prior to data analysis and visualization."), 
+        helpText("Please choose a csv/xlsx file from your device."),
+        helpText("The four tabs on the right will show a summary of the database \
+                 and potential errors to address prior to data analysis and visualization."), 
         helpText("Note that clicking on a given tab might take a couple of seconds to load."),
-        helpText("Moreover, after making changes to the data, it can be downloaded by clicking `Download csv` button on the top."),
-        helpText("And by clicking the `Undo` button, the most recent change made on the data set within the dashboard will be cancelled."),
+        helpText("Moreover, after making changes to the data, it can be downloaded by clicking ", 
+                 tags$b("Download CSV"), 
+                 " button on the top. And by clicking the ", 
+                 tags$b("Undo"), 
+                 " button, the most recent change made on the data set within the dashboard will be cancelled."),
         helpText("The dashboard needs to be refreshed every time a data set is uploaded."),
-        helpText("It is recommended to go through all the subtabs under Data Tab before moving forward."),
+        helpText("It is recommended to upload a ", 
+                 tags$b(tags$em("high quality")), 
+                 " data set, which means that there is little missing and wrong values. \
+                 Also, please go through all the subtabs under Data Tab before moving forward."),
         wellPanel(
           fileInput(
             inputId = "df",
             label = "User Data (csv/xlsx/txt format)",
             accept = c(
-              "text/csv",
-              "text/comma-separated-values",
-              "text/tab-separated-values",
-              "text/plain",
               ".csv",
-              ".xlsx",
-              ".tsv"
+              ".xlsx"
+              # ".tsv"
             ),
             placeholder = "No file selected",
             width = "100%"
@@ -54,8 +57,33 @@ paired_subtab <-
         width = 4,
         h3("Instruction:"),
         helpText("This tab will give error summary for the variables that are supposed to be the same in Summer and Winter."),
-        helpText("By clicking `Fill Missing Values` button, the missing values will be imputed automatically."),
-        helpText("By clicking `Fix Mismatches` button, the mismatch error in each variable will be fixed."),
+        helpText("By clicking ", tags$b("Fill Missing Values"), " button, the missing values will be imputed automatically.") %>% 
+          helper(type = "inline",
+                 title = "Further Illustration",
+                 content = c("If the corresponding value in the other season is not missing, \
+                             the missing value is imputed with that value.",
+                             "",
+                             "Or if there are paired missing continuous values, \
+                             it will be solved in `Missing Values` Tab. \
+                             For the paried missing discrete values, they will be deleted. \
+                             Thus, make sure the data quality is high enough.",
+                             "",
+                             "Moreover, the button can be pressed multiple times."),
+                 buttonLabel = "Got it!",
+                 fade = TRUE,
+                 size = "m",
+                 colour = "royalblue"),
+        helpText("By clicking ", tags$b("Fix Mismatches"), " button, the mismatch error in each variable will be fixed.") %>% 
+          helper(type = "inline",
+                 title = "Further Illustration",
+                 content = c("For this button, it will change the mismatched values \
+                             in winter variables (columns) into those is summer variables (columns).",
+                             "",
+                             "So, please make sure the values in summer variables (columns) are correct if you are using this button."),
+                 buttonLabel = "Got it!",
+                 fade = TRUE,
+                 size = "m",
+                 colour = "royalblue"),
         helpText("By double clicking elements in data tables below, changes can be done. Make sure to change with cautious."),
         selectInput("paired_mismatch", "Select Mismatch Variable",
                     choices = c()),
@@ -119,12 +147,42 @@ error_analysis_subtab <-
       sidebarPanel(
         width = 4,
         h3("Instruction:"),
-        helpText("This tab will detect missing values within the important variables. Note that it is recommened to first go through the `Paired Errors` tab before this one."),
-        helpText("Detailed information about missing values is displayed on the right, both in data table and plot."),
+        helpText("This tab will detect missing values within the important variables.\
+                 Note that it is recommened to first go through the ", tags$code("Paired Errors"), "tab \
+                 and ", tags$code("Outliers"), " tab before this one."),
+        helpText("Detailed information about missing values is displayed on the right, both in data table and plot.") %>% 
+          helper(type = "inline",
+                 title = "Further Illustration",
+                 content = c("The blue box indicates that the value for the variable \
+                             (column) is present (i.e., not missing) for the given pattern (row).",
+                             "",
+                             "While the red box indicates that the value for the variable \
+                             (column) is missing for the given pattern (row).",
+                             "",
+                             "The numbers in the rightmost column show how many variables \
+                             (column) have missing values for each pattern (row).",
+                             "",
+                             "The numbers in the bottom represent the total count of missing \
+                             values for each variable (column).",
+                             "",
+                             "And the numbers on the left represent how many missing values are there \
+                             for each pattern (row)."),
+                 buttonLabel = "Got it!",
+                 fade = TRUE,
+                 size = "m",
+                 colour = "royalblue"),
         helpText("In the data table below, columns with red background have missing values."),
-        helpText("By clicking `Fill Missing Values` button, all the missing values will be imputed automatically."),
+        helpText("By clicking ", tags$b("Fill Missing Values"), " button, all the missing values will be imputed automatically.") %>% 
+          helper(type = "inline",
+                 title = "Further Illustration",
+                 content = c("By clicking the button, the missing values are \
+                             imputed with the corresponding means."),
+                 buttonLabel = "Got it!",
+                 fade = TRUE,
+                 size = "m",
+                 colour = "royalblue"),
         helpText("By double clicking the elements of the data table, changes can be made. Still, change with cautious."),
-        actionButton("fill_other_miss", "Fill Missing Values"),
+        actionButton("fill_other_miss", "Fill Missing Values")
       ),
       mainPanel(
         fluidRow(

@@ -3,6 +3,8 @@ server <- function(input, output, session){
   myData <- reactiveValues(dt = NULL, history = list(NULL))
   # `dt` stores the newest data table, `history` stores old data tables
   
+  observe_helpers(withMathJax = TRUE)
+  
   #### After uploading data ####
   observeEvent(input$df, {
     #### Read data and check basics ####
@@ -182,8 +184,10 @@ server <- function(input, output, session){
       observeEvent(input$fill_pair_miss, {
         # print("Click Fill")
         new_dt <- miss1_fix(myData$dt, df_check_paired())
-        myData$history[[length(myData$history)+1]] = new_dt
-        myData$dt <- new_dt
+        if (!identical(new_dt, myData$dt)){
+          myData$history[[length(myData$history)+1]] = new_dt
+          myData$dt <- new_dt
+        }
       })
       
       ## MisMatch
@@ -202,8 +206,10 @@ server <- function(input, output, session){
       ### Fix mismatch button
       observeEvent(input$fix_pair_mm, {
         new_dt <- mm_fix(myData$dt, df_check_paired())
-        myData$history[[length(myData$history)+1]] = new_dt
-        myData$dt <- new_dt
+        if (!identical(new_dt, myData$dt)){
+          myData$history[[length(myData$history)+1]] = new_dt
+          myData$dt <- new_dt
+        }
       })
       
       
@@ -237,9 +243,7 @@ server <- function(input, output, session){
         ) %>% 
           formatStyle(columns = 1:ncol(outliers_dt(df_check_other(), input$outliers_var)$dt),
                       backgroundColor = styleInterval(cuts = -1e-100, 
-                                                      values = c("red", "white")),
-                      color = styleInterval(cuts = -1e-100, 
-                                            values = c("grey", "black"))
+                                                      values = c("palevioletred", "white"))
                       )
       )
       
@@ -286,14 +290,14 @@ server <- function(input, output, session){
           editable = T
         ) %>% 
           formatStyle(columns = which(get_miss_info(df_check_other())$miss_cols != 0) + 1,
-                      backgroundColor = "red",
-                      color = "grey")
+                      backgroundColor = "palevioletred",
+                      color = "black")
       )
       
       ## Edit function
       observeEvent(input$other_miss_dt_cell_edit, {
         info <- input$other_miss_dt_cell_edit
-        print(info)
+        # print(info)
         df_check_edit = df_check_other()
         df_check_edit[miss_rows_other()[info$row],
                       info$col+1] <- info$value # IDK why I need "+1", but it works
@@ -306,8 +310,10 @@ server <- function(input, output, session){
       ## Fill button
       observeEvent(input$fill_other_miss, {
         new_dt <- miss2_fix(myData$dt, df_check_other())
-        myData$history[[length(myData$history)+1]] = new_dt
-        myData$dt <- new_dt
+        if (!identical(new_dt, myData$dt)){
+          myData$history[[length(myData$history)+1]] = new_dt
+          myData$dt <- new_dt
+        }
       })
       
 

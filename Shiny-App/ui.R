@@ -1,5 +1,5 @@
 # UI
-source("./styles/custom-styles.R")
+source("./custom-styles.R")
 source("./tabs/dataTab.R")
 source("./tabs/visualizationTab.R")
 source("./tabs/testTab.R")
@@ -11,6 +11,7 @@ ui <- fluidPage(
   theme = shinytheme("cerulean"),
   custom_styles_text,
   custom_styles,
+  custom_styles_code,
   navbarPage(
     "Wisconsin Seed Potato Certification Program",
     # theme = shinytheme("lumen"),

@@ -43,18 +43,18 @@ paired_mm_dt = function(mydf, mm_var) {
 
 #### Fill missing values ####
 miss1_fix = function(mydf, df_check){
-  # df_check = mydf %>% select(summer_cols, winter_cols)
   df_error = paired_error_dt(df_check)
 
   df_error = df_error %>%
     mutate(isna = Summer + Winter,
            both = (Summer == Winter))
   # Miss only one season
-  ## Q: Do we need it if we use kNN?
   for (i in 1:dim(df_error)[1]){
     if (df_error$isna[i] != 0 & !df_error$both[i]){
       miss_rows_sep = get_miss_info(df_check[,c(i+1, i+n_vars+1)])$miss_rows # To exclude Index
       # print(miss_rows_sep)
+      
+      # If summer has missing value
       if (df_error$Summer[i] > df_error$Winter[i]){
         mydf[miss_rows_sep, summer_cols[i]] = mydf[miss_rows_sep, winter_cols[i]]
       }
@@ -63,21 +63,22 @@ miss1_fix = function(mydf, df_check){
       }
     }
   }
-  # Miss both seasons
-  ## Categorical Variables: annoying
-  # miss_rows = which(!complete.cases(df_check))
-  # num_vars = setdiff(colnames(df_check), c("S_STATE", "VARIETY", "S_G",
-  #                                          "winter_S_STATE", "winter_VARIETY", "winter_S_G"))
-  # df_KNN = knnImputation(df_check[,num_vars],
-  #                        k=10, meth="weighAvg")
-  # mydf[miss_rows, colnames(df_KNN)] = df_KNN[miss_rows,]
+  
+  # Miss both seasons: Leave to other_miss for continuous case
+  # For discrete case:
+  for (i in c(2,4)){
+    if (df_error$isna[i] != 0 & df_error$both[i]){
+      miss_rows_sep = get_miss_info(df_check[,c(i+1, i+n_vars+1)])$miss_rows # To exclude Index
+      mydf = mydf[-miss_rows_sep,]
+    }
+  }
 
+  
   return(mydf)
 }
 
 
 #### Fix mismatch values ####
-# How to do this properly?
 mm_fix = function(mydf, df_check){
   info_mm = get_mm_info(df_check)
   for (Col in info_mm$mm_cols){
@@ -120,9 +121,10 @@ get_mm_info = function(mydf){
   inconsistency = c()
   mismatch_rows = list()
   for (i in 1:n_vars){
-    Diff = mydf %>% select(i, i+n_vars) %>% 
-      na.omit() %>% 
-      mutate(diff = ifelse(.[[1]] != .[[2]], TRUE, FALSE))
+    Diff = mydf %>% 
+      select(i, i+n_vars) %>% 
+      # na.omit() %>% 
+      mutate(diff = (.[[1]] != .[[2]]) & (!is.na(.[[1]]) & !is.na(.[[2]])))
     inconsistency = c(inconsistency, sum(Diff$diff))
     if(sum(Diff$diff) != 0){
       mismatch_rows[[summer_cols[i]]] = which(Diff$diff)

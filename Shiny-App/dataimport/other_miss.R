@@ -27,7 +27,7 @@ other_miss_dt = function(mydf, miss_rows){
 
 
 miss2_fix = function(mydf, df_check){
-  imp = mice(df_check, method="norm.predict",m=1,maxit=1,seed=1)
+  imp = mice(df_check, method="pmm",m=1,maxit=1,seed=1)
   imputed_data = complete(imp)
   # imputed_data[imputed_data < 0] = 0
   imputed_data = imputed_data[-which(imputed_data < 0)] # TBD

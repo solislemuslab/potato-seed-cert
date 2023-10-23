@@ -29,7 +29,12 @@ outliers_dt <- function(mydf, my_vars) {
     lapply(function(x) which(x %in% boxplot.stats(x)$out)) %>% 
     unlist() %>% 
     unique()
-  
+  negative_df_rows = mydf %>% 
+    select(my_vars) %>% 
+    mutate(neg = if_any(everything(), ~ . < 0))
+  negative_rows = which(negative_df_rows$neg)
+  outlier_rows = c(outlier_rows, negative_rows) %>% 
+    unique()
   return(list(dt = mydf[outlier_rows, c("Index", my_vars)],
               out_row = outlier_rows))
 }

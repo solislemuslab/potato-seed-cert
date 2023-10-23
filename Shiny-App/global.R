@@ -12,6 +12,7 @@ library(shinyalert)
 library(mice)
 library(maps)
 library(forecast)
+library(shinyhelper)
 
 source("./visualization/disease_prevalence.R")
 source("./visualization/state_comparison.R")
