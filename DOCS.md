@@ -49,7 +49,18 @@ The following shows the hierarchy of the website:
 
 ### Outliers
 * The **Outliers** subtab explores the possible outliers in the variables (columns) that are used in the later analysis, possibly caused by miss typing. 
- 
+* The "Outliers Box-Plot" will give the box plot of selected variables, and the "Detailed Data Table" will also change accordingly.
+* Users may change the data set through the data table by double clicking the elements.
+* It is recommended to check all the variables with care, as all of them should not be negative. Moreover, *PLTCT_1*, *PLTCT_2*, *winter_PLANTCT*, *ACRES* and *winter_ACRES* should be positive. All the values that violates the above principals will be marked with red background.
+
+### Missing Values
+* In this subtab, users can learn about the missing values within the variables (columns) that are important for the later analysis. 
+* For "Missing Summary" part, users can check how many missing values are there for each variable (column) from the table, and the missing patterns from the plot.
+* For "Missing Data Table", variables (columns) with missing values will have red background. Users can edit the data by double clicking elements of the data table. 
+* Note that users can find missing values in the data table by clicking the variable (column) name to sort by it, and go to the end of the table.
+* "Fill Missing Values" button will fill all the missing values with predicted mean matching.
+
+
 ## Visualization Section
 * There are 4 kinds of visualization plots implemented in this section: 
     * Disease Prevalence
