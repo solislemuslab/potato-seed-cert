@@ -86,7 +86,7 @@ The following shows the hierarchy of the website:
   * Potato Variety
 * After choosing the 4 elements above, it will generate a line plot. The x-axis is Year, and y-axis is Percentage of potato with the disease type you chose before.
 
-![Disease Prevalence](assets/Shiny-Disease_Prevalence.png)
+![Disease Prevalence](assets/Shiny-Disease-Prevalence.png)
 
 ### State Comparison
 * The state comparison page contains 4 choices:
@@ -98,7 +98,7 @@ The following shows the hierarchy of the website:
 * After choosing the Disease Type, users can check the map to compare certain disease infection rate between states. 
 
 
-![State Comparison](assets/Shiny-State_Comparasion.png)
+![State Comparison](assets/Shiny-State-Comparasion.png)
 
 ### Acre Rejection
 * The acre rejection page contains two bar plots based on different classification criterias:
@@ -107,7 +107,7 @@ The following shows the hierarchy of the website:
 * The choices of *Potato Variety* will change according to the selection of the *Potato Lot Name*.
 * The y-axis of each bar plot is Rejection Percentage (ACRE_REJ/ACRE_TOTAL). The x-axis is different potato lot name or potato variety. For each potato lot name/potato variety, it shows two bars -- one for summer and one for winter.
 
-![Acre Rejection](assets/Shiny-Acre_Rej.png)
+![Acre Rejection](assets/Shiny-Acre-Rej.png)
 
 ### Variety
 * The variety page contains 4 choices:
