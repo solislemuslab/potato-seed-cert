@@ -30,7 +30,7 @@ miss2_fix = function(mydf, df_check){
   imp = mice(df_check, method="pmm",m=1,maxit=1,seed=1)
   imputed_data = complete(imp)
   # imputed_data[imputed_data < 0] = 0
-  imputed_data = imputed_data[-which(imputed_data < 0)] # TBD
+  # imputed_data = imputed_data[-which(imputed_data < 0)] # TBD
   problem = imp$loggedEvents
   # print(problem)
   if (!is.null(problem)){

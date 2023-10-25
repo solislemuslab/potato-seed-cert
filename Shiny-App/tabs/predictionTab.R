@@ -44,7 +44,7 @@ predict_tab <-
       ),
       mainPanel(
         h3("Predicted Result"),
-        plotlyOutput("pred_plot")
+        plotlyOutput("pred_plot", height = "700px")
       )
       
     )

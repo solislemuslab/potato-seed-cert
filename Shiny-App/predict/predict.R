@@ -10,12 +10,6 @@ predict_prevalance =
     }else{
       p_pp = ggplot()
       
-      dis_lab = ""
-      for (disease in diseases){
-        dis_lab = paste0(dis_lab, disease, ", ")
-      }
-      dis_lab = str_sub(dis_lab, 1, -3)
-      
       # Summer
       if ("Summer" %in% inspections){
         temp_1 = mydf %>% 
@@ -38,7 +32,7 @@ predict_prevalance =
         
         if (dim(temp_1)[1] == 0){
           p_pp = p_pp +
-            labs(x = paste0("Percentage of potato with ", dis_lab), 
+            labs(x = "Forecasted Value (%)", 
                  y = "State")
         }else{
           results = temp_1 %>% 
@@ -47,15 +41,19 @@ predict_prevalance =
           
           predicted = sapply(results$model, 
                              function(x) forecast(x, h=1)$mean)
-          results$rate_pred = predicted
+          predicted[predicted < 0] = 0
+          results$rate_pred = round(predicted, 4)
           
           p_pp = p_pp + 
-            geom_col(data = results, 
+            geom_col(data = results,
                      aes(x=rate_pred, y=S_STATE, fill=Disease),
                      position="dodge",
-                     alpha = 0.5) + 
+                     alpha = 0.5) +
+            geom_point(data = results,
+                       aes(x=rate_pred, y=S_STATE, col=Disease),
+                       alpha = 0.5) +
             labs(title="Forecasted Values by State and Disease Type",
-                 x="Forecasted Value", y="State")
+                 x="Forecasted Value (%)", y="State")
         }
       }
       
@@ -94,15 +92,20 @@ predict_prevalance =
           
           predicted = sapply(results$model, 
                              function(x) forecast(x, h=1)$mean)
-          results$rate_pred = predicted
+          
+          predicted[predicted < 0] = 0
+          results$rate_pred = round(predicted*100, 4)
           
           p_pp = p_pp + 
-            geom_col(data = results, 
+            geom_col(data = results,
                      aes(x=rate_pred, y=S_STATE, fill=Disease),
                      position="dodge",
-                     alpha = 0.5) + 
+                     alpha = 0.5) +
+            geom_point(data = results,
+                       aes(x=rate_pred, y=S_STATE, col=Disease),
+                       alpha = 0.5) +
             labs(title="Forecasted Values by State and Disease Type",
-                 x="Forecasted Value", y="State")
+                 x="Forecasted Value (%)", y="State")
         }
       }
       ggplotly(p_pp)

@@ -2,16 +2,17 @@
 
 chi2_subtab <- 
   tabPanel(
+    value = "chi2",
     "Chi-square Test",
     h3("Observation Table"),
     dataTableOutput("observe_dt"),
     h3("Chi-Square Test Result"),
     dataTableOutput("chi2_dt")
-    
   )
 
 anova_subtab <- 
   tabPanel(
+    value = "anova",
     "ANOVA",
     h3("Data Table"),
     dataTableOutput("anova_dt"),
@@ -54,35 +55,28 @@ test_tab <-
           value = c(0, as.numeric(format(Sys.Date(), "%Y")))
         ),
         
-        fluidRow(
-          column(
-            6,
-            pickerInput(
-              inputId = "test_disease_disc",
-              label = "Disease (Discrete)",
-              choices = c("BLEG_PCT_C", "RHIZOC", "VERT_C",
-                          "ASTRYELOS", "EBLIGHT"	, "LBLIGHT", "WILT_PCT_C"),
-              multiple = F,
-              options = list(`live-search` = T)
-            )
+        pickerInput(
+          inputId = "test_disease",
+          label = "Disease",
+          choices = c("BLEG_PCT_C", "RHIZOC", "VERT_C",
+                      "ASTRYELOS", "EBLIGHT"	, "LBLIGHT", "WILT_PCT_C"),
+          multiple = F,
+          options = list(`live-search` = T)
+        
           ),
 
-          column(
-            6,
-            pickerInput(
-              inputId = "test_disease_cont",
-              label = "Disease (Continuous)",
-              choices = c("SR1_MOS", "SR2_MOS", 
-                          "SR1_ST", "SR2_ST",
-                          "SR1_LR", "SR2_LR",
-                          "SR1_MIX", "SR2_MIX",
-                          "SR2_BRR"),
-              multiple = F,
-              options = list(`live-search` = T)
-            )
-          )
 
-        ),
+        # pickerInput(
+        #   inputId = "test_disease_cont",
+        #   label = "Disease (Continuous)",
+        #   choices = c("SR1_MOS", "SR2_MOS", 
+        #               "SR1_ST", "SR2_ST",
+        #               "SR1_LR", "SR2_LR",
+        #               "SR1_MIX", "SR2_MIX",
+        #               "SR2_BRR"),
+        #   multiple = F,
+        #   options = list(`live-search` = T)
+        # )
         
         pickerInput(
           inputId = "test_var",
@@ -105,6 +99,7 @@ test_tab <-
       mainPanel(
         fluidRow(
           tabsetPanel(
+            id = "test_subtabs",
             chi2_subtab,
             anova_subtab
           )

@@ -34,9 +34,9 @@ chi_square_test =
           chi_data = data.frame(
             "Null_Hypothesis" = "Independent",
             "Alternative_Hypothesis" = "Associated",
-            "Chi-Square-score" = round(chi2_result$statistic, 4),
+            "Chi_Square_Score" = round(chi2_result$statistic, 4),
             "df" = chi2_result$parameter,
-            "p-value" = round(chi2_result$p.value, 4),
+            "p_value" = round(chi2_result$p.value, 4),
             "Conclusion" = ifelse(chi2_result$p.value > significance,
                                   "Independent", "Associated")
           )

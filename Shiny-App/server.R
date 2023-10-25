@@ -491,12 +491,26 @@ server <- function(input, output, session){
       )
     }
     
+    observeEvent(input$test_subtabs, {
+      if (input$test_subtabs == "anova"){
+        updatePickerInput(
+          session,
+          "test_disease",
+          choices = c("SR1_MOS", "SR2_MOS", 
+                      "SR1_ST", "SR2_ST",
+                      "SR1_LR", "SR2_LR",
+                      "SR1_MIX", "SR2_MIX",
+                      "SR2_BRR")
+        )
+      }
+    })
+    
     # Update Chi-Square subtab
     output$observe_dt = renderDataTable(
       datatable(
         chi_square_test(upload_df, input$test_state,
                         input$test_year[1], input$test_year[2],
-                        input$test_disease_disc,
+                        input$test_disease,
                         input$test_var,
                         input$test_alpha)$Table,
         rownames = F,
@@ -511,7 +525,7 @@ server <- function(input, output, session){
       datatable(
         chi_square_test(upload_df, input$test_state,
                         input$test_year[1], input$test_year[2],
-                        input$test_disease_disc,
+                        input$test_disease,
                         input$test_var,
                         input$test_alpha)$Result,
         rownames = F,
@@ -529,7 +543,7 @@ server <- function(input, output, session){
       datatable(
         anova_test(upload_df, input$test_state,
                    input$test_year[1], input$test_year[2],
-                   input$test_disease_cont,
+                   input$test_disease,
                    input$test_var,
                    input$test_alpha)$Table,
         rownames = F,
@@ -546,7 +560,7 @@ server <- function(input, output, session){
       datatable(
         anova_test(upload_df, input$test_state,
                    input$test_year[1], input$test_year[2],
-                   input$test_disease_cont,
+                   input$test_disease,
                    input$test_var,
                    input$test_alpha)$Result,
         rownames = F,
