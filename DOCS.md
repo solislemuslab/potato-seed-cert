@@ -98,7 +98,7 @@ The following shows the hierarchy of the website:
 * After choosing the Disease Type, users can check the map to compare certain disease infection rate between states. 
 
 
-![State Comparison](assets/Shiny-State-Comparasion.png)
+![State Comparison](assets/Shiny-State-Comparison.png)
 
 ### Acre Rejection
 * The acre rejection page contains two bar plots based on different classification criterias:
