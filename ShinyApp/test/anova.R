@@ -1,13 +1,13 @@
-anova_test = 
+anova_test <- 
   function(mydf, state, year_min, year_max, 
            disease, var_comp, significance){
-    if (is.null(mydf)){
+    if (is.null(mydf)){ # If data is not valid
       error = data.frame(
         Remind = "Please upload valid data."
       )
       return(list(Table = error,
                   Result = error))
-    }else if (length(state) == 0){
+    }else if (length(state) == 0){ # If no state is selected
       error = data.frame(
         Remind = "Please select at least one state."
       )
@@ -20,7 +20,7 @@ anova_test =
                S_YR %in% year_min:year_max) %>% 
         select(Index, disease, var_comp, S_STATE, S_YR)
       
-      if (dim(temp)[1] == 0){
+      if (dim(temp)[1] == 0){ # If no sample
         error = data.frame(
           Info = "Not enough data. Please try other combinations."
         )
@@ -29,10 +29,6 @@ anova_test =
       }else{
         dof1 = length(unique(temp[[disease]]))
         dof2 = length(unique(temp[[var_comp]]))
-        # print(dof1)
-        # if (dof1 == 2){print(unique(temp[[disease]]))}
-        # print(dof2)
-        # print("")
         if (dof1 < 2 | dof2 < 2){
           anova_result = data.frame(
             Info = "Not enough degree of freedom to do the test. Please try other combinations."

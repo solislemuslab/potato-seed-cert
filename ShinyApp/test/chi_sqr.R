@@ -1,13 +1,13 @@
-chi_square_test = 
+chi_square_test <- 
   function(mydf, state, year_min, year_max, 
            disease, var_comp, significance){
-    if (is.null(mydf)){
+    if (is.null(mydf)){ # If data not valid
       error = data.frame(
         Remind = "Please upload valid data."
       )
       return(list(Table = error,
                   Result = error))
-    }else if (length(state) == 0){
+    }else if (length(state) == 0){ # If no state is selected
       error = data.frame(
         Remind = "Please select at least one state."
       )
@@ -17,7 +17,7 @@ chi_square_test =
       temp = mydf %>% 
         filter(S_STATE %in% state,
                S_YR %in% year_min:year_max)
-      if (dim(temp)[1] == 0){
+      if (dim(temp)[1] == 0){ # If no sample
         error = data.frame(
           Info = "Not enough data. Please try other combinations."
         )
@@ -29,7 +29,6 @@ chi_square_test =
           as.data.frame.matrix()
         
         if (dim(temp_table)[1] >= 2){
-          # print(temp_table)
           chi2_result = chisq.test(temp_table)
           chi_data = data.frame(
             "Null_Hypothesis" = "Independent",
@@ -40,7 +39,6 @@ chi_square_test =
             "Conclusion" = ifelse(chi2_result$p.value > significance,
                                   "Independent", "Associated")
           )
-
         }else{
           chi_data = data.frame(
             Info = "Not enough degree of freedom to do the test. Please try other combinations."
@@ -54,8 +52,5 @@ chi_square_test =
         return(list(Table = temp_table,
                     Result = chi_data))
       }
-
-
     }
-    
   }
