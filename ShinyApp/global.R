@@ -25,10 +25,10 @@ source("./test/chi_sqr.R")
 source("./test/anova.R")
 source("./predict/predict.R")
 
+# Set theme for ggplot2
 theme_set(theme_minimal())
 
-
-
+# Correct Column Names
 correct_names = c('SummerID', 'CY', 'CERT_N', 'LNAME', 'SNAME', 
                   'GCODE', 'VARIETY', 'VAR', 'V2', 'V3AR', 'S_GRW', 'S_G', 'S_YR', 'S_GCODE', 
                   'S_STATE', 'ACRES', 'I_CLASS', 'I_GEN', 'START_PLTG', 'DONE_PLTG', 'DATE_1ST', 
@@ -55,13 +55,15 @@ correct_names = c('SummerID', 'CY', 'CERT_N', 'LNAME', 'SNAME',
                   'winter_AC_REJ', 'winter_CY', 'DAPS1_binned', 'DAPS2_binned', 'NO_LR_2ND', 'NO_MOS_2ND',
                   'NO_ST_2ND', 'NO_TOTV_2ND')
 
+# Variables needed for visualization
 vars_need = c("PLTCT_1", correct_names[grepl("^NO.*_1ST$", correct_names)],
               "PLTCT_2", correct_names[grepl("^NO.*_2ND$", correct_names)],
               "S_YR", "winter_PLANTCT", "winter_MOSN",
               "winter_LRN", "winter_MXDN",
               "S_STATE","VARIETY","LNAME", "ACRES", "AC_REJ", 
               "winter_ACRES", "winter_AC_REJ")
-#### Variables that should be paired ####
+
+# Variables that should be paired
 summer_cols = c("CERT_N",
                 "VARIETY",
                 # "S_G",
