@@ -1,6 +1,6 @@
 # SERVER
 server <- function(input, output, session){
-  myData <- reactiveValues(dt = NULL, history = list(NULL))
+  myData = reactiveValues(dt = NULL, history = list(NULL))
   # `dt` stores the newest data table, `history` stores old data tables
   
   observe_helpers(withMathJax = TRUE)
@@ -10,10 +10,10 @@ server <- function(input, output, session){
     #### Read data and check basics ####
     if (is.null(input$df)) myData$dt = NULL
     if (grepl("csv", input$df$datapath)){
-      mydf <- read.csv(input$df$datapath, header = T)
+      mydf = read.csv(input$df$datapath, header = T)
     }
     if (grepl("xlsx", input$df$datapath)){
-      mydf <- read_xlsx(input$df$datapath)
+      mydf = read_xlsx(input$df$datapath)
     }
     if (length(check_col_names(mydf))!=0){ # Check Column Names
       shinyalert("Warning", 
@@ -28,7 +28,7 @@ server <- function(input, output, session){
                         paste(check_col_class(mydf)$Which, collapse = ", "),
                         ". Please check and upload again."), 
                  type = "info")
-      output$subtab_data <- renderDataTable(
+      output$subtab_data = renderDataTable(
         mydf[,check_col_class(mydf)$Which_col]
       )
     }
@@ -47,7 +47,7 @@ server <- function(input, output, session){
         myData$dt %>% select(Index, summer_cols, winter_cols)
       })
       
-      miss_rows_paired <- reactive({
+      miss_rows_paired = reactive({
         get_miss_info(df_check_paired())$miss_rows
       })
 
@@ -59,7 +59,7 @@ server <- function(input, output, session){
         myData$dt %>% select(Index, vars_need)
       })
       
-      miss_rows_other <- reactive({
+      miss_rows_other = reactive({
         get_miss_info(df_check_other())$miss_rows
       })
       
@@ -67,23 +67,23 @@ server <- function(input, output, session){
       ##### Undo button #####
       observeEvent(input$undo, {
         if(length(myData$history) > 2) {
-          myData$history <- myData$history[-length(myData$history)]
-          myData$dt <- tail(myData$history, 1)[[1]]
+          myData$history = myData$history[-length(myData$history)]
+          myData$dt = tail(myData$history, 1)[[1]]
         }
       })
       
       ##### Download button #####
-      output$downloadData <- downloadHandler(
-        filename = function() {
+      output$downloadData = downloadHandler(
+        filename <- function() {
           paste("data-", Sys.Date(), ".csv", sep="")
         },
-        content = function(file) {
+        content <- function(file) {
           write.csv(myData$dt[,-1], file, row.names = F)
         }
       )
       
       ##### Data Table #####
-      output$subtab_data <- renderDataTable(
+      output$subtab_data = renderDataTable(
         datatable(
           myData$dt,
           filter = "top",
@@ -150,8 +150,8 @@ server <- function(input, output, session){
         )
       }else{
         output$paired_mm_dt = renderDataTable({
-          empty_df <- data.frame(matrix(ncol = ncol(df_check_paired()), nrow = 0))
-          colnames(empty_df) <- colnames(df_check_paired())
+          empty_df = data.frame(matrix(ncol = ncol(df_check_paired()), nrow = 0))
+          colnames(empty_df) = colnames(df_check_paired())
           datatable(
             empty_df,
             filter = "top",
@@ -170,10 +170,10 @@ server <- function(input, output, session){
       ## Missing
       ### Edit DT function
       observeEvent(input$paired_miss_dt_cell_edit, {
-        info <- input$paired_miss_dt_cell_edit
+        info = input$paired_miss_dt_cell_edit
         df_check_edit = df_check_paired()
         df_check_edit[miss_rows_paired()[info$row],
-                      info$col+1] <- info$value # IDK why I need "+1", but it works
+                      info$col+1] = info$value # IDK why I need "+1", but it works
         
         myData$dt[miss_rows_paired(),
                   colnames(df_check_edit)] = df_check_edit[miss_rows_paired(),]
@@ -183,20 +183,20 @@ server <- function(input, output, session){
       ### Fill missing value button
       observeEvent(input$fill_pair_miss, {
         # print("Click Fill")
-        new_dt <- miss1_fix(myData$dt, df_check_paired())
+        new_dt = miss1_fix(myData$dt, df_check_paired())
         if (!identical(new_dt, myData$dt)){
           myData$history[[length(myData$history)+1]] = new_dt
-          myData$dt <- new_dt
+          myData$dt = new_dt
         }
       })
       
       ## MisMatch
       ### Edit DT function
       observeEvent(input$paired_mm_dt_cell_edit, {
-        info_mm <- input$paired_mm_dt_cell_edit
+        info_mm = input$paired_mm_dt_cell_edit
         df_mm_edit = df_check_paired()[colnames(paired_mm_dt(df_check_paired(), input$paired_mismatch))]
         df_mm_edit[mm_rows()[info_mm$row],
-                      info_mm$col+1] <- info_mm$value # IDK why I need "+1", but it works
+                      info_mm$col+1] = info_mm$value # IDK why I need "+1", but it works
         # myData$history[[length(myData$history)+1]] = df_mm_edit[mm_rows(),]
         myData$dt[mm_rows(),
                   colnames(df_mm_edit)] = df_mm_edit[mm_rows(),]
@@ -205,13 +205,12 @@ server <- function(input, output, session){
       
       ### Fix mismatch button
       observeEvent(input$fix_pair_mm, {
-        new_dt <- mm_fix(myData$dt, df_check_paired())
+        new_dt = mm_fix(myData$dt, df_check_paired())
         if (!identical(new_dt, myData$dt)){
           myData$history[[length(myData$history)+1]] = new_dt
-          myData$dt <- new_dt
+          myData$dt = new_dt
         }
       })
-      
       
       ##### Outliers #####
       updatePickerInput(
@@ -249,11 +248,11 @@ server <- function(input, output, session){
       
       ## Edit function
       observeEvent(input$outliers_dt_cell_edit, {
-        info <- input$outliers_dt_cell_edit
+        info = input$outliers_dt_cell_edit
         # print(info)
         df_check_edit = outliers_dt(df_check_other(), input$outliers_var)$dt
         df_check_edit[info$row,
-                      info$col+1] <- info$value # IDK why I need "+1", but it works
+                      info$col+1] = info$value # IDK why I need "+1", but it works
         
         myData$dt[outliers_dt(df_check_other(), input$outliers_var)$out_row,
                   colnames(df_check_edit)] = df_check_edit
@@ -296,11 +295,11 @@ server <- function(input, output, session){
       
       ## Edit function
       observeEvent(input$other_miss_dt_cell_edit, {
-        info <- input$other_miss_dt_cell_edit
+        info = input$other_miss_dt_cell_edit
         # print(info)
         df_check_edit = df_check_other()
         df_check_edit[miss_rows_other()[info$row],
-                      info$col+1] <- info$value # IDK why I need "+1", but it works
+                      info$col+1] = info$value # IDK why I need "+1", but it works
         
         myData$dt[miss_rows_other(),
                   colnames(df_check_edit)] = df_check_edit[miss_rows_other(),]
@@ -309,10 +308,10 @@ server <- function(input, output, session){
       
       ## Fill button
       observeEvent(input$fill_other_miss, {
-        new_dt <- miss2_fix(myData$dt, df_check_other())
+        new_dt = miss2_fix(myData$dt, df_check_other())
         if (!identical(new_dt, myData$dt)){
           myData$history[[length(myData$history)+1]] = new_dt
-          myData$dt <- new_dt
+          myData$dt = new_dt
         }
       })
       
@@ -322,7 +321,7 @@ server <- function(input, output, session){
   
   #### Visualization Tab ####
   observe({
-    upload_df <- myData$dt
+    upload_df = myData$dt
     # Update Choices after uploading data
     ## Disease Prevalence subTab
     updatePickerInput(
@@ -373,7 +372,6 @@ server <- function(input, output, session){
         )
       }
     })      
-    
     
     ## Acre Rejection subTab
     updatePickerInput(
@@ -429,45 +427,42 @@ server <- function(input, output, session){
     })
     
     # Update Disease Prevalence Content
-    output$plot_dis_pre <- renderPlotly({
+    output$plot_dis_pre = renderPlotly({
       plot_disease_prevalence(myData$dt, input$dis_pre_ins, input$dis_pre_dis,
                               input$dis_pre_state, input$dis_pre_variety)
     })
     
     # Update State Comparison Content
-    output$plot_state_comp <- renderPlotly({
+    output$plot_state_comp = renderPlotly({
       plot_state_comparison(myData$dt, input$state_comp_ins,
                             input$state_comp_state, input$state_comp_year[1],
                             input$state_comp_year[2])
     })
     
-    output$map_plot_state_comp <- renderPlotly({
+    output$map_plot_state_comp = renderPlotly({
       map_plot_sc(myData$dt, input$state_comp_ins,
                   input$state_comp_state, input$state_comp_year[1],
                   input$state_comp_year[2],
                   input$state_comp_dis)
     })
     # Update Acre Rejection Content
-    output$plot_acre_lot <- renderPlotly({
+    output$plot_acre_lot = renderPlotly({
       plot_acre_rejection(myData$dt, input$acre_lot,
                           input$acre_variety)$lot
     })
     
-    output$plot_acre_variety <- renderPlotly({
+    output$plot_acre_variety = renderPlotly({
       plot_acre_rejection(myData$dt, input$acre_lot,
                           input$acre_variety)$var
     })
     
     # Update Variety Content
-    output$plot_var <- renderPlotly(
+    output$plot_var = renderPlotly(
       plot_variety(myData$dt, input$variety_ins, input$variety_dis,
                    input$variety_variety, input$variety_year[1],
                    input$variety_year[2])
     )
   })
-  
-  
-
   
   #### Test Tab ####
   observe({
@@ -555,7 +550,6 @@ server <- function(input, output, session){
       )
     )
     
-    
     output$anova_res_dt = renderDataTable(
       datatable(
         anova_test(upload_df, input$test_state,
@@ -576,7 +570,7 @@ server <- function(input, output, session){
   
   #### Prediction Tab ####
   observe({
-    upload_df <- myData$dt
+    upload_df = myData$dt
     # Update Choices after uploading data
     updatePickerInput(
       session,
@@ -599,8 +593,5 @@ server <- function(input, output, session){
                          input$pred_variety,
                          input$pred_ins)
     })
-    
   })
-  
 }
-
