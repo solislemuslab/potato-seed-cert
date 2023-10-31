@@ -1,5 +1,4 @@
 # Visualization
-
 ## Disease Prevalence
 disease_prevalence_subtab <- 
   tabPanel(
@@ -174,5 +173,3 @@ visualization_tab <-
       variety_subtab
     )
   )
-
-

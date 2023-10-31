@@ -1,5 +1,4 @@
 # Help Tab
-
 help_tab <- 
   tabPanel(
     "Get Help",

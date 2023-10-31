@@ -1,5 +1,4 @@
 # Data Tab
-
 #### Data Table #### 
 data_table_subtab <- 
   tabPanel(
@@ -211,4 +210,3 @@ data_tab <-
       error_analysis_subtab
     ),
   )
-

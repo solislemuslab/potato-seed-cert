@@ -1,5 +1,4 @@
 # Test Tab
-
 chi2_subtab <- 
   tabPanel(
     value = "chi2",
@@ -22,7 +21,6 @@ anova_subtab <-
 
 
 ## Aggregation
-
 test_tab <- 
   tabPanel(
     "Test",
@@ -37,15 +35,6 @@ test_tab <-
           options = list(`actions-box` = T,
                          `live-search` = T)
         ),
-        
-        # pickerInput(
-        #   inputId = "test_grower",
-        #   label = "Grower",
-        #   choices = c(0),
-        #   multiple = T,
-        #   options = list(`actions-box` = T,
-        #                  `live-search` = T)
-        # ),
         
         sliderInput(
           inputId = "test_year",
@@ -64,19 +53,6 @@ test_tab <-
           options = list(`live-search` = T)
         
           ),
-
-
-        # pickerInput(
-        #   inputId = "test_disease_cont",
-        #   label = "Disease (Continuous)",
-        #   choices = c("SR1_MOS", "SR2_MOS", 
-        #               "SR1_ST", "SR2_ST",
-        #               "SR1_LR", "SR2_LR",
-        #               "SR1_MIX", "SR2_MIX",
-        #               "SR2_BRR"),
-        #   multiple = F,
-        #   options = list(`live-search` = T)
-        # )
         
         pickerInput(
           inputId = "test_var",

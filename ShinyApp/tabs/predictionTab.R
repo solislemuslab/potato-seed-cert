@@ -1,5 +1,4 @@
 # Prediction Tab
-
 predict_tab <- 
   tabPanel(
     "Prediction",
