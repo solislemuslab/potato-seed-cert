@@ -1,12 +1,10 @@
 #### Check Column Names ####
-
-
-check_col_names = function(mydf){
+check_col_names <- function(mydf){
   return(which(colnames(mydf)[-1] != correct_names))
 }
 
 #### Check Column Class ####
-check_col_class = function(mydf){
+check_col_class<-function(mydf){
   vars_chr = c("S_STATE", "VARIETY")
   vars_num = setdiff(vars_need, vars_chr)
   
@@ -18,4 +16,3 @@ check_col_class = function(mydf){
   return(list("Check" = all(Check),
               "Which_col" = names(Which_col)))
 }
-
