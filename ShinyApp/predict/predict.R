@@ -1,4 +1,4 @@
-predict_prevalance = 
+predict_prevalance <- 
   function(mydf, state, diseases, variety, inspections){
     # When data is not uploaded
     if(is.null(mydf)){
@@ -29,7 +29,7 @@ predict_prevalance =
         temp_1 = temp_1  %>% 
           pivot_longer(-c(S_YR, S_STATE), names_to = "Disease")%>% 
           filter(Disease %in% disease_types)
-        
+        # If no sample
         if (dim(temp_1)[1] == 0){
           p_pp = p_pp +
             labs(x = "Forecasted Value (%)", 
@@ -80,7 +80,7 @@ predict_prevalance =
         temp_2 = temp_2 %>%
           pivot_longer(-c(S_YR, winter_PLANTCT, S_STATE), names_to = "Disease") %>% 
           filter(Disease %in% disease_types) 
-        
+        # If no sample
         if (dim(temp_2)[1] == 0){
           p_pp = p_pp +
             labs(x = paste0("Percentage of potato with ", dis_lab), 
