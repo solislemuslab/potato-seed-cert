@@ -1,6 +1,6 @@
 # Data format
 
-Currently, the dashboard is tailored to the certification data. For this reason, the uploaded .csv/xlsx/txt file needs to contain the following columns:
+Currently, the dashboard is tailored to the certification data. For this reason, the uploaded .csv/xlsx file needs to contain the following columns:
 
 - '': first column does not have a column name and simply contains row numbers
 - 'SummerID'
@@ -93,7 +93,7 @@ Currently, the dashboard is tailored to the certification data. For this reason,
 - 'SF_HCNOT5'
 - 'SF_HCNOT6'
 - 'SF_HCNOT7'
-- 'ADDRESSS'
+- 'ADDRESS'
 - 'CITY'
 - 'STATE'
 - 'ZIP'
