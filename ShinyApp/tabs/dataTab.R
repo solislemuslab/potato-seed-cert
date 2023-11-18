@@ -6,12 +6,12 @@ data_table_subtab <-
     sidebarLayout(
       sidebarPanel(
         width = 4,
-        h3("Instruction:"),
+        h3("Instructions:"),
         helpText("Please choose a csv/xlsx file from your device."),
-        helpText("The four tabs on the right will show a summary of the database \
+        helpText("After data is loaded, four tabs will appear on the right with a summary of the database \
                  and potential errors to address prior to data analysis and visualization."), 
         helpText("Note that clicking on a given tab might take a couple of seconds to load."),
-        helpText("Moreover, after making changes to the data, it can be downloaded by clicking ", 
+        helpText("Moreover, after making changes to the data, the revised data can be downloaded by clicking ", 
                  tags$b("Download CSV"), 
                  " button on the top. And by clicking the ", 
                  tags$b("Undo"), 
