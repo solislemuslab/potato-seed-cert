@@ -28,9 +28,9 @@ server <- function(input, output, session){
                         paste(check_col_class(mydf)$Which, collapse = ", "),
                         ". Please check and upload again."), 
                  type = "info")
-      output$subtab_data = renderDataTable(
-        mydf[,check_col_class(mydf)$Which_col]
-      )
+      # output$subtab_data = renderDataTable(
+      #   mydf[,check_col_class(mydf)$Which_col]
+      # )
     }
     else{
       mydf = mydf %>%
