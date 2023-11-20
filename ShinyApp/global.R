@@ -25,6 +25,9 @@ source("./test/chi_sqr.R")
 source("./test/anova.R")
 source("./predict/predict.R")
 
+# Maximum upload size
+options(shiny.maxRequestSize = 10 * 1024^3)
+
 # Set theme for ggplot2
 theme_set(theme_minimal())
 
