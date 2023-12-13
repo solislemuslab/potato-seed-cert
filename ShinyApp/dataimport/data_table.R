@@ -4,7 +4,7 @@ check_col_names <- function(mydf){
 }
 
 #### Check Column Class ####
-check_col_class<-function(mydf){
+check_col_class <- function(mydf){
   vars_chr = c("S_STATE", "VARIETY")
   vars_num = setdiff(vars_need, vars_chr)
   

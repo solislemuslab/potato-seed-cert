@@ -31,7 +31,7 @@ R
 
 3. Install the necessary packages with
 ```
-install.packages(readLines("./requirements.txt"))
+source("./install_packages.R")
 ```
 This step can take several minutes.
 
@@ -46,17 +46,16 @@ maps
 plotly
 readxl
 shiny
+shinyjs
 shinythemes
 shinyWidgets
 shinyalert
 shinyhelper
 tidyverse
-
 ```
 
 4. Run the website with
 ```
-library(shiny)
 runApp("./ShinyApp")
 ```
 

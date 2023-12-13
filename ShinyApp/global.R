@@ -12,6 +12,7 @@ library(mice)
 library(maps)
 library(forecast)
 library(shinyhelper)
+library(shinyjs)
 
 source("./visualization/disease_prevalence.R")
 source("./visualization/state_comparison.R")
@@ -24,6 +25,9 @@ source("./dataimport/other_miss.R")
 source("./test/chi_sqr.R")
 source("./test/anova.R")
 source("./predict/predict.R")
+
+# Maximum upload size
+options(shiny.maxRequestSize = 10 * 1024^3)
 
 # Set theme for ggplot2
 theme_set(theme_minimal())
@@ -56,11 +60,11 @@ correct_names = c('SummerID', 'CY', 'CERT_N', 'LNAME', 'SNAME',
                   'NO_ST_2ND', 'NO_TOTV_2ND')
 
 # Variables needed for visualization
-vars_need = c("PLTCT_1", correct_names[grepl("^NO.*_1ST$", correct_names)],
+vars_need = c("S_STATE","VARIETY",
+              "PLTCT_1", correct_names[grepl("^NO.*_1ST$", correct_names)],
               "PLTCT_2", correct_names[grepl("^NO.*_2ND$", correct_names)],
               "S_YR", "winter_PLANTCT", "winter_MOSN",
-              "winter_LRN", "winter_MXDN",
-              "S_STATE","VARIETY","LNAME", "ACRES", "AC_REJ", 
+              "winter_LRN", "winter_MXDN","LNAME", "ACRES", "AC_REJ", 
               "winter_ACRES", "winter_AC_REJ")
 
 # Variables that should be paired

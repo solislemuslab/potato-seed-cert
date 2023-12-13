@@ -20,17 +20,28 @@ server <- function(input, output, session){
                  paste0("The data uploaded has wrong column names: ",
                         paste(colnames(mydf)[check_col_names(mydf)+1], collapse = ", "),
                         ". Please check and upload again."), 
-                 type = "info")
+                 type = "info",
+                 callbackR = function(x) {
+                   # Refresh the page after the alert is closed
+                   runjs("location.reload();")
+                   })
       myData$dt = NULL
+      
     }else if (!check_col_class(mydf)$Check){ # Check Important Variable Classes
       shinyalert("Warning", 
                  paste0("The data uploaded has wrong column classes: ",
                         paste(check_col_class(mydf)$Which, collapse = ", "),
+                        ". They should be ", 
+                        c("characters", "numbers")[if_else(check_col_class(mydf)$Which > 2, 2, 1)],
                         ". Please check and upload again."), 
-                 type = "info")
-      output$subtab_data = renderDataTable(
-        mydf[,check_col_class(mydf)$Which_col]
-      )
+                 type = "info",
+                 callbackR = function(x) {
+                   # Refresh the page after the alert is closed
+                   runjs("location.reload();")
+                 })
+      # output$subtab_data = renderDataTable(
+      #   mydf[,check_col_class(mydf)$Which_col]
+      # )
     }
     else{
       mydf = mydf %>%
