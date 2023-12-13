@@ -56,7 +56,6 @@ tidyverse
 
 4. Run the website with
 ```
-library(shiny)
 runApp("./ShinyApp")
 ```
 
