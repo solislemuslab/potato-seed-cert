@@ -8,6 +8,7 @@ source("./tabs/helpTab.R")
 
 ui <- fluidPage(
   theme = shinytheme("cerulean"),
+  useShinyjs(),
   custom_styles,
   custom_styles_code,
   navbarPage(
