@@ -2,6 +2,7 @@ __pycache__/*
 apps/__pycache__/*
 virtual-env/*
 notes-meetings.md
+data/*
 
 # Compiled source #
 ###################
@@ -153,3 +154,4 @@ Backup[ ]of[ ]*.numbers/
 
 ## H5
 *.h5
+.Rproj.user

@@ -16,6 +16,7 @@ import flask
 import os
 import dash_table
 import jellyfish
+import csv
 #from app import app
 
 PAGE_SIZE = 5
@@ -28,6 +29,8 @@ summer_columns = ["CERT_N",
                   "S_YR",
                   "S_GCODE",
                   "S_STATE"]
+expected_csv_cols = ['Unnamed: 0', 'SummerID', 'CY', 'CERT_N', 'LNAME', 'SNAME', 'GCODE', 'VARIETY', 'VAR', 'V2', 'V3AR', 'S_GRW', 'S_G', 'S_YR', 'S_GCODE', 'S_STATE', 'ACRES', 'I_CLASS', 'I_GEN', 'START_PLTG', 'DONE_PLTG', 'DATE_1ST', 'INSPECTOR', 'INS_TITL', 'DAPS1', 'PLTCT_1', 'NO_LR_1ST', 'SR1_LR', 'NO_MOS_1ST', 'SR1_MOS', 'NO_ST_1ST', 'SR1_ST', 'SR1_TOTV', 'NO_MIX_1ST', 'AC_MIX_1ST', 'SR1_MIX', 'DATE_2ND', 'DAPS2', 'PLTCT_2', 'SR2_LR', 'SR2_MOS', 'SR2_ST', 'SR2_TOTV', 'NO_BRR_2ND', 'SR2_BRR', 'NO_MIX_2ND', 'AC_MIX_2ND', 'SR2_MIX', 'PPA_MIX', 'SRF_LR', 'SRF_MOS', 'SRF_ST', 'SRF_MIX', 'TOTVIR', 'BLEG_PCT_C', 'BLEG_PCT_N', 'RHIZOC', 'VERT_C', 'VERT_N', 'ASTRYELOS', 'EBLIGHT', 'EBLIGHT_N', 'LBLIGHT', 'SCLEROTIN', 'WILT_PCT_C', 'WILT_PCT_N', 'G_AND_VIG', 'INS_CONT', 'WEED_CONT', 'ISOLATION', 'STAND', 'COMMMENTS', 'AC_PASSD', 'AC_REJ', 'S_CLASS', 'S_GEN', 'DN_CLASS', 'PRN_F', 'BR_F', 'PSTV_F', 'LB_F', 'LAST_MOD', 'LAST_TIM', 'STOP', 'SF_HCNOT1', 'SF_HCNOT2', 'SF_HCNOT3', 'SF_HCNOT4',
+                     'SF_HCNOT5', 'SF_HCNOT6', 'SF_HCNOT7', 'ADDRESSS', 'CITY', 'STATE', 'ZIP', 'SF_HCNOT8', 'SF_HCNOT9', 'SF_HCNOT10', 'SF_HCNOT11', 'WinterID', 'winter_CERT_N', 'winter_SNAME', 'winter_VAR', 'winter_TYPE', 'winter_ACRES', 'winter_AD_SAMPS', 'winter_AC_PASSD', 'winter_WT_SAMP', 'winter_WT_A', 'winter_LNAME', 'winter_GCODE', 'winter_VARIETY', 'winter_S_GRW', 'winter_S_G', 'winter_S_YR', 'winter_S_GCODE', 'winter_S_STATE', 'winter_I_CLASS', 'winter_I_GEN', 'winter_S_CLASS', 'winter_S_GEN', 'winter_DN_CLASS', 'winter_NS', 'winter_WT_LOC', 'winter_PLANTCT', 'winter_LRN', 'winter_MOSN', 'winter_MXDN', 'winter_LR', 'winter_MOS', 'winter_MIX', 'winter_PSTV', 'winter_BRR', 'winter_ELI_PLTS', 'winter_ELI_PPW', 'winter_ELI_POS', 'winter_ELI_PVY', 'winter_LVS', 'winter_TBR', 'winter_TOTV', 'winter_CLASS', 'winter_GEN', 'winter_PAYING', 'winter_SF_PROG', 'winter_FY', 'winter_DIP', 'winter_AC_REJ', 'winter_CY', 'DAPS1_binned', 'DAPS2_binned', 'NO_LR_2ND', 'NO_MOS_2ND', 'NO_ST_2ND', 'NO_TOTV_2ND']
 
 winter_columns = ["winter_{}".format(x) for x in summer_columns]
 error_columns = ["error_{}".format(x) for x in summer_columns]
@@ -138,6 +141,7 @@ def parse_data(contents, filename):
         # print(e)
         return html.Div([
             'There was an error processing this file.'
+
         ])
     return df
 
@@ -154,6 +158,20 @@ def callback_upload(app):
             df = parse_data(contents, filename)
 
             if tab == 'tab-1':
+                lst = []
+                for col in df.columns:
+                    lst.append(col)
+                if((lst == expected_csv_cols) is False):
+                    return html.Div([
+                        html.P(
+                            ["There was an error processing this file, please check the ",
+                             html.A(children="data-format.md",
+                                    href="https://github.com/solislemuslab/potato-seed-cert/blob/master/Data-Format.md"),
+                                " and verify the colum names in your file."
+                             ], className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
+                        )
+                    ]), df.to_dict('records')
+
                 return html.Div([
                     html.Br(),
                     dash_table.DataTable(
@@ -184,9 +202,28 @@ def callback_upload(app):
                     # ),
                     # dbc.Button(children="fix me",  color="primary",
                     #           outline=True, id="fix-button", className="mr-1", block=True),''',
-                    html.Br()
+                    html.Br(),
+                    html.Br(),
+                    html.P(
+                        "Data Summary --- total columns: {} and total rows: {}".format(
+                            len(df.columns), len(df.index)),
+                        className="font-weight-lighter", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic'}
+                    ),
                 ]), df.to_dict('records')
             elif tab == 'tab-2':
+                lst = []
+                for col in df.columns:
+                    lst.append(col)
+                if((lst == expected_csv_cols) is False):
+                    return html.Div([
+                        html.P(
+                            ["There was an error processing this file, please check the ",
+                             html.A(children="data-format.md",
+                                    href="https://github.com/solislemuslab/potato-seed-cert/blob/master/Data-Format.md"),
+                                " and verify the colum names in your file."
+                             ], className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
+                        )
+                    ]), df.to_dict('records')
                 return html.Div([
                     html.P(
                         "Error Summary",
@@ -209,13 +246,41 @@ def callback_upload(app):
                     ),
                     html.P(
                         "Please click the button below if you want to fill all missing entries",
-                        className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'}
+                        className='font-weight-bolder', style={"padding-top": '20px', "font-size": '20px', "color": 'blue', 'font-weight': 'bold', 'font-style': 'italic'},
+
                     ),
                     dbc.Button(children="fix me",  color="primary",
                                outline=True, id="fix-button", className="mr-1", block=True),
-
+                    dbc.Button("Help", color="primary",
+                               id="Pchi_square-open", className="mr-auto"),
+                    dbc.Modal(
+                        [
+                            dbc.ModalHeader(
+                                "Fill in missing value function"),
+                            dbc.ModalBody(
+                                "Click this [Fill in Missing Value] button to fill in the missing entries in the table from information in other columns."),
+                            dbc.ModalFooter(
+                                dbc.Button("Close", id="Pchi_square-close",
+                                           className="ml-auto")
+                            ),
+                        ],
+                        id="Pchi_square-message",
+                    )
                 ]), df.to_dict('records')
             elif tab == 'tab-3':
+                lst = []
+                for col in df.columns:
+                    lst.append(col)
+                if((lst == expected_csv_cols) is False):
+                    return html.Div([
+                        html.P(
+                            ["There was an error processing this file, please check the ",
+                             html.A(children="data-format.md",
+                                    href="https://github.com/solislemuslab/potato-seed-cert/blob/master/Data-Format.md"),
+                                " and verify the colum names in your file."
+                             ], className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
+                        ),
+                    ]), df.to_dict('records')
                 return html.Div([
                     dbc.Row(
                         dbc.Col(
@@ -240,9 +305,40 @@ def callback_upload(app):
                     ),
                     dbc.Button(children="fix me",  color="primary",
                                outline=True, id="fix-button", className="mr-1", block=True),
-
+                    dbc.Col(
+                        [
+                            dbc.Button("Help", color="primary",
+                                       id="Pchi_square-open", className="mr-auto"),
+                            dbc.Modal(
+                                [
+                                    dbc.ModalHeader(
+                                        "Fill in Missing Value Button"),
+                                    dbc.ModalBody(
+                                        "The user fills all missing entries in the table by clicking the FILL IN MISSING VALUES button"),
+                                    dbc.ModalFooter(
+                                        dbc.Button("Close", id="Pchi_square-close",
+                                                   className="mr-1")
+                                    ),
+                                ],
+                                id="Pchi_square-message",
+                            )],
+                        width={"size": 2, "offset": 6}
+                    )
                 ]), df.to_dict('records')
             elif tab == 'tab-4':
+                lst = []
+                for col in df.columns:
+                    lst.append(col)
+                if((lst == expected_csv_cols) is False):
+                    return html.Div([
+                        html.P(
+                            ["There was an error processing this file, please check the ",
+                             html.A(children="data-format.md",
+                                    href="https://github.com/solislemuslab/potato-seed-cert/blob/master/Data-Format.md"),
+                                " and verify the colum names in your file."
+                             ], className="font-weight-bolder", style={"padding-top": '20px', "font-size": '20px', 'font-style': 'italic', "color": 'red'}
+                        ),
+                    ]), df.to_dict('records')
                 return html.Div([
                     html.P(
                         "Similarity between Two Similar Column Names(in %)",
@@ -677,7 +773,7 @@ def callback_upload(app):
     ])
     def error_table(nclicks):
         if nclicks == None or nclicks % 2 == 0:
-            return ["FIX ERRORS"]
+            return ["FILL IN MISSING VALUES"]
         else:
             return ["Undo"]
 
@@ -688,7 +784,7 @@ def callback_upload(app):
     ])
     def error_table2(nclicks):
         if nclicks == None or nclicks % 2 == 0:
-            return ["FIX ERRORS"]
+            return ["FILL IN MISSING VALUES"]
         else:
             return ["Undo"]
 
