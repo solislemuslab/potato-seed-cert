@@ -8,7 +8,7 @@ data_table_subtab <-
         width = 4,
         h3("Instructions:"),
         helpText("Please choose a csv/xlsx file from your device."),
-        helpText("After data is loaded, four tabs will appear on the right with a summary of the database \
+        helpText("The four tabs (Data Table, Paired Errors, Outliers, Missing Values) provide with a summary of the database \
                  and potential errors to address prior to data analysis and visualization."), 
         helpText("Note that clicking on a given tab might take a couple of seconds to load."),
         helpText("Moreover, after making changes to the data, the revised data can be downloaded by clicking ", 
@@ -55,7 +55,7 @@ paired_subtab <-
       sidebarPanel(
         width = 4,
         h3("Instruction:"),
-        helpText("This tab will give error summary for the variables that are supposed to be the same in Summer and Winter."),
+        helpText("This tab will identify errors in column variables that are supposed to be the same in Summer and Winter."),
         helpText("By clicking ", tags$b("Fill Missing Values"), " button, the missing values will be imputed automatically.") %>% 
           helper(type = "inline",
                  title = "Further Illustration",
