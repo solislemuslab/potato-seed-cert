@@ -336,7 +336,36 @@ server <- function(input, output, session){
     }
   })
   
+  #### Check Data ####
+  # Check for missing values
+  df_check_other = reactive({
+    myData$dt %>% select(Index, vars_need)
+  })
+  
+  noError <- reactive({
+    check_col_class(myData$dt)$Check & 
+      all(complete.cases(df_check_other()))
+  })
+  
+  # Observe clicking on the Analysis tab
+  observeEvent(input$mainTab, {
+    if ((input$mainTab == "Visualization" |
+        input$mainTab == "Test" |
+        input$mainTab == "Prediction") && !noError()) {
+      shinyalert(title = "Warning", 
+                 text = "The data still have missing values, which will affect the content in this tab. \
+                 Please go through the Data Tab first.", 
+                 type = "info")
+    }
+  })
+  
   #### Visualization Tab ####
+  # output$noMissingValues <- reactive({
+  #   check_col_class(myData$dt)$Check & 
+  #     all(complete.cases(df_check_other()))
+  # })
+  # outputOptions(output, 'noMissingValues', suspendWhenHidden = FALSE)
+  
   observe({
     upload_df = myData$dt
     # Update Choices after uploading data
@@ -348,12 +377,16 @@ server <- function(input, output, session){
       selected = "WI"
     )
     
-    updatePickerInput(
-      session,
-      "dis_pre_variety",
-      choices = unique(upload_df$VARIETY),
-      selected = "Atlantic"
-    )
+    observeEvent(input$dis_pre_state, {
+      req(input$dis_pre_state)
+      x = input$dis_pre_state
+      updatePickerInput(
+        session,
+        "dis_pre_variety",
+        choices = unique(upload_df$VARIETY[upload_df$S_STATE == x]),
+        selected = unique(upload_df$VARIETY[upload_df$S_STATE == x])[1]
+      )
+    })
     
     ## State Comparison subTab
     updatePickerInput(
