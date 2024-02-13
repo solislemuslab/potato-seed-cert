@@ -27,6 +27,9 @@ test_tab <-
     sidebarLayout(
       sidebarPanel(
         h3("Data Selection"),
+        helpText("The null hypothesis is that the infection rate of selected disease type is \
+                 independent with the selected source variable, \
+                 and the alternative hypothesis is that they are associated."),
         pickerInput(
           inputId = "test_state",
           label = "State",
