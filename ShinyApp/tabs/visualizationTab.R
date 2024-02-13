@@ -6,6 +6,9 @@ disease_prevalence_subtab <-
     sidebarLayout(
       sidebarPanel(
         h3("Data Selection"),
+        helpText("After choosing the four elements below, there will be a line plot, whose \
+                 x-axis is Year, and y-axis is Percentage of potato \
+                 with the chosen disease types."),
         pickerInput(
           inputId = "dis_pre_ins",
           label = "Inspection",
@@ -51,6 +54,11 @@ state_comparison_subtab <-
     sidebarLayout(
       sidebarPanel(
         h3("Data Selection"),
+        helpText("The plot on top compares the average susceptibility in selected range \
+                 of years of potato to different diseases in different states."),
+        helpText("Each line corresponds to a state, x-axis corresponds to disease types, \
+                 and y-axis corresponds to percentage of infection."),
+        helpText("The map below compares certain disease infection rate between states."),
         pickerInput(
           inputId = "state_comp_state",
           label = "State",
@@ -94,6 +102,9 @@ acre_rejection_subtab <-
     sidebarLayout(
       sidebarPanel(
         h3("Data Selection"),
+        helpText("The y-axis of each bar plot is Rejection Percentage (ACRE_REJ/ACRE_TOTAL)."),
+        helpText("The x-axis is different potato lot name (plot on top) or potato variety (plot on bottom)."),
+        helpText("For each potato lot name/potato variety, it shows two bars -- one for summer and one for winter."),
         pickerInput(
           inputId = "acre_lot",
           label = "Lot Name",
@@ -125,6 +136,9 @@ variety_subtab <-
     sidebarLayout(
       sidebarPanel(
         h3("Data Selection"),
+        helpText("The x-axis is different kinds of potato variety, \
+                 and the y-axis is the average percentage of potato in the selected range of \
+                 year with the selected disease type."),
         pickerInput(
           inputId = "variety_ins",
           label = "Inspection",

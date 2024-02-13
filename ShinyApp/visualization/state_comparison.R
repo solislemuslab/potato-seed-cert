@@ -136,7 +136,7 @@ map_plot_sc <-
         geom_polygon(color = "grey") +
         scale_fill_gradient(na.value = "white") +
         # coord_fixed(1.3) +
-        labs(title = "Comparison between States in map", fill = "Acre Rejection Rate(%)")
+        labs(title = "Comparison between States in map", fill = "Disease Infection Rate(%)")
       ggplotly(p)
     }
   }
