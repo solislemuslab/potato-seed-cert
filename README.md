@@ -59,6 +59,8 @@ tidyverse
 runApp("./ShinyApp")
 ```
 
+Note that even if you installed the packages already, you need to run the installation command to load the packages before running the app.
+
 # Contributions
 
 Users interested in expanding functionalities in `Potato-Seed-Dashboard` are welcome to do so.
