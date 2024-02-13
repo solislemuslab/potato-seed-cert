@@ -40,6 +40,9 @@ predict_tab <-
           multiple = F,
           options = list(`live-search` = T)
         ),
+        helpText("The x-axis represents the predicted disease prevalence for the year \
+                 following the last year in the dataset, \
+                 and the y-axis lists the selected states.")
       ),
       mainPanel(
         h3("Predicted Result"),
