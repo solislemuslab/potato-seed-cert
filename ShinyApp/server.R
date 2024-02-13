@@ -229,7 +229,8 @@ server <- function(input, output, session){
         "outliers_var",
         choices = colnames(df_check_other())[-c(1,
                                              which(colnames(df_check_other()) %in% c("VARIETY", "S_STATE")))],
-        selected = colnames(df_check_other())[2]
+        selected = colnames(df_check_other())[-c(1,
+                                                 which(colnames(df_check_other()) %in% c("VARIETY", "S_STATE")))][1]
       )
       
       
@@ -240,21 +241,26 @@ server <- function(input, output, session){
       
       ## Data Table
       output$outliers_dt = renderDataTable(
-        datatable(
-          outliers_dt(df_check_other(), input$outliers_var)$dt,
-          rownames = F,
-          filter = "top",
-          options = list(scrollY = 300,
-                         scrollX = 500,
-                         deferRender = TRUE,
-                         pageLength = 10,
-                         autoWidth = F),
-          editable = T
-        ) %>% 
-          formatStyle(columns = 1:ncol(outliers_dt(df_check_other(), input$outliers_var)$dt),
-                      backgroundColor = styleInterval(cuts = -1e-100, 
-                                                      values = c("palevioletred", "white"))
-                      )
+        if(length(input$outliers_var) == 0){
+          datatable(NULL)
+        }else{
+          datatable(
+            outliers_dt(df_check_other(), input$outliers_var)$dt,
+            rownames = F,
+            filter = "top",
+            options = list(scrollY = 300,
+                           scrollX = 500,
+                           deferRender = TRUE,
+                           pageLength = 10,
+                           autoWidth = F),
+            editable = T
+          ) %>% 
+            formatStyle(columns = 1:ncol(outliers_dt(df_check_other(), input$outliers_var)$dt),
+                        backgroundColor = styleInterval(cuts = -1e-100, 
+                                                        values = c("palevioletred", "white"))
+            )
+        }
+
       )
       
       ## Edit function
