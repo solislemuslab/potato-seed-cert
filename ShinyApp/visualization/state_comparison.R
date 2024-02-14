@@ -132,12 +132,17 @@ map_plot_sc <-
         select(S_STATE, value)
       merged_data = left_join(us_map, temp_full, by = "S_STATE")
       
-      p = ggplot(data = merged_data, aes(x = long, y = lat, fill = value, group = group)) +
+      merged_data$hover_text <- with(merged_data, paste(toupper(S_STATE), ": ", value, '%'))
+      
+      p = ggplot(data = merged_data, aes(x = long, y = lat, 
+                                         fill = value, group = group,
+                                         text = hover_text)) +
         geom_polygon(color = "grey") +
-        scale_fill_gradient(na.value = "white") +
+        scale_fill_gradient(limits = c(0, max(merged_data$value, na.rm = T) + 0.0001), 
+                            na.value = "white") +
         # coord_fixed(1.3) +
-        labs(title = "Comparison between States in map", fill = "Acre Rejection Rate(%)")
-      ggplotly(p)
+        labs(title = "Comparison between States in map", fill = "Disease Infection Rate(%)")
+      ggplotly(p, tooltip = "text")
     }
   }
 }

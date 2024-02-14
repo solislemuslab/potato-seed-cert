@@ -166,7 +166,7 @@ The following shows the hierarchy of the website:
   * State
   * Disease Type
   * Potato Variety
-* It gives prediction of disease prevalence after selecting the values of above variables. Users can see a plot with bars and points, indicating the predicted values.
+* It gives prediction of disease prevalence after selecting the values of above variables. Users can see a plot with bars and points, indicating the predicted values. The x-axis represents the predicted disease prevalence for the year following the last year in the dataset, and the y-axis lists the selected states.
 * The predicting model is ARIMA. As the sample size is not big enough, the predicted results are for reference only, which means that they may vary from the true value. Thus, use the results with cautious.
 
 ![Prediction](assets/Shiny-Predict.png)

@@ -36,7 +36,9 @@ disease_prevalence_subtab <-
           multiple = F,
           selected = "",
           options = list(`live-search` = T)
-        )
+        ),
+        helpText("The x-axis is Year, and y-axis is Percentage of potato \
+                 with the chosen disease types.")
       ),
       mainPanel(
         plotlyOutput("plot_dis_pre", height = "700px")
@@ -72,13 +74,17 @@ state_comparison_subtab <-
           max = as.numeric(format(Sys.Date(), "%Y")),
           value = c(0, as.numeric(format(Sys.Date(), "%Y")))
         ),
-        
         pickerInput(
           "state_comp_dis",
           "Disease",
           choices = c(),
           multiple = F
-        )
+        ),
+        helpText("The plot on top compares the average susceptibility in selected range \
+                 of years of potato to different diseases in different states."),
+        helpText("Each line corresponds to a state, x-axis corresponds to disease types, \
+                 and y-axis corresponds to percentage of infection."),
+        helpText("The map below compares certain disease infection rate between states.")
       ),
       mainPanel(
         plotlyOutput("plot_state_comp"),
@@ -109,7 +115,11 @@ acre_rejection_subtab <-
           multiple = T,
           options = list(`actions-box` = T,
                          `live-search` = T)
-        )
+        ),
+        helpText("The y-axis of each bar plot is Rejection Percentage (ACRE_REJ/ACRE_TOTAL)."),
+        helpText("The x-axis is different potato lot name (plot on top) or potato variety (plot on bottom)."),
+        helpText("For each potato lot name/potato variety, it shows two bars \
+                 -- one for summer and one for winter.")
       ),
       mainPanel(
         plotlyOutput("plot_acre_lot", height = "350px"),
@@ -154,7 +164,10 @@ variety_subtab <-
           min = 0,
           max = as.numeric(format(Sys.Date(), "%Y")),
           value = c(0, as.numeric(format(Sys.Date(), "%Y")))
-        )
+        ),
+        helpText("The x-axis is different kinds of potato variety, \
+                 and the y-axis is the average percentage of potato in the selected range of \
+                 year with the selected disease type.")
       ),
       mainPanel(
         plotlyOutput("plot_var", height = "700px")

@@ -13,11 +13,13 @@ ui <- fluidPage(
   custom_styles_code,
   navbarPage(
     "Wisconsin Seed Potato Certification Program",
-    data_tab,
-    visualization_tab,
-    test_tab,
-    predict_tab,
-    help_tab
+    tabsetPanel(id = "mainTab",
+      data_tab,
+      visualization_tab,
+      test_tab,
+      predict_tab,
+      help_tab
+    )
   )
 )
 
