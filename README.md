@@ -33,7 +33,7 @@ R
 ```
 source("./install_packages.R")
 ```
-This step can take several minutes.
+This step can take several minutes. Some people might need to install `shinyjs` from RStudio.
 
 A list of packages can be found in the requirements.txt file and is listed below:
 ```
