@@ -360,12 +360,12 @@ server <- function(input, output, session){
   })
   
   #### Visualization Tab ####
-  # output$noMissingValues <- reactive({
-  #   check_col_class(myData$dt)$Check & 
-  #     all(complete.cases(df_check_other()))
-  # })
-  # outputOptions(output, 'noMissingValues', suspendWhenHidden = FALSE)
-  
+  output$noMissingValues <- reactive({
+    check_col_class(myData$dt)$Check &
+      all(complete.cases(df_check_other()))
+  })
+  outputOptions(output, 'noMissingValues', suspendWhenHidden = FALSE)
+
   observe({
     upload_df = myData$dt
     # Update Choices after uploading data

@@ -177,12 +177,13 @@ variety_subtab <-
 
 ## Combination
 visualization_tab <- 
-  tabPanel(
-    "Visualization",
+  tabPanel("Visualization", conditionalPanel(
+    condition = "output.noMissingValues",
     tabsetPanel(
       disease_prevalence_subtab,
       state_comparison_subtab,
       acre_rejection_subtab,
       variety_subtab
     )
-  )
+  ))
+
