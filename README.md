@@ -62,7 +62,7 @@ git clone https://github.com/solislemuslab/potato-seed-cert
 git clone https://github.com/solislemuslab/potato-seed-cert
 ```
 
-2. Get inside the potato-seed-cert folder, create and activate an R virtual environment:
+2. Get inside the **potato-seed-cert** folder, create and activate an R virtual environment:
 ```
 cd potato-seed-cert
 R
