@@ -15,26 +15,6 @@ While we recommend the use of the dashboard via the online link, we present belo
 ## Steps to run this website locally
 Users with strong programming skills might like to modify the existing code and run a version of the website locally.
 
-1. Clone this repository
-
-```
-git clone https://github.com/solislemuslab/potato-seed-cert
-```
-
-
-2. Get inside the potato-seed-cert folder, create and activate an R virtual environment:
-
-```
-cd potato-seed-cert
-R
-```
-
-3. Install the necessary packages with
-```
-source("./install_packages.R")
-```
-This step can take several minutes. Some people might need to install `shinyjs` from RStudio.
-
 A list of packages can be found in the requirements.txt file and is listed below:
 ```
 DT
@@ -53,6 +33,46 @@ shinyalert
 shinyhelper
 tidyverse
 ```
+
+There are two ways to run the dashboard locally, and the former one is recommended.
+
+### With RStudio
+
+1. Clone this repository with command line:
+```
+git clone https://github.com/solislemuslab/potato-seed-cert
+```
+
+2. Get inside the **potato-seed-cert** folder, open `install_packages.R` and run the code to install the necessary packages. This step can take several minutes.
+
+3. Get inside the **ShinyApp** folder, open `global.R`. Then there are three ways to run the website:
+  - Click *Run App* button.
+
+  - Use *Command/Ctrl + Shift + Enter*. 
+  
+  - Run the following code in the console
+    ```
+    runApp('ShinyApp')
+    ``` 
+
+### With Command Line
+
+1. Clone this repository
+```
+git clone https://github.com/solislemuslab/potato-seed-cert
+```
+
+2. Get inside the potato-seed-cert folder, create and activate an R virtual environment:
+```
+cd potato-seed-cert
+R
+```
+
+3. Install the necessary packages with
+```
+source("./install_packages.R")
+```
+This step can take several minutes. Some people might need to install `shinyjs` from RStudio.
 
 4. Run the website with
 ```
