@@ -13,9 +13,9 @@ More details on the folder structure can be found on the contributing file: [CON
 While we recommend the use of the dashboard via the online link, we present below the steps to run the dashboard locally.
 
 ## Steps to run this website locally
-Users with strong programming skills might like to modify the existing code and run a version of the website locally.
+Users with strong programming skills might like to modify the existing code and run a version of the dashboard locally.
 
-A list of packages can be found in the requirements.txt file and is listed below:
+A list of packages can be found in the `requirements.txt` file and is listed below:
 ```
 DT
 DMwR2
@@ -45,7 +45,7 @@ git clone https://github.com/solislemuslab/potato-seed-cert
 
 2. Get inside the **potato-seed-cert** folder, open `install_packages.R` with [RStudio](https://posit.co) and run the code to install the necessary packages. This step can take several minutes.
 
-3. Get inside the **ShinyApp** folder, open `global.R`. Then there are three ways to run the website:
+3. Get inside the **ShinyApp** folder, open `global.R`. Then there are three ways to run the dashboard:
   - Click *Run App* button.
 
   - Use *Command/Ctrl + Shift + Enter*. 
@@ -74,7 +74,7 @@ source("./install_packages.R")
 ```
 This step can take several minutes. Some people might need to install `shinyjs` from RStudio.
 
-4. Run the website with
+4. Run the dashboard with
 ```
 runApp("./ShinyApp")
 ```
