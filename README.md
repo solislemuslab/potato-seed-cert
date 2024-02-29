@@ -43,7 +43,7 @@ There are two ways to run the dashboard locally, and the former one is recommend
 git clone https://github.com/solislemuslab/potato-seed-cert
 ```
 
-2. Get inside the **potato-seed-cert** folder, open `install_packages.R` and run the code to install the necessary packages. This step can take several minutes.
+2. Get inside the **potato-seed-cert** folder, open `install_packages.R` with [RStudio](https://posit.co) and run the code to install the necessary packages. This step can take several minutes.
 
 3. Get inside the **ShinyApp** folder, open `global.R`. Then there are three ways to run the website:
   - Click *Run App* button.
