@@ -184,7 +184,7 @@ server <- function(input, output, session){
         info = input$paired_miss_dt_cell_edit
         df_check_edit = df_check_paired()
         df_check_edit[miss_rows_paired()[info$row],
-                      info$col+1] = info$value # IDK why I need "+1", but it works
+                      info$col+1] = info$value
         
         myData$dt[miss_rows_paired(),
                   colnames(df_check_edit)] = df_check_edit[miss_rows_paired(),]
@@ -205,12 +205,11 @@ server <- function(input, output, session){
       ### Edit DT function
       observeEvent(input$paired_mm_dt_cell_edit, {
         info_mm = input$paired_mm_dt_cell_edit
-        df_mm_edit = df_check_paired()[colnames(paired_mm_dt(df_check_paired(), input$paired_mismatch))]
-        df_mm_edit[mm_rows()[info_mm$row],
-                      info_mm$col+1] = info_mm$value # IDK why I need "+1", but it works
-        # myData$history[[length(myData$history)+1]] = df_mm_edit[mm_rows(),]
-        myData$dt[mm_rows(),
-                  colnames(df_mm_edit)] = df_mm_edit[mm_rows(),]
+        df_mm_edit = paired_mm_dt(df_check_paired(), input$paired_mismatch)
+        df_mm_edit[info_mm$row,
+                      info_mm$col+1] = info_mm$value
+        myData$dt[mm_rows()[info_mm$row],
+                  colnames(df_mm_edit)] = df_mm_edit[info_mm$row,]
         myData$history[[length(myData$history)+1]] = myData$dt
       })
       
@@ -339,12 +338,20 @@ server <- function(input, output, session){
   #### Check Data ####
   # Check for missing values
   df_check_other = reactive({
-    myData$dt %>% select(Index, vars_need)
+    if (is.null(myData$dt)){
+      NULL
+    } else{
+      myData$dt %>% select(Index, vars_need)
+    }
   })
-  
+
   noError <- reactive({
-    check_col_class(myData$dt)$Check & 
-      all(complete.cases(df_check_other()))
+    if (is.null(myData$dt)){
+      FALSE
+    } else{
+      check_col_class(myData$dt)$Check & 
+        all(complete.cases(df_check_other()))
+    }
   })
   
   # Observe clicking on the Analysis tab
@@ -353,16 +360,20 @@ server <- function(input, output, session){
         input$mainTab == "Test" |
         input$mainTab == "Prediction") && !noError()) {
       shinyalert(title = "Warning", 
-                 text = "The data still have missing values, which will affect the content in this tab. \
-                 Please go through the Data Tab first.", 
+                 text = "The data is not uploaded or still have missing values, which will affect the content in this tab. \
+                 Please upload data or go through the Data Tab first.", 
                  type = "info")
     }
   })
   
   #### Visualization Tab ####
   output$noMissingValues <- reactive({
-    check_col_class(myData$dt)$Check &
-      all(complete.cases(df_check_other()))
+    if (is.null(myData$dt)){
+      FALSE
+    } else{
+      check_col_class(myData$dt)$Check & 
+        all(complete.cases(df_check_other()))
+    }
   })
   outputOptions(output, 'noMissingValues', suspendWhenHidden = FALSE)
 
